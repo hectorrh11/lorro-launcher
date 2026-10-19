@@ -185,6 +185,31 @@ verified, what is still pending, and what is required to distribute the app.
   the idle footprint is now roughly a quarter lower, and stays lower while the
   help/cloud extras are unused.
 
+### 1.11 Publication repository and auto-update activation
+- Publication target: **`github.com/hectorrh11/lorro-launcher`** (public).
+  Configured in `electron-builder.yml` (`publish: provider: github, owner:
+  hectorrh11, repo: lorro-launcher`) and in `.env`
+  (`MAIN_VITE_UPDATE_REPOSITORY=hectorrh11/lorro-launcher`,
+  `RENDERER_VITE_RELEASES_URL=https://github.com/hectorrh11/lorro-launcher/releases/latest`).
+- The packaged app contains `resources/app-update.yml` with the same provider, so
+  installed clients check this repository for new versions.
+- Version baseline is **1.0.0** (package.json). `update.txt` at the repository root
+  is the detailed, user-facing changelog and must be updated with every release.
+- Publishing a new version:
+  1. Make the changes and bump `version` in `package.json` (e.g. `1.1.0`).
+  2. Update `update.txt` with a detailed changelog entry.
+  3. Build + publish (must run from a path without `$`, see section 3 item 1):
+     `$env:GH_TOKEN = gh auth token; npx electron-builder --win --publish always`
+  4. Electron-builder creates the GitHub Release and uploads `setup.exe`,
+     `.blockmap` and `latest.yml`, then **publish the release** (it is created as a
+     draft): `gh release edit v1.1.0 --repo hectorrh11/lorro-launcher --draft=false --latest`.
+- Verified for 1.0.0: release `v1.0.0` is public (`draft:false`, `latest`), assets
+  include `latest.yml`, and `https://github.com/hectorrh11/lorro-launcher/releases/latest/download/latest.yml`
+  returns HTTP 200.
+- Note on version numbers: clients only accept updates whose version is **greater**
+  than the installed one. Any installation on the old `4.1.6` build must install the
+  `1.0.0` setup once; from `1.0.0` onward in-app auto-update works.
+
 ---
 
 ## 2. Tests and verification performed

@@ -6,12 +6,14 @@ import "./auto-update-header.scss";
 import type { AppUpdaterEvent } from "@types";
 
 export const releasesPageUrl =
-  "https://github.com/hydralauncher/hydra/releases/latest";
+  import.meta.env.RENDERER_VITE_RELEASES_URL ?? "";
 
 export function AutoUpdateSubHeader() {
   const [isReadyToInstall, setIsReadyToInstall] = useState(false);
   const [newVersion, setNewVersion] = useState<string | null>(null);
   const [isAutoInstallAvailable, setIsAutoInstallAvailable] = useState(false);
+  const [isUpdateChannelConfigured, setIsUpdateChannelConfigured] =
+    useState(false);
 
   const { t } = useTranslation("header");
 
@@ -32,6 +34,10 @@ export function AutoUpdateSubHeader() {
       }
     );
 
+    window.electron.getAppInfo().then((appInfo) => {
+      setIsUpdateChannelConfigured(appInfo.updateChannelConfigured);
+    });
+
     window.electron.checkForUpdates().then((isAutoInstallAvailable) => {
       setIsAutoInstallAvailable(isAutoInstallAvailable);
     });
@@ -41,9 +47,13 @@ export function AutoUpdateSubHeader() {
     };
   }, []);
 
+  if (!isUpdateChannelConfigured) return null;
+
   if (!newVersion) return null;
 
   if (!isAutoInstallAvailable) {
+    if (!releasesPageUrl) return null;
+
     return (
       <header className="auto-update-sub-header">
         <Link

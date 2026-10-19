@@ -121,6 +121,8 @@ export class WindowManager {
       webPreferences: {
         preload: path.join(__dirname, "../preload/index.mjs"),
         sandbox: false,
+        backgroundThrottling: true,
+        spellcheck: false,
       },
       show: false,
       ...(process.platform === "linux"
@@ -881,14 +883,19 @@ export class WindowManager {
     closeWindow: () => void
   ) {
     contents.on("will-navigate", (_event, url) => {
-      if (url.startsWith("hydralauncher://auth")) {
+      // Accept both the Lorro protocol and the legacy Hydra protocol, since the
+      // external auth service still redirects with the original scheme.
+      if (url.startsWith("lorro://auth") || url.startsWith("hydralauncher://auth")) {
         closeWindow();
 
         HydraApi.handleExternalAuth(url);
         return;
       }
 
-      if (url.startsWith("hydralauncher://update-account")) {
+      if (
+        url.startsWith("lorro://update-account") ||
+        url.startsWith("hydralauncher://update-account")
+      ) {
         closeWindow();
 
         WindowManager.sendToAppWindows("on-account-updated");
@@ -1037,7 +1044,7 @@ export class WindowManager {
     const connectionWindow = new BrowserWindow({
       width: layout.width,
       height: layout.height,
-      title: "Hydra",
+      title: "Lorro Launcher",
       backgroundColor: "#1c1c1c",
       parent: parentWindow,
       modal: true,
@@ -1395,7 +1402,7 @@ export class WindowManager {
       tray.popUpContextMenu(contextMenu);
     };
 
-    tray.setToolTip("Hydra Launcher");
+    tray.setToolTip("Lorro Launcher");
 
     if (process.platform === "win32") {
       await updateSystemTray();

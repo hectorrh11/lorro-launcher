@@ -1,0 +1,110 @@
+========================================================
+ LORRO LAUNCHER - REGISTRO DE ACTUALIZACIONES
+========================================================
+Este archivo describe, A DETALLE, todos los cambios, adiciones
+y correcciones de cada versión de Lorro Launcher.
+
+Cliente de auto-actualización: los usuarios que tengan el launcher
+instalado verán el aviso "Reiniciar e instalar" cuando se publique
+una versión nueva.
+
+========================================================
+VERSION 1.0.0
+========================================================
+Primera versión pública de Lorro Launcher.
+
+--- IDENTIDAD Y MARCA ---
+* Nombre del producto: "Lorro Launcher" (appId com.lorro.launcher,
+  ejecutable "Lorro Launcher.exe").
+* Logo original propio, generado a partir de una única fuente de diseño
+  (scripts/generate-lorro-brand.mjs) con filtro/duotono violeta:
+  - Icono de aplicación (.ico multiescala y .icns).
+  - Logo horizontal (LORRO + LAUNCHER).
+  - Icono de bandeja claro/oscuro.
+  - Imagen del instalador (installerSidebar.bmp) y de la ventana Acerca de.
+* Paleta de identidad: violeta (#8b5cf6), índigo (#4f46e5) y cian
+  (#22d3ee) sobre fondos oscuros premium.
+* Tipografías: Space Grotesk (títulos) y Noto Sans (cuerpo).
+
+--- INTERFAZ (GUI) ---
+* Rediseño visual completo manteniendo TODAS las funciones y menús:
+  - Barra superior (title bar) con la marca Lorro y el estado Cloud.
+  - Sidebar y navegación con estados hover/activo en degradado.
+  - Inicio, Biblioteca, Catálogo y Búsqueda.
+  - Fichas de juegos y tarjetas de biblioteca (elevación, glow, bordes).
+  - Descargas y progreso, instalaciones y actualizaciones.
+  - Perfiles y biblioteca personal.
+  - Ajustes, modales, menús contextuales y tooltips.
+  - Notificaciones, errores y estados vacíos.
+  - Pantalla de carga y diálogos del sistema.
+* Botones rediseñados (primary/outline/dark/cloud/danger) y corrección
+  de contraste (texto sobre fondo blanco).
+* Nueva sección de Ajustes -> "Acerca de": versión, descripción,
+  atribución, ruta de datos, estado de actualizaciones y licencia.
+
+--- BIBLIOTECA Y FUNCIONES EXISTENTES (CONSERVADAS) ---
+* Biblioteca de juegos, búsqueda y catálogo.
+* Gestión de juegos instalados y rutas de instalación.
+* Descargas y seguimiento del progreso.
+* Detección de instalaciones existentes.
+* Lanzamiento de juegos.
+* Perfiles y biblioteca personal.
+* Ajustes y preferencias.
+* Gestión de archivos necesarios para las funciones existentes.
+* Sistema de fuentes configurables (añadir/validar/habilitar/deshabilitar/
+  eliminar), con aislamiento de fallos.
+
+--- DESCARGAS ---
+* Nueva opción "Enlace personalizado": pega cualquier enlace directo
+  http/https y Lorro lo descarga y, opcionalmente, lo añade a la
+  biblioteca personal.
+  - Progreso real con velocidad y tiempo restante, pausar/reanudar,
+    cancelar, abrir carpeta y eliminar.
+  - Validación del enlace: detecta enlaces inaccesibles, errores HTTP,
+    respuestas JSON/HTML de error y archivos vacíos (0 bytes) para no dar
+    falsas esperanzas.
+  - Descarga por tramos (paralela) con reanudación por rangos HTTP.
+  - Persistencia de la cola; lo interrumpido queda en pausa.
+* Descargas en multitramo (multiconexión): hasta 16 conexiones paralelas
+  (8 por defecto) para acelerar servidores lentos o limitados por
+  conexión, replicando la técnica de segmentación dinámica.
+* Integración con gestores de descarga externos: detecta y permite
+  enviar el enlace a Internet Download Manager (IDM), Neat Download
+  Manager o Free Download Manager, además de "Copiar enlace".
+* Gráfica de velocidad de descarga:
+  - Al pasar el ratón por una barra se muestra la velocidad de ese
+    instante y cuánto tiempo hace.
+  - Nuevo indicador de velocidad MEDIA con selector de ventana:
+    Total / Última hora / Últimos 30 min / Últimos 15 min / Últimos 5 min.
+  - Gráfica optimizada (redibujado bajo demanda, sin bucle continuo).
+
+--- RENDIMIENTO Y RECURSOS ---
+* Reducción del consumo de memoria en reposo: menos procesos activos y
+  embeds pesados (chat de soporte, changelog, iframe de pago) cargados
+  de forma diferida solo cuando se usan.
+* Imágenes de tarjetas y descargas con carga diferida y decodificación
+  asíncrona.
+* Ajustes de arranque para equipos modestos y límite de memoria del
+  proceso principal.
+* Soporte de "reducir movimiento" del sistema (prefers-reduced-motion).
+
+--- DATOS, ACTUALIZACIONES Y DISTRIBUCIÓN ---
+* Directorio de datos propio e independiente: %APPDATA%\Lorro Launcher
+  (no mezcla datos con otros launchers).
+* Migración opcional y segura desde datos antiguos (con copia, sin
+  sobrescribir silenciosamente).
+* Auto-actualización activada mediante GitHub Releases de este repositorio:
+  los usuarios reciben las versiones nuevas desde el propio launcher.
+* Instalador Windows (NSIS) y versión portable con identidad de Lorro,
+  iconos propios, accesos directos y entrada de desinstalación correcta.
+* El desinstalador NO borra datos personales del usuario.
+
+--- LICENCIA Y ATRIBUCIONES ---
+* Licencia MIT y avisos de copyright originales conservados.
+* Lorro Launcher es una personalización del proyecto de código abierto
+  Hydra Launcher (MIT, © Los Broxas / Hydra Launcher contributors).
+  No se afirma que el código original se creara desde cero.
+* Licencias de terceros (Electron, React, legendary, ludusavi, fuentes,
+  iconos, etc.) conservadas y documentadas.
+
+========================================================

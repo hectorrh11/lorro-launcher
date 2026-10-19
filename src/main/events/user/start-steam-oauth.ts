@@ -3,6 +3,9 @@ import { openSteamOpenIdWindow } from "@main/services/steam-integration/steam-st
 import { steamSyncOrchestrator } from "@main/services/steam-integration/steam-sync-orchestrator";
 import { registerEvent } from "../register-event";
 
+// The external auth service validates the return URL, so the legacy scheme is
+// kept here. Lorro registers and accepts both schemes, and redirects are
+// handled transparently.
 const STEAM_OAUTH_RETURN_TO = "hydralauncher://steam-connected";
 
 const getErrorMessage = (error: unknown): string | null => {

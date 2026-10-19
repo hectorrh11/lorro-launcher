@@ -3,6 +3,7 @@ import fs from "node:fs";
 import { app } from "electron";
 
 import type { GameShop } from "@types";
+import { APP_PROTOCOL } from "@shared";
 import { getHydraExecutablePath } from "./hydra-executable-path";
 
 export { getHydraExecutablePath } from "./hydra-executable-path";
@@ -13,7 +14,7 @@ export const buildRunDeepLink = (shop: GameShop, objectId: string) => {
     objectId,
   });
 
-  return `hydralauncher://run?${query.toString()}`;
+  return `${APP_PROTOCOL}://run?${query.toString()}`;
 };
 
 const quoteLinuxExecArg = (value: string) => {

@@ -1,5 +1,6 @@
-appId: gg.hydralauncher.hydra
-productName: Hydra
+appId: com.lorro.launcher
+productName: Lorro Launcher
+copyright: Copyright © 2026 Lorro Launcher contributors. Based on Hydra Launcher (MIT).
 beforePack: scripts/legendary-before-pack.cjs
 afterPack: scripts/legendary-after-pack.cjs
 afterSign: scripts/legendary-after-pack.cjs
@@ -11,6 +12,7 @@ extraResources:
   - seeds
   - from: node_modules/create-desktop-shortcuts/src/windows.vbs
   - from: resources/achievement.wav
+  - from: resources/lorro
   - from: "src/big-picture/src/assets/audio/Favorite Sound.wav"
     to: chat-message.wav
 files:
@@ -34,7 +36,7 @@ asarUnpack:
   - node_modules/sharp/**
   - node_modules/@img/sharp-libvips-*/**
 win:
-  executableName: Hydra
+  executableName: Lorro Launcher
   extraResources:
     - from: legendary/win32/${arch}
       to: legendary
@@ -58,15 +60,20 @@ win:
     - nsis
     - portable
 nsis:
-  artifactName: ${name}-${version}-setup.${ext}
+  artifactName: lorro-launcher-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
+  createStartMenuShortcut: true
   oneClick: false
   allowToChangeInstallationDirectory: true
   include: installer.nsh
+  deleteAppDataOnUninstall: false
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+  installerHeaderIcon: build/icon.ico
 portable:
-  artifactName: ${name}-${version}-portable.${ext}
+  artifactName: lorro-launcher-${version}-portable.${ext}
   unpackDirName: false
 mac:
   sign: scripts/legendary-mac-sign.cjs
@@ -89,8 +96,9 @@ mac:
     - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
   notarize: false
 dmg:
-  artifactName: ${name}-${version}.${ext}
+  artifactName: lorro-launcher-${version}.${ext}
 linux:
+  executableName: lorro-launcher
   extraResources:
     - from: binaries/epic-prerequisite-runner/x64
       to: epic
@@ -126,13 +134,16 @@ linux:
   maintainer: electronjs.org
   category: Game
   mimeTypes:
-    - x-scheme-handler/hydralauncher
+    - x-scheme-handler/lorro
 appImage:
-  artifactName: ${name}-${version}.${ext}
+  artifactName: lorro-launcher-${version}.${ext}
 npmRebuild: false
+# Auto-update: Lorro Launcher publishes releases to this GitHub repository.
+# The main process also needs MAIN_VITE_UPDATE_REPOSITORY=<owner>/<repo> at build
+# time (see .env). Update channels can be changed here without touching the code.
 publish:
   provider: github
-  owner: hydralauncher
-  repo: hydra
+  owner: hectorrh11
+  repo: lorro-launcher
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/

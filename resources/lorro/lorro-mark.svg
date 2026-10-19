@@ -1,0 +1,38 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="lorroHead" x1="158" y1="128" x2="360" y2="340" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#C4B5FD"/>
+      <stop offset="0.5" stop-color="#8B5CF6"/>
+      <stop offset="1" stop-color="#4F46E5"/>
+    </linearGradient>
+    <linearGradient id="lorroBeak" x1="336" y1="206" x2="446" y2="288" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#A5F3FC"/>
+      <stop offset="0.55" stop-color="#22D3EE"/>
+      <stop offset="1" stop-color="#0891B2"/>
+    </linearGradient>
+    <linearGradient id="lorroCrest" x1="148" y1="36" x2="326" y2="150" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#C4B5FD"/>
+      <stop offset="1" stop-color="#6D28D9"/>
+    </linearGradient>
+    <radialGradient id="lorroGlow" cx="0" cy="0" r="1" gradientTransform="translate(250 232) rotate(90) scale(230)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7C5CF0" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#7C5CF0" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="#0A0912"/>
+  <rect width="512" height="512" rx="116" fill="url(#lorroGlow)"/>
+  <rect x="1.5" y="1.5" width="509" height="509" rx="114.5" stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="3"/>
+  <g>
+    <path d="M206 150C176 118 156 92 148 62C178 78 202 104 218 136L206 150Z" fill="url(#lorroCrest)"/>
+    <path d="M232 134C224 96 228 64 244 36C264 66 268 102 258 136L232 134Z" fill="url(#lorroCrest)"/>
+    <path d="M262 132C274 98 296 72 326 56C320 90 304 118 282 138L262 132Z" fill="url(#lorroCrest)"/>
+    <path d="M158 250C158 180 202 128 262 128C322 128 360 172 360 224C360 258 346 286 322 306L286 330C262 342 240 344 220 338C180 326 158 294 158 250Z" fill="url(#lorroHead)"/>
+    <ellipse cx="216" cy="188" rx="42" ry="23" transform="rotate(-24 216 188)" fill="#FFFFFF" fill-opacity="0.12"/>
+    <path d="M336 206L446 246L330 288C344 262 344 232 336 206Z" fill="url(#lorroBeak)"/>
+    <path d="M336 206L446 246L394 254L336 206Z" fill="#FFFFFF" fill-opacity="0.22"/>
+    <circle cx="292" cy="212" r="17" fill="#0A0912"/>
+    <circle cx="292" cy="212" r="17" stroke="#FFFFFF" stroke-opacity="0.9" stroke-width="5"/>
+    <circle cx="298" cy="205" r="4.5" fill="#FFFFFF"/>
+    <path d="M186 318C214 340 258 346 292 330" stroke="#0A0912" stroke-opacity="0.35" stroke-width="8" stroke-linecap="round"/>
+  </g>
+</svg>

@@ -24,6 +24,7 @@ import { format } from "date-fns";
 import { AchievementNotificationInfo, GameRepack } from "@types";
 
 export * from "./archive-org";
+export * from "./brand";
 export * from "./constants";
 export {
   shouldAutoStartSteamSync,

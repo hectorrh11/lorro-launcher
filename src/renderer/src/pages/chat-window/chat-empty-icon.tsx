@@ -1,4 +1,4 @@
-import HydraIcon from "@renderer/assets/icons/hydra.svg?react";
+import HydraIcon from "@renderer/assets/icons/lorro.svg?react";
 
 /**
  * Two speech bubbles with the Hydra mark cut out of the front one, for an

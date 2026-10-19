@@ -31,7 +31,7 @@ import type {
 
 import ConsoleBackside from "@renderer/assets/emulation/console-backside.svg?react";
 import hydraSaveCard from "@renderer/assets/emulation/icons/hydra-save-card.png";
-import HydraIcon from "@renderer/assets/icons/hydra.svg?react";
+import HydraIcon from "@renderer/assets/icons/lorro.svg?react";
 
 import { RenameModal, RestoreModal, formatDate } from "./emulation-save-modals";
 

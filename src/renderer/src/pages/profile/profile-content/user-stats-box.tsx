@@ -3,7 +3,7 @@ import { userProfileContext } from "@renderer/context";
 import { useTranslation } from "react-i18next";
 import { useFormat, useUserDetails } from "@renderer/hooks";
 import { MAX_MINUTES_TO_SHOW_IN_PLAYTIME } from "@renderer/constants";
-import HydraIcon from "@renderer/assets/icons/hydra.svg?react";
+import HydraIcon from "@renderer/assets/icons/lorro.svg?react";
 import { useSubscription } from "@renderer/hooks/use-subscription";
 import { ClockIcon, TrophyIcon } from "@primer/octicons-react";
 import { Award } from "lucide-react";

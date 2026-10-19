@@ -21,6 +21,7 @@ import {
 } from "../../../../types";
 import { orderBy } from "lodash-es";
 import { ArrowDownIcon } from "@primer/octicons-react";
+import { CustomDownloadLauncher } from "@renderer/components/custom-download/custom-download-launcher";
 
 export default function Downloads() {
   const { downloadLibrary: library, updateLibrary } = useLibrary();
@@ -184,6 +185,8 @@ export default function Downloads() {
         onClose={() => setShowDeleteModal(false)}
         deleteGame={handleDeleteGame}
       />
+
+      <CustomDownloadLauncher variant="page" />
 
       {hasItemsInLibrary ? (
         <section className="downloads__container">

@@ -5,21 +5,23 @@
 }
 
 ::-webkit-scrollbar {
-  width: 9px;
-  background-color: globals.$dark-background-color;
+  width: 10px;
+  background-color: transparent;
 }
 
 ::-webkit-scrollbar-track {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.18);
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(167, 139, 250, 0.22);
   border-radius: 24px;
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 255, 255, 0.25);
+  background-color: rgba(167, 139, 250, 0.4);
 }
 
 html,
@@ -32,19 +34,19 @@ main {
 body {
   overflow: hidden;
   user-select: none;
-  font-family:
-    Noto Sans,
-    sans-serif;
+  font-family: globals.$font-body;
   font-size: globals.$body-font-size;
   color: globals.$body-color;
   margin: 0;
+  background-color: globals.$background-color;
+  -webkit-font-smoothing: antialiased;
 }
 
 body.window-rounded {
   background-color: transparent;
 
   #root {
-    border-radius: 8px;
+    border-radius: 10px;
     overflow: hidden;
   }
 
@@ -58,6 +60,7 @@ button {
   background-color: transparent;
   border: none;
   font-family: inherit;
+  color: inherit;
 }
 
 h1,
@@ -68,6 +71,13 @@ h5,
 h6,
 p {
   margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: globals.$font-display;
+  letter-spacing: -0.02em;
 }
 
 p {
@@ -106,6 +116,16 @@ progress[value] {
   appearance: none;
 }
 
+::selection {
+  background-color: rgba(139, 92, 246, 0.4);
+  color: #ffffff;
+}
+
+:focus-visible {
+  outline: 2px solid rgba(167, 139, 250, 0.7);
+  outline-offset: 2px;
+}
+
 .container {
   width: 100%;
   height: 100%;
@@ -122,21 +142,33 @@ progress[value] {
     flex-direction: column;
     position: relative;
     height: 100%;
-    background: linear-gradient(
-      0deg,
-      globals.$dark-background-color 50%,
-      globals.$background-color 100%
-    );
+    background:
+      radial-gradient(
+        1100px 620px at 18% -12%,
+        rgba(124, 92, 240, 0.16),
+        transparent 70%
+      ),
+      radial-gradient(
+        900px 520px at 88% 4%,
+        rgba(34, 211, 238, 0.08),
+        transparent 72%
+      ),
+      linear-gradient(
+        180deg,
+        globals.$background-color 0%,
+        globals.$dark-background-color 100%
+      );
   }
 }
 
 .title-bar {
   display: flex;
   width: 100%;
-  height: 35px;
-  min-height: 35px;
+  height: 38px;
+  min-height: 38px;
   background-color: globals.$dark-background-color;
   align-items: center;
+  gap: 10px;
   padding: 0 calc(globals.$spacing-unit * 2);
   -webkit-app-region: drag;
   z-index: 4;
@@ -151,10 +183,35 @@ progress[value] {
     );
   }
 
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  &__brand-mark {
+    width: 21px;
+    height: 21px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  &__brand-name {
+    font-family: globals.$font-display;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: globals.$muted-color;
+
+    strong {
+      font-weight: 700;
+      @include globals.lorro-text-gradient;
+    }
+  }
+
   &__cloud-text {
-    background: linear-gradient(270deg, #16b195 50%, #3e62c0 100%);
-    background-clip: text;
-    color: transparent;
+    @include globals.lorro-text-gradient;
+    font-weight: 600;
   }
 
   &__big-picture {
@@ -164,19 +221,19 @@ progress[value] {
     color: globals.$muted-color;
     opacity: 0.6;
     cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 4px;
+    padding: 4px 10px;
+    border-radius: 7px;
     margin-left: auto;
     margin-right: globals.$spacing-unit;
     font-size: 12px;
     -webkit-app-region: no-drag;
     transition:
-      opacity ease 0.1s,
-      background-color ease 0.1s;
+      opacity ease 0.15s,
+      background-color ease 0.15s;
 
     &:hover {
       opacity: 1;
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: rgba(139, 92, 246, 0.14);
     }
   }
 
@@ -204,7 +261,7 @@ progress[value] {
 
     &:hover {
       background-color: rgba(255, 255, 255, 0.08);
-      color: #dadbe1;
+      color: #ffffff;
     }
 
     &--close:hover {
@@ -219,4 +276,15 @@ progress[value] {
 .woot-widget-holder,
 #cw-widget-holder {
   bottom: 56px !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

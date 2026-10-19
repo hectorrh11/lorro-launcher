@@ -215,6 +215,7 @@ export const LibraryGameCard = memo(function LibraryGameCard({
           isChosenCoverActive ? "library-game-card__game-image--contain" : ""
         }`}
         loading="lazy"
+        decoding="async"
         onError={handleImageError}
       />
     );

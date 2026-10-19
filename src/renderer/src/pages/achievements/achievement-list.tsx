@@ -3,7 +3,7 @@ import type { UserAchievement } from "@types";
 import { useTranslation } from "react-i18next";
 import "./achievements.scss";
 import { EyeClosedIcon, SearchIcon } from "@primer/octicons-react";
-import HydraIcon from "@renderer/assets/icons/hydra.svg?react";
+import HydraIcon from "@renderer/assets/icons/lorro.svg?react";
 import { useSubscription } from "@renderer/hooks/use-subscription";
 import { useState } from "react";
 import { FullscreenMediaModal } from "@renderer/components";

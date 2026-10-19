@@ -9,7 +9,7 @@ import {
 } from "@primer/octicons-react";
 import cn from "classnames";
 
-import HydraIcon from "@renderer/assets/icons/hydra.svg?react";
+import HydraIcon from "@renderer/assets/icons/lorro.svg?react";
 import { Backdrop } from "@renderer/components/backdrop/backdrop";
 import { Button, CheckboxField } from "@renderer/components";
 

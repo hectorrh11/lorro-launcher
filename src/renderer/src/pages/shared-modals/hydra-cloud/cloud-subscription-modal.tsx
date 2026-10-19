@@ -27,6 +27,7 @@ export function CloudSubscriptionModal({
   const { t, i18n } = useTranslation("hydra_cloud");
   const lang = i18n.language?.split("-")[0] || "en";
   const [isClosing, setIsClosing] = useState(false);
+  const [hasOpened, setHasOpened] = useState(false);
   const [cloudIframeUrl, setCloudIframeUrl] = useState("");
   const [isIframeUnavailable, setIsIframeUnavailable] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -158,9 +159,13 @@ export function CloudSubscriptionModal({
     if (visible) syncIframeState();
   }, [visible, syncIframeState]);
 
-  // The overlay (and the iframe inside it) stays mounted for the lifetime of the
-  // profile so the frame is preloaded; only its visibility is toggled. A hidden
-  // iframe still loads its document, so opening is instant with no layout shift.
+  // The iframe is loaded lazily on first open to avoid keeping a heavy remote
+  // document resident for the whole session; once opened it stays mounted so
+  // reopening is instant with no layout shift.
+  useEffect(() => {
+    if (visible) setHasOpened(true);
+  }, [visible]);
+
   const state = isClosing ? "closing" : visible ? "open" : "hidden";
 
   const handleClickOpenCheckout = () => {
@@ -197,7 +202,7 @@ export function CloudSubscriptionModal({
             {t("hydra_cloud_feature_found")}
             <Button onClick={handleClickOpenCheckout}>{t("learn_more")}</Button>
           </div>
-        ) : (
+        ) : hasOpened ? (
           <iframe
             ref={iframeRef}
             title="Hydra Cloud"
@@ -207,7 +212,7 @@ export function CloudSubscriptionModal({
             height={CLOUD_DESIGN_HEIGHT}
             onLoad={syncIframeState}
           />
-        )}
+        ) : null}
       </div>
     </div>,
     document.body

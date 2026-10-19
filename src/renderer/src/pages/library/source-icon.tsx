@@ -1,5 +1,5 @@
 import EpicLogo from "@renderer/assets/epic-integration-logo.svg?react";
-import HydraIcon from "@renderer/assets/icons/hydra.svg?react";
+import HydraIcon from "@renderer/assets/icons/lorro.svg?react";
 import { SteamIcon } from "@renderer/components/steam-library-badge/steam-library-badge";
 import type { LibrarySource } from "./library-category";
 import "./source-icon.scss";

@@ -18,7 +18,7 @@ import {
 } from "@renderer/helpers";
 import { AchievementNotificationItem } from "@renderer/components/achievements/notification/achievement-notification";
 import { levelDBService } from "@renderer/services/leveldb.service";
-import HydraIconUrl from "@renderer/assets/icons/hydra.svg?url";
+import HydraIconUrl from "@renderer/assets/icons/lorro.svg?url";
 import app from "../../../app.scss?inline";
 import styles from "../../../components/achievements/notification/achievement-notification.scss?inline";
 import root from "react-shadow";

@@ -1,9 +1,13 @@
 {
-  "name": "hydralauncher",
-  "version": "4.1.6",
-  "description": "Hydra",
+  "name": "lorro-launcher",
+  "version": "1.0.0",
+  "description": "Lorro Launcher - a premium game launcher for your library, downloads and achievements.",
   "main": "./out/main/index.js",
-  "author": "Los Broxas",
+  "author": "Lorro Launcher contributors",
+  "contributors": [
+    "Hydra Launcher contributors (original project)"
+  ],
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/hydralauncher/hydra.git"
@@ -29,9 +33,11 @@
     "build": "npm run typecheck && electron-vite build",
     "postinstall": "npm run build:native && electron-builder install-app-deps && node ./scripts/postinstall.cjs && npm run prepare:legendary",
     "build:unpack": "npm run build:native && npm run build && electron-builder --dir",
-    "build:win": "npm run build:native && electron-vite build && electron-builder --win",
-    "build:mac": "npm run build:native && electron-vite build && electron-builder --mac",
-    "build:linux": "npm run build:native && electron-vite build && electron-builder --linux",
+    "build:win": "npm run build:native && electron-vite build && electron-builder --win --publish never",
+    "build:mac": "npm run build:native && electron-vite build && electron-builder --mac --publish never",
+    "build:linux": "npm run build:native && electron-vite build && electron-builder --linux --publish never",
+    "brand": "node scripts/generate-lorro-brand.mjs",
+    "icons": "node scripts/generate-lorro-brand.mjs && node scripts/generate-lorro-icons.mjs",
     "dev:big-picture": "vite dev src/big-picture",
     "prepare": "husky"
   },

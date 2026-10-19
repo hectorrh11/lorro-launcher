@@ -45,7 +45,7 @@ import {
   readStoredSouvenirSort,
   type SouvenirGrouping,
 } from "@renderer/helpers";
-import HydraIcon from "@renderer/assets/icons/hydra.svg?react";
+import HydraIcon from "@renderer/assets/icons/lorro.svg?react";
 import { useSubscription } from "@renderer/hooks/use-subscription";
 import { LockedProfile } from "./locked-profile";
 import { SouvenirSyncCleanupModal } from "./souvenir-sync-cleanup-modal";

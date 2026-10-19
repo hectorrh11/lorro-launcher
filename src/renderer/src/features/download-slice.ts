@@ -2,11 +2,20 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { DownloadProgress, GameShop } from "@types";
 
-import { MAX_DOWNLOAD_SPEED_HISTORY } from "@renderer/constants";
+import {
+  DOWNLOAD_SPEED_SAMPLE_MAX_AGE_MS,
+  MAX_DOWNLOAD_SPEED_HISTORY,
+  MAX_DOWNLOAD_SPEED_SAMPLES,
+} from "@renderer/constants";
 
 export interface ExtractionInfo {
   visibleId: string;
   progress: number;
+}
+
+export interface DownloadSpeedSample {
+  t: number;
+  v: number;
 }
 
 export interface DownloadState {
@@ -16,6 +25,7 @@ export interface DownloadState {
   extraction: ExtractionInfo | null;
   peakSpeeds: Record<string, number>;
   speedHistory: Record<string, number[]>;
+  speedSamples: Record<string, DownloadSpeedSample[]>;
 }
 
 const initialState: DownloadState = {
@@ -25,7 +35,26 @@ const initialState: DownloadState = {
   extraction: null,
   peakSpeeds: {},
   speedHistory: {},
+  speedSamples: {},
 };
+
+function pushSpeedSample(
+  samples: DownloadSpeedSample[],
+  downloadSpeed: number
+): void {
+  const now = Date.now();
+  samples.push({ t: now, v: downloadSpeed });
+
+  const cutoff = now - DOWNLOAD_SPEED_SAMPLE_MAX_AGE_MS;
+  let expired = 0;
+  while (expired < samples.length && samples[expired].t < cutoff) {
+    expired++;
+  }
+  if (expired > 0) samples.splice(0, expired);
+
+  const excess = samples.length - MAX_DOWNLOAD_SPEED_SAMPLES;
+  if (excess > 0) samples.splice(0, excess);
+}
 
 export const downloadSlice = createSlice({
   name: "download",
@@ -58,6 +87,11 @@ export const downloadSlice = createSlice({
         if (excess > 0) {
           state.speedHistory[gameId].splice(0, excess);
         }
+
+        if (!state.speedSamples[gameId]) {
+          state.speedSamples[gameId] = [];
+        }
+        pushSpeedSample(state.speedSamples[gameId], downloadSpeed);
       }
     },
     clearDownload: (state) => {
@@ -106,6 +140,7 @@ export const downloadSlice = createSlice({
     clearPeakSpeed: (state, action: PayloadAction<string>) => {
       state.peakSpeeds[action.payload] = 0;
       state.speedHistory[action.payload] = [];
+      state.speedSamples[action.payload] = [];
     },
   },
 });

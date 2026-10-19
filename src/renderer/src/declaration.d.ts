@@ -8,6 +8,9 @@ import type {
   SeedingStatus,
   UserPreferences,
   StartGameDownloadPayload,
+  CustomDownload,
+  StartCustomDownloadPayload,
+  ExternalDownloadManagerInfo,
   RealDebridUser,
   PremiumizeUser,
   AllDebridUser,
@@ -1081,10 +1084,32 @@ declare global {
     openCheckout: (options?: OpenCheckoutOptions) => Promise<void>;
     getCloudIframeUrl: () => Promise<string>;
     getVersion: () => Promise<string>;
+    getAppInfo: () => Promise<{
+      name: string;
+      protocol: string;
+      version: string;
+      updateChannelConfigured: boolean;
+      userDataPath: string;
+    }>;
     getAppSessionId: () => Promise<string>;
     isStaging: () => Promise<boolean>;
     ping: () => string;
     getDefaultDownloadsPath: () => Promise<string>;
+    startCustomDownload: (
+      payload: StartCustomDownloadPayload
+    ) => Promise<CustomDownload>;
+    getCustomDownloads: () => Promise<CustomDownload[]>;
+    pauseCustomDownload: (id: string) => Promise<void>;
+    resumeCustomDownload: (id: string) => Promise<void>;
+  cancelCustomDownload: (id: string) => Promise<void>;
+  removeCustomDownload: (id: string) => Promise<void>;
+  getExternalDownloadManager: () => Promise<ExternalDownloadManagerInfo>;
+  openDownloadInExternalManager: (
+    id: string
+  ) => Promise<ExternalDownloadManagerInfo & { started: boolean }>;
+    onCustomDownloadProgress: (
+      cb: (downloads: CustomDownload[]) => void
+    ) => () => Electron.IpcRenderer;
     getScreenshotsPath: () => Promise<string>;
     getAchievementSouvenirSyncStatus: () => Promise<AchievementSouvenirSyncStatus>;
     getAchievementSouvenirSyncDetails: () => Promise<AchievementSouvenirSyncDetails>;

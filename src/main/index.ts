@@ -13,6 +13,12 @@ import path from "node:path";
 import url from "node:url";
 import { electronApp, optimizer } from "@electron-toolkit/utils";
 import {
+  APP_ID,
+  APP_PROTOCOL,
+  LEGACY_APP_PROTOCOL,
+  isLorroDeepLink,
+} from "@shared";
+import {
   logger,
   clearGamesPlaytime,
   WindowManager,
@@ -25,10 +31,12 @@ import {
 import resources from "@locales";
 import { TorrentService } from "./services/torrent-service";
 import { DownloadManager } from "./services/download/download-manager";
+import { customDownloadManager } from "./services/custom-download-manager";
 import { db, gamesSublevel, levelKeys } from "./level";
 import { GameShop, UserPreferences } from "@types";
 import { launchGame, openClassicsGame } from "./helpers";
 import { refreshPortableShortcutLauncher } from "./helpers/shortcut-launch";
+import { offerLegacyHydraMigration } from "./helpers/lorro-data-migration";
 import { lookupCachedPlatform } from "./events/library/get-library";
 import { loadState } from "./main";
 import {
@@ -54,11 +62,17 @@ crashReporter.start({
 
 const { autoUpdater } = updater;
 
-autoUpdater.setFeedURL({
-  provider: "github",
-  owner: "hydralauncher",
-  repo: "hydra",
-});
+// Auto-update is disabled until a Lorro Launcher publication repository is
+// configured (see docs/LORRO_STATUS.md). This prevents Lorro from ever
+// identifying as, or downloading updates from, the Hydra Launcher repository.
+const lorroUpdateRepository = import.meta.env.MAIN_VITE_UPDATE_REPOSITORY;
+
+if (lorroUpdateRepository) {
+  const [owner, repo] = lorroUpdateRepository.split("/");
+  if (owner && repo) {
+    autoUpdater.setFeedURL({ provider: "github", owner, repo });
+  }
+}
 
 autoUpdater.logger = logger;
 
@@ -67,6 +81,24 @@ if (!gotTheLock) app.quit();
 
 if (process.platform === "linux") {
   app.commandLine.appendSwitch("ozone-platform-hint", "auto");
+}
+
+// Memory-conscious Chromium switches. Lorro is a library-focused launcher, so
+// it benefits more from a small memory footprint than from Chromium's
+// aggressive caching and GPU rasterization.
+app.commandLine.appendSwitch("enable-low-end-device-mode");
+app.commandLine.appendSwitch(
+  "js-flags",
+  "--max-old-space-size=512 --max-semi-space-size=8"
+);
+
+if (process.platform === "win32") {
+  // Avoids Windows' occlusion calculations waking the renderer unnecessarily,
+  // which keeps idle CPU usage low.
+  app.commandLine.appendSwitch(
+    "disable-features",
+    "CalculateNativeWinOcclusion"
+  );
 }
 
 i18n.init({
@@ -78,7 +110,7 @@ i18n.init({
   },
 });
 
-const PROTOCOL = "hydralauncher";
+const PROTOCOL = APP_PROTOCOL;
 
 // Register the custom schemes as privileged so the renderer can fetch them
 // (supportFetchAPI) and use the results on a canvas without tainting it
@@ -104,11 +136,27 @@ if (process.defaultApp) {
   app.setAsDefaultProtocolClient(PROTOCOL);
 }
 
+// Keep old Hydra deep links working (shortcuts created by previous versions).
+if (process.defaultApp) {
+  if (process.argv.length >= 2) {
+    app.setAsDefaultProtocolClient(LEGACY_APP_PROTOCOL, process.execPath, [
+      path.resolve(process.argv[1]),
+    ]);
+  }
+} else {
+  app.setAsDefaultProtocolClient(LEGACY_APP_PROTOCOL);
+}
+
 const initializeApp = async () => {
   refreshPortableShortcutLauncher();
-  electronApp.setAppUserModelId("gg.hydralauncher.hydra");
+  electronApp.setAppUserModelId(APP_ID);
 
   logger.info("Crash dumps directory", app.getPath("crashDumps"));
+
+  // Optional, opt-in import of a previous Hydra data directory.
+  await offerLegacyHydraMigration().catch((error) => {
+    logger.warn("Legacy data migration prompt failed", error);
+  });
 
   protocol.handle("local", (request) => {
     const filePath = request.url.slice("local:".length);
@@ -210,11 +258,11 @@ const initializeApp = async () => {
   if (language) i18n.changeLanguage(language);
 
   // Check if starting from a "run" deep link - don't show main window in that case
-  const deepLinkArg = process.argv.find((arg) =>
-    arg.startsWith("hydralauncher://")
-  );
+  const deepLinkArg = process.argv.find(isLorroDeepLink);
   const forceBigPicture = process.argv.includes("--big-picture");
-  const isRunDeepLink = deepLinkArg?.startsWith("hydralauncher://run");
+  const isRunDeepLink =
+    deepLinkArg?.startsWith(`${PROTOCOL}://run`) ||
+    deepLinkArg?.startsWith(`${LEGACY_APP_PROTOCOL}://run`);
 
   if (!process.argv.includes("--hidden") && !isRunDeepLink) {
     WindowManager.createMainWindow({ forceBigPicture });
@@ -360,13 +408,13 @@ const handleDeepLinkPath = (uri?: string) => {
 };
 
 app.on("second-instance", (_event, commandLine) => {
-  const deepLink = commandLine.find((arg) =>
-    arg.startsWith("hydralauncher://")
-  );
+  const deepLink = commandLine.find(isLorroDeepLink);
   const forceBigPicture = commandLine.includes("--big-picture");
 
   // Check if this is a "run" deep link - don't show main window in that case
-  const isRunDeepLink = deepLink?.startsWith("hydralauncher://run");
+  const isRunDeepLink =
+    deepLink?.startsWith(`${PROTOCOL}://run`) ||
+    deepLink?.startsWith(`${LEGACY_APP_PROTOCOL}://run`);
 
   if (!isRunDeepLink) {
     if (WindowManager.mainWindow) {
@@ -429,6 +477,7 @@ app.on("before-quit", async (e) => {
       TorrentService.shutdown(),
       clearGamesPlaytime(),
       emulators.stopAllEmulatorSouvenirCaptureSessions(),
+      customDownloadManager.shutdown(),
     ]);
     for (const result of results) {
       if (result.status === "rejected") {

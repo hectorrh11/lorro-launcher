@@ -318,10 +318,48 @@
     overflow: hidden;
   }
 
-  &__speed-chart-canvas {
+  &__speed-chart-holder {
+    position: relative;
     width: 100%;
     height: 80px;
+  }
+
+  &__speed-chart-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
     image-rendering: crisp-edges;
+    cursor: crosshair;
+  }
+
+  &__speed-chart-tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: globals.$surface-overlay-color;
+    border: 1px solid globals.$border-strong-color;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 2;
+
+    &-value {
+      color: globals.$muted-color;
+      font-weight: 700;
+      font-size: 11px;
+    }
+
+    &-ago {
+      color: globals.$subtle-color;
+      font-size: 9px;
+      letter-spacing: 0.3px;
+    }
   }
 
   &__stat-item {
@@ -355,6 +393,20 @@
     font-weight: 700;
     font-size: 11px;
     line-height: 1.2;
+  }
+
+  &__stat-item--average {
+    align-items: flex-start;
+
+    .download-group__stat-content {
+      flex-wrap: wrap;
+      row-gap: 4px;
+    }
+  }
+
+  &__average-select {
+    width: 100%;
+    margin-top: 2px;
   }
 
   &__simple-list {

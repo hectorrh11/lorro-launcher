@@ -13,11 +13,26 @@
   -webkit-app-region: drag;
   z-index: globals.$title-bar-z-index;
 
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: globals.$spacing-unit;
+  }
+
+  &__brand-mark {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    flex-shrink: 0;
+  }
+
   h4 {
     margin: 0;
     color: globals.$muted-color;
+    font-family: globals.$font-display;
     font-size: globals.$small-font-size;
-    font-weight: 500;
+    font-weight: 600;
+    letter-spacing: 0.02em;
   }
 
   &__controls {

@@ -8,11 +8,19 @@ const developmentUserDataPath = import.meta.env.MAIN_VITE_USER_DATA_PATH;
 if (!app.isPackaged && developmentUserDataPath) {
   fs.mkdirSync(developmentUserDataPath, { recursive: true, mode: 0o700 });
   app.setPath("userData", developmentUserDataPath);
+} else if (!app.isPackaged || app.getName() !== "Lorro Launcher") {
+  // Lorro keeps its data fully separate from any other launcher, including
+  // Hydra. The folder name is stable across package name/product name changes.
+  const lorroUserDataPath = path.join(app.getPath("appData"), "Lorro Launcher");
+  fs.mkdirSync(lorroUserDataPath, { recursive: true, mode: 0o700 });
+  app.setPath("userData", lorroUserDataPath);
 }
 
 export const defaultDownloadsPath = SystemPath.getPath("downloads");
 
-export const isStaging = import.meta.env.MAIN_VITE_API_URL.includes("staging");
+export const isStaging = (import.meta.env.MAIN_VITE_API_URL ?? "").includes(
+  "staging"
+);
 
 export const windowsStartMenuPath = path.join(
   SystemPath.getPath("appData"),
@@ -26,7 +34,7 @@ export const publicProfilePath = "C:/Users/Public";
 
 export const levelDatabasePath = path.join(
   SystemPath.getPath("userData"),
-  `hydra-db${isStaging ? "-staging" : ""}`
+  `lorro-db${isStaging ? "-staging" : ""}`
 );
 
 export const commonRedistPath = path.join(

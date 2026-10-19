@@ -7,6 +7,7 @@ import {
   WINDOW_TITLE_BAR_CONTROL_WIDTH,
   WINDOW_TITLE_BAR_TRANSITION_DURATION_MS,
 } from "@shared";
+import lorroMarkUrl from "@renderer/assets/icons/lorro.svg?url";
 import "./window-title-bar.scss";
 
 const titleBarStyle = {
@@ -28,7 +29,15 @@ export function WindowTitleBar({
 
   return (
     <header className="window-title-bar" style={titleBarStyle}>
-      <h4>Hydra</h4>
+      <div className="window-title-bar__brand">
+        <img
+          className="window-title-bar__brand-mark"
+          src={lorroMarkUrl}
+          alt=""
+          draggable={false}
+        />
+        <h4>Lorro</h4>
+      </div>
       <div className="window-title-bar__controls">
         <button
           type="button"

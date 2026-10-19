@@ -102,6 +102,9 @@ import type {
   ResolveEpicCloudSaveConflictPayload,
   EpicLaunchOptions,
   EpicLinuxCompatibility,
+  CustomDownload,
+  StartCustomDownloadPayload,
+  ExternalDownloadManagerInfo,
 } from "@types";
 import type { AuthPage, Downloader } from "@shared";
 import type { AxiosProgressEvent } from "axios";
@@ -1464,7 +1467,39 @@ contextBridge.exposeInMainWorld("electron", {
   /* Misc */
   ping: () => ipcRenderer.invoke("ping"),
   getVersion: () => ipcRenderer.invoke("getVersion"),
+  getAppInfo: () => ipcRenderer.invoke("getAppInfo"),
   getDefaultDownloadsPath: () => ipcRenderer.invoke("getDefaultDownloadsPath"),
+  startCustomDownload: (payload: StartCustomDownloadPayload) =>
+    ipcRenderer.invoke("startCustomDownload", payload),
+  getCustomDownloads: () =>
+    ipcRenderer.invoke("getCustomDownloads") as Promise<CustomDownload[]>,
+  pauseCustomDownload: (id: string) =>
+    ipcRenderer.invoke("pauseCustomDownload", id),
+  resumeCustomDownload: (id: string) =>
+    ipcRenderer.invoke("resumeCustomDownload", id),
+  cancelCustomDownload: (id: string) =>
+    ipcRenderer.invoke("cancelCustomDownload", id),
+  removeCustomDownload: (id: string) =>
+    ipcRenderer.invoke("removeCustomDownload", id),
+  getExternalDownloadManager: () =>
+    ipcRenderer.invoke(
+      "getExternalDownloadManager"
+    ) as Promise<ExternalDownloadManagerInfo>,
+  openDownloadInExternalManager: (id: string) =>
+    ipcRenderer.invoke("openDownloadInExternalManager", id) as Promise<
+      ExternalDownloadManagerInfo & { started: boolean }
+    >,
+  onCustomDownloadProgress: (
+    cb: (downloads: CustomDownload[]) => void
+  ) => {
+    const listener = (
+      _event: Electron.IpcRendererEvent,
+      downloads: CustomDownload[]
+    ) => cb(downloads);
+    ipcRenderer.on("on-custom-download-progress", listener);
+    return () =>
+      ipcRenderer.removeListener("on-custom-download-progress", listener);
+  },
   getScreenshotsPath: () => ipcRenderer.invoke("getScreenshotsPath"),
   getAchievementSouvenirSyncStatus: () =>
     ipcRenderer.invoke("getAchievementSouvenirSyncStatus"),

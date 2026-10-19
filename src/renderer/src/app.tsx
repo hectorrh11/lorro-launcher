@@ -50,6 +50,7 @@ import { CloudGiftNotificationModal } from "./pages/shared-modals/cloud-gift-not
 import { playMessageSound } from "./pages/chat-window/chat-sounds";
 
 import type { UserPreferences } from "@types";
+import lorroMarkUrl from "./assets/icons/lorro.svg?url";
 import "./app.scss";
 import {
   getAchievementSoundUrl,
@@ -328,7 +329,44 @@ export function App() {
       updateUserDetails(userDetails);
     }
 
-    setupWorkWonders(userDetails?.workwondersJwt, userPreferences?.language);
+    // The WorkWonders widgets are remote iframes (help, changelog, feedback).
+    // Loading them eagerly keeps several extra renderer processes resident for
+    // the whole session, so they are only initialized once the user actually
+    // interacts, with a fallback timer so they are still ready if needed.
+    const workWondersToken = userDetails?.workwondersJwt;
+    const workWondersLanguage = userPreferences?.language;
+    if (!workwondersRef.current && !workwondersInitializingRef.current) {
+      let started = false;
+      const startWorkWonders = () => {
+        if (started) return;
+        started = true;
+        window.removeEventListener("pointerdown", startWorkWonders);
+        window.removeEventListener("keydown", startWorkWonders);
+        window.removeEventListener("pointerover", onWorkWondersHover);
+        setupWorkWonders(workWondersToken, workWondersLanguage);
+      };
+      // Only a real interaction (or hovering a help/changelog trigger) starts the
+      // widgets, so simply having the pointer over the window does not load them.
+      const onWorkWondersHover = (event: PointerEvent) => {
+        const target = event.target as HTMLElement | null;
+        if (
+          target?.closest(
+            "[data-open-workwonders-changelog-mini],[data-open-support-chat],[data-open-article]"
+          )
+        ) {
+          startWorkWonders();
+        }
+      };
+      window.addEventListener("pointerdown", startWorkWonders, {
+        once: true,
+        passive: true,
+      });
+      window.addEventListener("keydown", startWorkWonders, { once: true });
+      window.addEventListener("pointerover", onWorkWondersHover, {
+        passive: true,
+      });
+      window.setTimeout(startWorkWonders, 60000);
+    }
 
     if (!document.getElementById("external-resources")) {
       const $script = document.createElement("script");
@@ -667,12 +705,18 @@ export function App() {
             window.electron.platform === "win32" ? " title-bar--windows" : ""
           }`}
         >
-          <h4>
-            Hydra
-            {hasActiveSubscription && (
-              <span className="title-bar__cloud-text"> Cloud</span>
-            )}
-          </h4>
+          <div className="title-bar__brand">
+            <img
+              className="title-bar__brand-mark"
+              src={lorroMarkUrl}
+              alt=""
+              draggable={false}
+            />
+            <span className="title-bar__brand-name">
+              LORRO
+              {hasActiveSubscription && <strong> CLOUD</strong>}
+            </span>
+          </div>
 
           <button
             type="button"

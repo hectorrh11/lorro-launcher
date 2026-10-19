@@ -51,6 +51,7 @@ export function GameCard({ game, ...props }: GameCardProps) {
           alt={game.title}
           className="game-card__cover"
           loading="lazy"
+          decoding="async"
         />
 
         <div className="game-card__content">

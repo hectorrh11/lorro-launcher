@@ -5,6 +5,7 @@ import {
   Button,
   ConfirmationModal,
   GuideLink,
+  SelectField,
 } from "@renderer/components";
 import {
   formatDownloadProgress,
@@ -14,6 +15,7 @@ import {
 import { Downloader, formatBytes, formatBytesToMbps } from "@shared";
 import { addMilliseconds } from "date-fns";
 import {
+  DOWNLOAD_SPEED_AVERAGE_WINDOWS,
   DOWNLOADER_NAME,
   MAX_DOWNLOAD_SPEED_HISTORY,
 } from "@renderer/constants";
@@ -140,16 +142,34 @@ function AnimatedPercentage({ value }: Readonly<AnimatedPercentageProps>) {
 
 interface SpeedChartProps {
   speeds: number[];
+  samples?: { t: number; v: number }[];
   peakSpeed: number;
   color?: string;
+  formatSpeed: (speed: number) => string;
+}
+
+function formatSpeedAgo(milliseconds: number): string {
+  const seconds = Math.max(0, Math.round(milliseconds / 1000));
+  if (seconds < 60) return `${seconds}s`;
+  const minutes = Math.round(seconds / 60);
+  if (minutes < 60) return `${minutes}m`;
+  return `${Math.round(minutes / 60)}h`;
 }
 
 function SpeedChart({
   speeds,
+  samples,
   peakSpeed,
   color = "rgba(255, 255, 255, 1)",
+  formatSpeed,
 }: Readonly<SpeedChartProps>) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const metricsRef = useRef<{
+    barSpacing: number;
+    barWidth: number;
+    display: { t: number; v: number }[];
+  }>({ barSpacing: 0, barWidth: 4, display: [] });
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -158,22 +178,16 @@ function SpeedChart({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let animationFrameId: number;
-    let resizeObserver: ResizeObserver | null = null;
-
     const draw = () => {
       const clientWidth = canvas.clientWidth;
       const clientHeight = canvas.clientHeight;
-      if (clientWidth <= 0 || clientHeight <= 0) {
-        animationFrameId = requestAnimationFrame(draw);
-        return;
-      }
+      if (clientWidth <= 0 || clientHeight <= 0) return;
 
       const dpr = window.devicePixelRatio || 1;
 
       canvas.width = clientWidth * dpr;
       canvas.height = clientHeight * dpr;
-      ctx.scale(dpr, dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       const width = clientWidth;
       const height = clientHeight;
@@ -188,7 +202,16 @@ function SpeedChart({
       );
       const barSpacing =
         totalBars > 1 ? (width - barWidth) / (totalBars - 1) : 0;
-      const maxHeight = peakSpeed || Math.max(...speeds, 1);
+
+      const source =
+        samples && samples.length > 0
+          ? samples
+          : speeds.map((value) => ({ t: 0, v: value }));
+      const display = source.slice(-totalBars);
+      const maxHeight =
+        peakSpeed || Math.max(...display.map((entry) => entry.v), 1);
+
+      metricsRef.current = { barSpacing, barWidth, display };
 
       ctx.clearRect(0, 0, width, height);
 
@@ -211,17 +234,19 @@ function SpeedChart({
           b = Number.parseInt(matches[2]) || 255;
         }
       }
-      const displaySpeeds = speeds.slice(-totalBars);
 
       for (let i = 0; i < totalBars; i++) {
         const x = i * barSpacing;
-        ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
+        const isHovered = hoverIndex !== null && i === hoverIndex;
+        ctx.fillStyle = isHovered
+          ? `rgba(${r}, ${g}, ${b}, 0.22)`
+          : "rgba(255, 255, 255, 0.08)";
         ctx.beginPath();
         ctx.roundRect(x, 0, barWidth, height, 3);
         ctx.fill();
 
-        if (i < displaySpeeds.length) {
-          const speed = displaySpeeds[i] || 0;
+        if (i < display.length) {
+          const speed = display[i].v || 0;
           const filledHeight = (speed / maxHeight) * height;
 
           if (filledHeight > 0) {
@@ -235,35 +260,67 @@ function SpeedChart({
             gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 1)`);
             gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0.7)`);
 
-            ctx.fillStyle = gradient;
+            ctx.fillStyle = isHovered ? `rgba(${r}, ${g}, ${b}, 1)` : gradient;
             ctx.beginPath();
             ctx.roundRect(x, height - filledHeight, barWidth, filledHeight, 3);
             ctx.fill();
           }
         }
       }
-      animationFrameId = requestAnimationFrame(draw);
     };
 
-    animationFrameId = requestAnimationFrame(draw);
-    resizeObserver = new ResizeObserver(() => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
-      draw();
-    });
+    draw();
+
+    const resizeObserver = new ResizeObserver(() => draw());
     resizeObserver.observe(canvas);
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
-      if (resizeObserver) {
-        resizeObserver.disconnect();
-      }
+      resizeObserver.disconnect();
     };
-  }, [speeds, peakSpeed, color]);
+  }, [speeds, samples, peakSpeed, color, hoverIndex]);
+
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    const { barSpacing, barWidth, display } = metricsRef.current;
+    if (barSpacing <= 0 || display.length === 0) return;
+
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const rawIndex = Math.round((x - barWidth / 2) / barSpacing);
+    const index = Math.min(display.length - 1, Math.max(0, rawIndex));
+
+    setHoverIndex((previous) => (previous === index ? previous : index));
+  };
+
+  const hovered = hoverIndex !== null ? metricsRef.current.display[hoverIndex] : undefined;
+  const hoveredLeft =
+    hoverIndex !== null
+      ? metricsRef.current.barSpacing * hoverIndex +
+        metricsRef.current.barWidth / 2
+      : 0;
 
   return (
-    <canvas ref={canvasRef} className="download-group__speed-chart-canvas" />
+    <div
+      className="download-group__speed-chart-holder"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => setHoverIndex(null)}
+    >
+      <canvas ref={canvasRef} className="download-group__speed-chart-canvas" />
+      {hovered && (
+        <div
+          className="download-group__speed-chart-tooltip"
+          style={{ left: `${hoveredLeft}px` }}
+        >
+          <span className="download-group__speed-chart-tooltip-value">
+            {formatSpeed(hovered.v)}
+          </span>
+          {hovered.t > 0 && (
+            <span className="download-group__speed-chart-tooltip-ago">
+              {formatSpeedAgo(Date.now() - hovered.t)}
+            </span>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -278,6 +335,7 @@ interface HeroDownloadViewProps {
   dominantColor: string;
   lastPacket: ReturnType<typeof useDownload>["lastPacket"];
   speedHistory: number[];
+  speedSamples?: { t: number; v: number }[];
   formatSpeed: (speed: number) => string;
   calculateETA: () => string | null;
   pauseDownload: (shop: GameShop, objectId: string) => void;
@@ -353,6 +411,7 @@ function HeroDownloadView({
   dominantColor,
   lastPacket,
   speedHistory,
+  speedSamples,
   formatSpeed,
   calculateETA,
   pauseDownload,
@@ -361,6 +420,36 @@ function HeroDownloadView({
   t,
 }: Readonly<HeroDownloadViewProps>) {
   const navigate = useNavigate();
+
+  const [averageWindow, setAverageWindow] = useState("total");
+
+  const averageSpeed = useMemo(() => {
+    const samples = speedSamples ?? [];
+    if (samples.length === 0) return 0;
+
+    const windowDefinition = DOWNLOAD_SPEED_AVERAGE_WINDOWS.find(
+      (definition) => definition.key === averageWindow
+    );
+
+    if (!windowDefinition) return 0;
+
+    const cutoff =
+      windowDefinition.milliseconds === null
+        ? 0
+        : Date.now() - windowDefinition.milliseconds;
+
+    let total = 0;
+    let count = 0;
+
+    for (const sample of samples) {
+      if (sample.t >= cutoff) {
+        total += sample.v;
+        count++;
+      }
+    }
+
+    return count > 0 ? total / count : 0;
+  }, [speedSamples, averageWindow]);
 
   const handleLogoClick = useCallback(() => {
     navigate(buildGameDetailsPath(game));
@@ -382,6 +471,8 @@ function HeroDownloadView({
             ""
           }
           alt={game.title}
+          loading="lazy"
+          decoding="async"
         />
         <div className="download-group__hero-overlay" />
       </div>
@@ -534,6 +625,31 @@ function HeroDownloadView({
               </div>
             </div>
 
+            <div className="download-group__stat-item download-group__stat-item--average">
+              <span style={{ color: dominantColor, display: "flex" }}>
+                <GraphIcon size={16} />
+              </span>
+              <div className="download-group__stat-content">
+                <span className="download-group__stat-label">
+                  {t("average")}:
+                </span>
+                <span className="download-group__stat-value">
+                  {averageSpeed > 0 ? formatSpeed(averageSpeed) : "0 B/s"}
+                </span>
+                <SelectField
+                  theme="dark"
+                  className="download-group__average-select"
+                  value={averageWindow}
+                  onChange={(event) => setAverageWindow(event.target.value)}
+                  options={DOWNLOAD_SPEED_AVERAGE_WINDOWS.map((definition) => ({
+                    key: definition.key,
+                    value: definition.key,
+                    label: t(definition.labelKey),
+                  }))}
+                />
+              </div>
+            </div>
+
             {game.download?.downloader === Downloader.Torrent &&
               isGameDownloading &&
               lastPacket &&
@@ -568,8 +684,10 @@ function HeroDownloadView({
           <div className="download-group__speed-chart">
             <SpeedChart
               speeds={speedHistory}
+              samples={speedSamples}
               peakSpeed={peakSpeed}
               color={dominantColor}
+              formatSpeed={formatSpeed}
             />
           </div>
         </div>
@@ -676,6 +794,7 @@ export function DownloadGroup({
 
   // Get speed history and peak speeds from Redux (centralized state)
   const speedHistory = useAppSelector((state) => state.download.speedHistory);
+  const speedSamples = useAppSelector((state) => state.download.speedSamples);
   const peakSpeeds = useAppSelector((state) => state.download.peakSpeeds);
   const [dominantColors, setDominantColors] = useState<Record<string, string>>(
     {}
@@ -1106,6 +1225,7 @@ export function DownloadGroup({
     // Fall back to game.id if lastPacket is not available
     const dataKey = lastPacket?.gameId ?? game.id;
     const gameSpeedHistory = speedHistory[dataKey] ?? [];
+    const gameSpeedSamples = speedSamples[dataKey] ?? [];
     const storedPeak = peakSpeeds[dataKey];
     // Use stored peak if available and > 0, otherwise use current speed as initial value
     const peakSpeed =
@@ -1144,6 +1264,7 @@ export function DownloadGroup({
           dominantColor={dominantColor}
           lastPacket={lastPacket}
           speedHistory={gameSpeedHistory}
+          speedSamples={gameSpeedSamples}
           formatSpeed={formatSpeed}
           calculateETA={calculateETA}
           pauseDownload={pauseDownload}
@@ -1190,6 +1311,8 @@ export function DownloadGroup({
                   <img
                     src={game.customCoverImageUrl || game.libraryImageUrl || ""}
                     alt={game.title}
+                    loading="lazy"
+                    decoding="async"
                   />
                 </button>
 

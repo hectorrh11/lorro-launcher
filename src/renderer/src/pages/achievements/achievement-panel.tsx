@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import HydraIcon from "@renderer/assets/icons/hydra.svg?react";
+import HydraIcon from "@renderer/assets/icons/lorro.svg?react";
 import { UserAchievement } from "@types";
 import { useSubscription } from "@renderer/hooks/use-subscription";
 import { useUserDetails } from "@renderer/hooks";

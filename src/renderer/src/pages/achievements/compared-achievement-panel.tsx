@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import HydraIcon from "@renderer/assets/icons/hydra.svg?react";
+import HydraIcon from "@renderer/assets/icons/lorro.svg?react";
 import { ComparedAchievements } from "@types";
 import { useUserDetails } from "@renderer/hooks";
 import "./achievement-panel.scss";

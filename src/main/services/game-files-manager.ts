@@ -6,6 +6,7 @@ import { updateGameExecutablePath } from "@main/helpers/update-executable-path";
 import { runAchievementMetadataExport } from "@main/services/achievements/metadata-export";
 import { db, downloadsSublevel, gamesSublevel, levelKeys } from "@main/level";
 import {
+  APP_PROTOCOL,
   Downloader,
   FILE_EXTENSIONS_TO_EXTRACT,
   removeSymbolsFromName,
@@ -721,7 +722,7 @@ export class GameFilesManager {
       objectId: this.objectId,
     });
 
-    return `hydralauncher://run?${query.toString()}`;
+    return `${APP_PROTOCOL}://run?${query.toString()}`;
   }
 
   private quoteLinuxExecArg(value: string) {

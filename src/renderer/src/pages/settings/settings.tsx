@@ -12,6 +12,7 @@ import {
   CloudIcon,
   DownloadIcon,
   GearIcon,
+  InfoIcon,
   LinkIcon,
   PlayIcon,
   VideoIcon,
@@ -27,6 +28,7 @@ import { SettingsContextIntegrations } from "./settings-context-integrations";
 import { SettingsContextCompatibility } from "./settings-context-compatibility";
 import { SettingsContextBigPicture } from "./settings-context-big-picture";
 import { SettingsContextEmulation } from "./emulation/settings-context-emulation";
+import { SettingsAbout } from "./settings-about";
 
 export default function Settings() {
   const { t } = useTranslation("settings");
@@ -90,6 +92,11 @@ export default function Settings() {
         icon: <Gamepad2 size={16} />,
         group: "classics" as const,
       },
+      {
+        id: "about" as const,
+        label: t("about"),
+        icon: <InfoIcon size={16} />,
+      },
     ],
     [t, userDetails]
   );
@@ -138,6 +145,10 @@ export default function Settings() {
 
             if (selectedCategoryId === "emulation") {
               return <SettingsContextEmulation />;
+            }
+
+            if (selectedCategoryId === "about") {
+              return <SettingsAbout />;
             }
 
             return <SettingsAccount />;

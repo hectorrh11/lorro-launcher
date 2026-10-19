@@ -7,7 +7,7 @@ import {
   TrophyIcon,
   ToolsIcon,
 } from "@primer/octicons-react";
-import HydraIcon from "@renderer/assets/icons/hydra.svg?react";
+import HydraIcon from "@renderer/assets/icons/lorro.svg?react";
 // Direct import keeps this lightweight window off the components barrel.
 import { Button } from "@renderer/components/button/button";
 import { MAX_MINUTES_TO_SHOW_IN_PLAYTIME } from "@renderer/constants";

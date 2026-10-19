@@ -46,6 +46,7 @@ import { useEpicManagedConnection } from "@renderer/hooks/use-epic-managed";
 import { useLibrary } from "@renderer/hooks";
 import type { LibraryGame } from "@types";
 import { epicInstallTiming } from "@renderer/helpers/epic-install-timing";
+import { CustomDownloadLauncher } from "@renderer/components/custom-download/custom-download-launcher";
 
 export interface RepacksModalProps {
   visible: boolean;
@@ -389,6 +390,10 @@ export function RepacksModal({
                 })}
             </div>
           </div>
+        </div>
+
+        <div className="repacks-modal__custom-link">
+          <CustomDownloadLauncher defaultTitle={game?.title} />
         </div>
 
         <div className="repacks-modal__repacks">

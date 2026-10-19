@@ -14,8 +14,8 @@ import "./bottom-panel.scss";
 
 import { useNavigate } from "react-router-dom";
 
-const HYDRA_CLOUD_GRADIENT_START_COLOR = "#16b195";
-const HYDRA_CLOUD_GRADIENT_END_COLOR = "#3e62c0";
+const LORRO_GRADIENT_START_COLOR = "#8b5cf6";
+const LORRO_GRADIENT_END_COLOR = "#22d3ee";
 
 export function BottomPanel() {
   const { t } = useTranslation(["bottom_panel", "sidebar"]);
@@ -160,7 +160,7 @@ export function BottomPanel() {
             >
               <defs>
                 <linearGradient
-                  id="hydra-cloud-gradient"
+                  id="lorro-gradient"
                   x1="0%"
                   y1="100%"
                   x2="100%"
@@ -168,11 +168,11 @@ export function BottomPanel() {
                 >
                   <stop
                     offset="0%"
-                    stopColor={HYDRA_CLOUD_GRADIENT_START_COLOR}
+                    stopColor={LORRO_GRADIENT_START_COLOR}
                   />
                   <stop
                     offset="100%"
-                    stopColor={HYDRA_CLOUD_GRADIENT_END_COLOR}
+                    stopColor={LORRO_GRADIENT_END_COLOR}
                   />
                 </linearGradient>
               </defs>

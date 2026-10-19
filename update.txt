@@ -9,6 +9,28 @@ instalado verán el aviso "Reiniciar e instalar" cuando se publique
 una versión nueva.
 
 ========================================================
+VERSION 1.1.0
+========================================================
+Inicio de juegos directamente desde la biblioteca.
+
+--- INICIAR JUEGO DESDE LA PORTADA ---
+* Ahora puedes arrancar un juego sin entrar en su ficha:
+  - DOBLE CLIC sobre la portada del juego en la Biblioteca para iniciarlo.
+  - Botón de PLAY que aparece en la esquina de la portada al pasar el
+    ratón por encima (también accesible con teclado: Tab + Enter/Espacio).
+  - Un solo clic sigue abriendo la ficha del juego como siempre.
+* Si el juego no tiene un ejecutable configurado:
+  - Se abre un selector de archivos para que elijas el .exe (o .app en Mac)
+    del juego.
+  - La ruta elegida se guarda automáticamente como ejecutable del juego y,
+    a continuación, se inicia.
+  - Si cancelas la selección, no pasa nada.
+* Selección de ejecutable también disponible desde el menú contextual
+  (clic derecho -> Jugar) para juegos sin ejecutable configurado.
+* Nuevos textos en la interfaz (Jugar / no se pudo iniciar el juego) en
+  inglés y español.
+
+========================================================
 VERSION 1.0.0
 ========================================================
 Primera versión pública de Lorro Launcher.

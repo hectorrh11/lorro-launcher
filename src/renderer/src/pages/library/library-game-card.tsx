@@ -8,6 +8,7 @@ import {
   isAnimatedCoverCandidate,
   useAppSelector,
   useAnimatedSourceWarmup,
+  useLaunchLibraryGame,
 } from "@renderer/hooks";
 import {
   CLASSICS_PS_PLATFORM_LABELS,
@@ -16,13 +17,21 @@ import {
 } from "@renderer/helpers";
 import { AchievementProgress, SteamLibraryBadge } from "@renderer/components";
 import { GameVisibilityBadge } from "@renderer/components/game-visibility-badge/game-visibility-badge";
-import { memo, useEffect, useState } from "react";
+import {
+  memo,
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type MouseEvent,
+} from "react";
 import { useTranslation } from "react-i18next";
 import {
   ClockIcon,
   AlertFillIcon,
   ImageIcon,
   CheckCircleFillIcon,
+  PlayIcon,
 } from "@primer/octicons-react";
 import {
   EMULATOR_ICONS,
@@ -48,6 +57,48 @@ export const LibraryGameCard = memo(function LibraryGameCard({
   const { t } = useTranslation("library");
   const { formatPlayTime, handleCardClick, handleContextMenuClick } =
     useGameCard(game, onContextMenu);
+  const { launchGame, isLaunching } = useLaunchLibraryGame();
+
+  const clickTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (clickTimeoutRef.current !== null) {
+        window.clearTimeout(clickTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleWrapperClick = () => {
+    if (clickTimeoutRef.current !== null) return;
+
+    clickTimeoutRef.current = window.setTimeout(() => {
+      clickTimeoutRef.current = null;
+      handleCardClick();
+    }, 200);
+  };
+
+  const handleWrapperDoubleClick = () => {
+    if (clickTimeoutRef.current !== null) {
+      window.clearTimeout(clickTimeoutRef.current);
+      clickTimeoutRef.current = null;
+    }
+
+    void launchGame(game);
+  };
+
+  const handlePlayClick = (event: MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    void launchGame(game);
+  };
+
+  const handlePlayKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    void launchGame(game);
+  };
 
   const userPreferences = useAppSelector(
     (state) => state.userPreferences.value
@@ -227,7 +278,8 @@ export const LibraryGameCard = memo(function LibraryGameCard({
       onMouseEnter={() => setIsCoverHovered(true)}
       onMouseLeave={() => setIsCoverHovered(false)}
       className="library-game-card__wrapper"
-      onClick={handleCardClick}
+      onClick={handleWrapperClick}
+      onDoubleClick={handleWrapperDoubleClick}
       onContextMenu={handleContextMenuClick}
     >
       <div
@@ -343,6 +395,22 @@ export const LibraryGameCard = memo(function LibraryGameCard({
       </div>
 
       {renderCoverMedia()}
+
+      <div
+        className={cn("library-game-card__action-button", {
+          "library-game-card__action-button--loading": isLaunching,
+        })}
+        role="button"
+        tabIndex={0}
+        title={t("play_game")}
+        aria-label={t("play_game")}
+        aria-disabled={isLaunching}
+        onClick={handlePlayClick}
+        onDoubleClick={(event) => event.stopPropagation()}
+        onKeyDown={handlePlayKeyDown}
+      >
+        <PlayIcon size={18} />
+      </div>
     </button>
   );
 });

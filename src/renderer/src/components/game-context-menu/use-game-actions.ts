@@ -11,6 +11,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import {
   buildGameDetailsPath,
   handleClassicsLaunchError,
+  showExecutableOpenDialog,
 } from "@renderer/helpers";
 import { logger } from "@renderer/logger";
 import { useGameOptionsModal } from "@renderer/context/game-options-modal/game-options-modal.context";
@@ -102,6 +103,34 @@ export function useGameActions(requestedGame: GameContextMenuGame) {
       ...game,
       objectId: game.objectId,
     });
+
+    if (!canPlay && game.shop === "custom") {
+      const { filePaths } = await showExecutableOpenDialog();
+      const selectedExecutablePath = filePaths?.[0];
+
+      if (!selectedExecutablePath) {
+        return;
+      }
+
+      try {
+        await window.electron.updateExecutablePath(
+          game.shop,
+          game.objectId,
+          selectedExecutablePath
+        );
+        await window.electron.openGame(
+          game.shop,
+          game.objectId,
+          selectedExecutablePath,
+          game.launchOptions
+        );
+      } catch (error) {
+        logger.error("Failed to launch custom game", error);
+        showErrorToast(t("failed_to_launch_game"));
+      }
+
+      return;
+    }
 
     if (!canPlay) {
       if (location.pathname !== detailsPath) {

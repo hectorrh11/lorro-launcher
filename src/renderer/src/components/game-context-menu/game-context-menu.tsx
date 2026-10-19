@@ -278,13 +278,19 @@ export function GameContextMenu({
     },
   ];
 
+  const canLaunchCustomGame = !canPlay && game.shop === "custom";
+
   const items: ContextMenuItemData[] = [
     {
       id: "play",
-      label: isGameRunning ? t("close") : canPlay ? t("play") : t("download"),
+      label: isGameRunning
+        ? t("close")
+        : canPlay || canLaunchCustomGame
+          ? t("play")
+          : t("download"),
       icon: isGameRunning ? (
         <XIcon size={16} />
-      ) : canPlay ? (
+      ) : canPlay || canLaunchCustomGame ? (
         <PlayIcon size={16} />
       ) : (
         <DownloadIcon size={16} />
@@ -292,7 +298,7 @@ export function GameContextMenu({
       onClick: () => {
         if (isGameRunning) {
           void handleCloseGame();
-        } else if (canPlay) {
+        } else if (canPlay || canLaunchCustomGame) {
           void handlePlayGame();
         } else {
           handleOpenDownloadOptions();
@@ -301,6 +307,7 @@ export function GameContextMenu({
       disabled:
         isDeleting ||
         (!canPlay &&
+          !canLaunchCustomGame &&
           !isGameRunning &&
           (isDownloadDeleting || isGameDownloading)),
     },

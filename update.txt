@@ -9,6 +9,21 @@ instalado verán el aviso "Reiniciar e instalar" cuando se publique
 una versión nueva.
 
 ========================================================
+VERSION 1.2.0
+========================================================
+Corrección de la gráfica de velocidad de descarga.
+
+--- CORRECCIÓN ---
+* El globo informativo que aparece al pasar el cursor por encima de una
+  barra de la gráfica de velocidad ya no se recorta ni queda oculto
+  detrás de otros elementos: ahora se dibuja dentro del propio gráfico,
+  por lo que siempre es visible.
+* El globo se mantiene dentro de los límites de la gráfica en los
+  extremos (primera y última barra), sin salirse por los lados.
+* Sigue mostrando la velocidad de ese instante (MB/s) y cuánto tiempo
+  hace de esa muestra.
+
+========================================================
 VERSION 1.1.0
 ========================================================
 Inicio de juegos directamente desde la biblioteca.

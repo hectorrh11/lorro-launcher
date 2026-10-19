@@ -167,8 +167,9 @@ function SpeedChart({
   const metricsRef = useRef<{
     barSpacing: number;
     barWidth: number;
+    width: number;
     display: { t: number; v: number }[];
-  }>({ barSpacing: 0, barWidth: 4, display: [] });
+  }>({ barSpacing: 0, barWidth: 4, width: 0, display: [] });
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
   useEffect(() => {
@@ -211,7 +212,7 @@ function SpeedChart({
       const maxHeight =
         peakSpeed || Math.max(...display.map((entry) => entry.v), 1);
 
-      metricsRef.current = { barSpacing, barWidth, display };
+      metricsRef.current = { barSpacing, barWidth, width, display };
 
       ctx.clearRect(0, 0, width, height);
 
@@ -297,6 +298,11 @@ function SpeedChart({
       ? metricsRef.current.barSpacing * hoverIndex +
         metricsRef.current.barWidth / 2
       : 0;
+  const tooltipHalfWidth = 46;
+  const clampedLeft = Math.min(
+    Math.max(hoveredLeft, tooltipHalfWidth),
+    Math.max(tooltipHalfWidth, metricsRef.current.width - tooltipHalfWidth)
+  );
 
   return (
     <div
@@ -308,7 +314,7 @@ function SpeedChart({
       {hovered && (
         <div
           className="download-group__speed-chart-tooltip"
-          style={{ left: `${hoveredLeft}px` }}
+          style={{ left: `${clampedLeft}px` }}
         >
           <span className="download-group__speed-chart-tooltip-value">
             {formatSpeed(hovered.v)}

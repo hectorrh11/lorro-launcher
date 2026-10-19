@@ -334,7 +334,7 @@
 
   &__speed-chart-tooltip {
     position: absolute;
-    bottom: calc(100% + 8px);
+    top: 0;
     transform: translateX(-50%);
     display: flex;
     flex-direction: column;
@@ -347,7 +347,7 @@
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
     pointer-events: none;
     white-space: nowrap;
-    z-index: 2;
+    z-index: 3;
 
     &-value {
       color: globals.$muted-color;

@@ -1,263 +1,81 @@
 ========================================================
+LORRO LAUNCHER - HISTORIAL DE CAMBIOS
+========================================================
+
+========================================================
 VERSION 1.67.0
 ========================================================
-Actualización grande centrada en herramientas avanzadas de
-mantenimiento y control del launcher.
-
---- COPIAS DE SEGURIDAD DE PARTIDAS ---
-* Nueva sección Ajustes -> Mantenimiento -> Copias de seguridad.
-* Rutas de guardado por juego (deteccion automatica de carpetas
-  habituales + configuracion manual).
-* Copia manual, automatica al cerrar el juego, y motivos
-  update/uninstall/pre-restore.
-* Historial con fecha, tamano y juego; restaurar, exportar,
-  importar y eliminar copias.
-* Carpeta de destino configurable (otra unidad) y retencion
-  configurable (numero maximo y antiguedad maxima).
-* No borra archivos del usuario: solo poda sus propios archivos
-  de copia y conserva siempre la mas reciente.
-* Antes de restaurar se crea una copia de seguridad del estado
-  actual; se rechaza restaurar con el juego en ejecucion.
-* Aviso: no todos los juegos tienen rutas de guardado
-  detectables; por eso existe la configuracion manual.
+Actualizacion grande: herramientas avanzadas de mantenimiento,
+perfiles de lanzamiento y navegacion con mando en Big Picture.
 
 --- PERFILES DE LANZAMIENTO POR JUEGO ---
-* Backend completo: multiples perfiles independientes por juego,
-  con nombre, ejecutable, directorio de trabajo, argumentos,
-  variables de entorno, modo de ventana, herramientas externas
-  y acciones previas.
-* Crear, duplicar, editar, eliminar, marcar predeterminado,
-  validar rutas/argumentos y lanzar mostrando el comando exacto.
-* Pendiente: interfaz grafica integrada en la ficha del juego
-  (el backend ya esta operativo por IPC).
+* Varios perfiles independientes por juego, con nombre, ejecutable,
+  directorio de trabajo, argumentos, variables de entorno, modo de
+  ventana, herramientas previas y posteriores.
+* Crear, editar, duplicar, eliminar, marcar predeterminado, validar
+  y lanzar mostrando el comando exacto.
+* Interfaz completa en Ajustes -> Mantenimiento -> Perfiles de
+  lanzamiento, con selector de juego y editor integrado.
+
+--- COPIAS DE SEGURIDAD DE PARTIDAS ---
+* Rutas de guardado por juego: deteccion automatica de carpetas
+  habituales y configuracion manual.
+* Copia manual y automatica (al cerrar el juego y antes de
+  restaurar); historial con fecha, tamano y juego.
+* Restaurar, exportar, importar y eliminar copias.
+* Destino configurable en otra unidad y retencion por numero maximo
+  y antiguedad.
+* Se niega a restaurar con el juego en ejecucion y crea una copia
+  del estado actual antes de restaurar.
+* Nunca borra archivos del usuario: solo poda sus propios archivos
+  de copia y conserva siempre la mas reciente.
 
 --- ESTADISTICAS DE JUEGO ---
-* Sesiones reales registradas desde el monitor de procesos
-  (inicio/fin con marcas de tiempo), recuperacion de sesiones
-  tras cierre inesperado.
-* Historial de sesiones, tiempo total, numero de sesiones,
-  juegos mas usados y actividad por dia/semana/mes.
-* Correccion manual de duraciones erroneas y borrado de sesiones.
-* Datos guardados localmente; nunca se envian a servidores
-  externos sin consentimiento.
+* Sesiones reales desde el monitor de procesos, con recuperacion
+  tras cierres inesperados.
+* Tiempo total, numero de sesiones, juegos mas usados y actividad
+  por dia, semana y mes.
+* Historial de sesiones y correccion o borrado manual de registros
+  erroneos. Todo se guarda localmente.
 
 --- DIAGNOSTICO Y REPARACION ---
-* Comprobaciones por juego: ejecutable, ruta, permisos, espacio
-  libre, perfiles de lanzamiento y errores registrados.
-* Estados claros (OK, aviso, error, sin comprobar), reejecucion,
-  informe copiable y recomendaciones.
-* Reparaciones solo cuando son seguras y verificables (por
-  ejemplo, detectar y guardar rutas de partidas existentes).
-  Nunca se borran archivos personales ni se desactivan
-  protecciones del sistema.
+* Comprueba ejecutable, ruta, permisos, espacio libre, rutas de
+  guardado, perfiles y errores del registro.
+* Estados OK, aviso, error y sin comprobar; reejecutar y copiar el
+  informe.
+* Solo aplica arreglos seguros y verificables; nunca toca archivos
+  personales ni desactiva protecciones del sistema.
 
 --- GESTOR DE ALMACENAMIENTO ---
-* Unidades con capacidad total/libre, juegos con su tamano y
-  ubicacion, posibles duplicados, juegos mas grandes y caches
-  temporales de Lorro.
+* Unidades con espacio total y libre, tamano y ubicacion de cada
+  juego, posibles duplicados y caches de Lorro.
 * Limpieza de caches identificadas con vista previa del espacio.
 * Mover instalaciones entre unidades con comprobacion de espacio,
-  verificacion posterior y restauracion del estado original si
-  algo falla.
-* Nunca se eliminan partidas, mods, capturas ni configuraciones
-  personales de forma automatica.
+  verificacion posterior y rollback si algo falla.
+* No elimina partidas, mods, capturas ni configuraciones.
 
---- BIG PICTURE ---
+--- BIG PICTURE Y MANDO ---
+* Navegacion con mando: stick izquierdo y cruceta para moverse,
+  A para activar, B/Start para volver, LB/RB para saltar entre
+  elementos, con desplazamiento automatico al foco.
 * Se conserva el modo Big Picture existente y su navegacion.
-* Pendiente: mejoras especificas de mando y navegacion por
-  controlador solicitadas para esta version.
+
+--- INCLUYE TODO LO ANTERIOR ---
+* 1.3.0: temas claro, oscuro y transparente; fondo personalizado
+  con imagen o video, recorte inteligente 1920x1080, desenfoque y
+  atenuacion.
+* 1.2.0: grafico de velocidad con tooltip y selector de media
+  (total, 1 h, 30 min, 15 min, 5 min).
+* 1.1.0: lanzar juegos desde la tarjeta de la biblioteca con doble
+  clic, boton de juego o selector de ejecutable.
+* 1.0.0: identidad Lorro Launcher (logo, colores, instalador, datos
+  propios y migracion opcional), descargador propio con validacion,
+  multi-conexion, watchdog y gestor externo, y actualizaciones
+  automaticas desde GitHub.
 
 --- NOTAS ---
-* Los datos nuevos se guardan en %APPDATA%\Lorro Launcher.
-* Compatible con las funciones existentes (descargas, biblioteca,
-  lanzamiento, actualizaciones).
-========================================================
- LORRO LAUNCHER - REGISTRO DE ACTUALIZACIONES
-========================================================
-Este archivo describe, A DETALLE, todos los cambios, adiciones
-y correcciones de cada versión de Lorro Launcher.
-
-Cliente de auto-actualización: los usuarios que tengan el launcher
-instalado verán el aviso "Reiniciar e instalar" cuando se publique
-una versión nueva.
-
-========================================================
-VERSION 1.3.0
-========================================================
-Temas de apariencia y fondo personalizado (imagen o vídeo).
-
---- TEMAS ---
-* Nuevo selector de tema en Ajustes -> Apariencia:
-  - Oscuro: el tema original de Lorro.
-  - Claro: interfaz clara de alto contraste, aplicada de forma coherente
-    a todas las pantallas (incluidos modales y menús).
-  - Transparente: superficies translúcidas tipo cristal con desenfoque,
-    dejando ver el fondo personalizado.
-* El tema elegido se guarda y se aplica al abrir el launcher.
-* Los botones nativos de la ventana adaptan su color según el tema claro
-  u oscuro para que siempre se vean.
-
---- FONDO PERSONALIZADO ---
-* Puedes poner una FOTO o un VÍDEO como fondo de la aplicación.
-* Imágenes: se reescalan automáticamente a 1920x1080 con recorte
-  inteligente (se centra en la zona de interés). No se deforman ni se
-  estiran: se reencuadran para que se vean bien y con buena calidad,
-  aunque la resolución original sea incorrecta.
-* Vídeos: se reproducen en bucle, sin sonido y sin deformarse (se
-  ajustan recortando lo que sobra, no estirando). No se recodifican para
-  no perder calidad ni consumir CPU extra.
-* Controles de DESENFOQUE (0-24) y OSCURECER (0-80%) para que el fondo no
-  reste legibilidad.
-* El fondo se puede quitar en cualquier momento.
-* El fondo y sus ajustes se guardan en tu equipo (no se suben a ningún
-  sitio).
-
---- RENDIMIENTO ---
-* El vídeo de fondo se PAUSA automáticamente cuando la ventana no está
-  visible, para no gastar CPU/GPU en segundo plano.
-* El fondo se carga solo cuando está configurado.
-* El cambio de tema no recarga la interfaz.
-* Se mantienen las optimizaciones anteriores (carga diferida, límites de
-  memoria, reducción de procesos en reposo).
-
---- NOTAS ---
-* Los temas personalizados (archivos de tema) siguen funcionando igual.
-* Todo es local: no se envía ninguna imagen o vídeo a servidores.
-
-========================================================
-VERSION 1.2.0
-========================================================
-Corrección de la gráfica de velocidad de descarga.
-
---- CORRECCIÓN ---
-* El globo informativo que aparece al pasar el cursor por encima de una
-  barra de la gráfica de velocidad ya no se recorta ni queda oculto
-  detrás de otros elementos: ahora se dibuja dentro del propio gráfico,
-  por lo que siempre es visible.
-* El globo se mantiene dentro de los límites de la gráfica en los
-  extremos (primera y última barra), sin salirse por los lados.
-* Sigue mostrando la velocidad de ese instante (MB/s) y cuánto tiempo
-  hace de esa muestra.
-
-========================================================
-VERSION 1.1.0
-========================================================
-Inicio de juegos directamente desde la biblioteca.
-
---- INICIAR JUEGO DESDE LA PORTADA ---
-* Ahora puedes arrancar un juego sin entrar en su ficha:
-  - DOBLE CLIC sobre la portada del juego en la Biblioteca para iniciarlo.
-  - Botón de PLAY que aparece en la esquina de la portada al pasar el
-    ratón por encima (también accesible con teclado: Tab + Enter/Espacio).
-  - Un solo clic sigue abriendo la ficha del juego como siempre.
-* Si el juego no tiene un ejecutable configurado:
-  - Se abre un selector de archivos para que elijas el .exe (o .app en Mac)
-    del juego.
-  - La ruta elegida se guarda automáticamente como ejecutable del juego y,
-    a continuación, se inicia.
-  - Si cancelas la selección, no pasa nada.
-* Selección de ejecutable también disponible desde el menú contextual
-  (clic derecho -> Jugar) para juegos sin ejecutable configurado.
-* Nuevos textos en la interfaz (Jugar / no se pudo iniciar el juego) en
-  inglés y español.
-
-========================================================
-VERSION 1.0.0
-========================================================
-Primera versión pública de Lorro Launcher.
-
---- IDENTIDAD Y MARCA ---
-* Nombre del producto: "Lorro Launcher" (appId com.lorro.launcher,
-  ejecutable "Lorro Launcher.exe").
-* Logo original propio, generado a partir de una única fuente de diseño
-  (scripts/generate-lorro-brand.mjs) con filtro/duotono violeta:
-  - Icono de aplicación (.ico multiescala y .icns).
-  - Logo horizontal (LORRO + LAUNCHER).
-  - Icono de bandeja claro/oscuro.
-  - Imagen del instalador (installerSidebar.bmp) y de la ventana Acerca de.
-* Paleta de identidad: violeta (#8b5cf6), índigo (#4f46e5) y cian
-  (#22d3ee) sobre fondos oscuros premium.
-* Tipografías: Space Grotesk (títulos) y Noto Sans (cuerpo).
-
---- INTERFAZ (GUI) ---
-* Rediseño visual completo manteniendo TODAS las funciones y menús:
-  - Barra superior (title bar) con la marca Lorro y el estado Cloud.
-  - Sidebar y navegación con estados hover/activo en degradado.
-  - Inicio, Biblioteca, Catálogo y Búsqueda.
-  - Fichas de juegos y tarjetas de biblioteca (elevación, glow, bordes).
-  - Descargas y progreso, instalaciones y actualizaciones.
-  - Perfiles y biblioteca personal.
-  - Ajustes, modales, menús contextuales y tooltips.
-  - Notificaciones, errores y estados vacíos.
-  - Pantalla de carga y diálogos del sistema.
-* Botones rediseñados (primary/outline/dark/cloud/danger) y corrección
-  de contraste (texto sobre fondo blanco).
-* Nueva sección de Ajustes -> "Acerca de": versión, descripción,
-  atribución, ruta de datos, estado de actualizaciones y licencia.
-
---- BIBLIOTECA Y FUNCIONES EXISTENTES (CONSERVADAS) ---
-* Biblioteca de juegos, búsqueda y catálogo.
-* Gestión de juegos instalados y rutas de instalación.
-* Descargas y seguimiento del progreso.
-* Detección de instalaciones existentes.
-* Lanzamiento de juegos.
-* Perfiles y biblioteca personal.
-* Ajustes y preferencias.
-* Gestión de archivos necesarios para las funciones existentes.
-* Sistema de fuentes configurables (añadir/validar/habilitar/deshabilitar/
-  eliminar), con aislamiento de fallos.
-
---- DESCARGAS ---
-* Nueva opción "Enlace personalizado": pega cualquier enlace directo
-  http/https y Lorro lo descarga y, opcionalmente, lo añade a la
-  biblioteca personal.
-  - Progreso real con velocidad y tiempo restante, pausar/reanudar,
-    cancelar, abrir carpeta y eliminar.
-  - Validación del enlace: detecta enlaces inaccesibles, errores HTTP,
-    respuestas JSON/HTML de error y archivos vacíos (0 bytes) para no dar
-    falsas esperanzas.
-  - Descarga por tramos (paralela) con reanudación por rangos HTTP.
-  - Persistencia de la cola; lo interrumpido queda en pausa.
-* Descargas en multitramo (multiconexión): hasta 16 conexiones paralelas
-  (8 por defecto) para acelerar servidores lentos o limitados por
-  conexión, replicando la técnica de segmentación dinámica.
-* Integración con gestores de descarga externos: detecta y permite
-  enviar el enlace a Internet Download Manager (IDM), Neat Download
-  Manager o Free Download Manager, además de "Copiar enlace".
-* Gráfica de velocidad de descarga:
-  - Al pasar el ratón por una barra se muestra la velocidad de ese
-    instante y cuánto tiempo hace.
-  - Nuevo indicador de velocidad MEDIA con selector de ventana:
-    Total / Última hora / Últimos 30 min / Últimos 15 min / Últimos 5 min.
-  - Gráfica optimizada (redibujado bajo demanda, sin bucle continuo).
-
---- RENDIMIENTO Y RECURSOS ---
-* Reducción del consumo de memoria en reposo: menos procesos activos y
-  embeds pesados (chat de soporte, changelog, iframe de pago) cargados
-  de forma diferida solo cuando se usan.
-* Imágenes de tarjetas y descargas con carga diferida y decodificación
-  asíncrona.
-* Ajustes de arranque para equipos modestos y límite de memoria del
-  proceso principal.
-* Soporte de "reducir movimiento" del sistema (prefers-reduced-motion).
-
---- DATOS, ACTUALIZACIONES Y DISTRIBUCIÓN ---
-* Directorio de datos propio e independiente: %APPDATA%\Lorro Launcher
-  (no mezcla datos con otros launchers).
-* Migración opcional y segura desde datos antiguos (con copia, sin
-  sobrescribir silenciosamente).
-* Auto-actualización activada mediante GitHub Releases de este repositorio:
-  los usuarios reciben las versiones nuevas desde el propio launcher.
-* Instalador Windows (NSIS) y versión portable con identidad de Lorro,
-  iconos propios, accesos directos y entrada de desinstalación correcta.
-* El desinstalador NO borra datos personales del usuario.
-
---- LICENCIA Y ATRIBUCIONES ---
-* Licencia MIT y avisos de copyright originales conservados.
-* Lorro Launcher es una personalización del proyecto de código abierto
-  Hydra Launcher (MIT, © Los Broxas / Hydra Launcher contributors).
-  No se afirma que el código original se creara desde cero.
-* Licencias de terceros (Electron, React, legendary, ludusavi, fuentes,
-  iconos, etc.) conservadas y documentadas.
-
-========================================================
+* Los datos se guardan en %APPDATA%\Lorro Launcher.
+* Compatible con descargas, biblioteca, lanzamiento y
+  actualizaciones existentes.
+* Las versiones anteriores a 1.0.0 necesitan una instalacion manual
+  una sola vez; a partir de ahi la actualizacion es automatica.

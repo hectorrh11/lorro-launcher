@@ -2,6 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   DiagnosticReport,
+  LaunchProfile,
+  LaunchProfileValidation,
+  LaunchToolStep,
   LorroGameStats,
   LorroStatsSummary,
   SaveBackupConfig,
@@ -12,7 +15,12 @@ import { Button, SelectField } from "@renderer/components";
 import { useLibrary, useToast } from "@renderer/hooks";
 import "./settings-advanced.scss";
 
-type AdvancedTab = "backups" | "stats" | "storage" | "diagnostics";
+type AdvancedTab =
+  | "profiles"
+  | "backups"
+  | "stats"
+  | "storage"
+  | "diagnostics";
 
 const formatBytes = (bytes: number) => {
   if (!bytes) return "0 B";
@@ -42,7 +50,7 @@ function gameKeyOf(game: { shop: string; objectId: string }) {
 
 export function SettingsAdvanced() {
   const { t } = useTranslation("settings");
-  const [tab, setTab] = useState<AdvancedTab>("backups");
+  const [tab, setTab] = useState<AdvancedTab>("profiles");
   const { library } = useLibrary();
 
   const gameOptions = useMemo(
@@ -56,6 +64,7 @@ export function SettingsAdvanced() {
   );
 
   const tabs: { id: AdvancedTab; label: string }[] = [
+    { id: "profiles", label: t("advanced_tab_profiles", "Launch profiles") },
     { id: "backups", label: t("advanced_tab_backups", "Backups") },
     { id: "stats", label: t("advanced_tab_stats", "Statistics") },
     { id: "storage", label: t("advanced_tab_storage", "Storage") },
@@ -79,6 +88,7 @@ export function SettingsAdvanced() {
         ))}
       </div>
 
+      {tab === "profiles" && <ProfilesTab gameOptions={gameOptions} />}
       {tab === "backups" && <BackupsTab gameOptions={gameOptions} />}
       {tab === "stats" && <StatsTab gameOptions={gameOptions} />}
       {tab === "storage" && <StorageTab />}
@@ -659,6 +669,359 @@ function DiagnosticsTab({ gameOptions }: TabProps) {
           )}
         </div>
       ))}
+    </div>
+  );
+}
+
+function ProfilesTab({ gameOptions }: TabProps) {
+  const { t } = useTranslation("settings");
+  const { showErrorToast, showSuccessToast } = useToast();
+  const [gameKey, setGameKey] = useState("");
+  const [profiles, setProfiles] = useState<LaunchProfile[]>([]);
+  const [editing, setEditing] = useState<LaunchProfile | null>(null);
+  const [validation, setValidation] = useState<LaunchProfileValidation | null>(
+    null
+  );
+  const [envText, setEnvText] = useState("");
+  const [toolsText, setToolsText] = useState("");
+  const [preText, setPreText] = useState("");
+
+  useEffect(() => {
+    if (!gameKey && gameOptions.length) setGameKey(gameOptions[0].value);
+  }, [gameKey, gameOptions]);
+
+  const load = useCallback(async (key: string) => {
+    if (!key) return;
+    setProfiles(await window.electron.listLaunchProfiles(key));
+    setEditing(null);
+    setValidation(null);
+  }, []);
+
+  useEffect(() => {
+    void load(gameKey);
+  }, [gameKey, load]);
+
+  const startEditing = (profile: LaunchProfile) => {
+    setEditing(profile);
+    setValidation(null);
+    setEnvText(
+      Object.entries(profile.environment)
+        .map(([key, value]) => `${key}=${value}`)
+        .join("\n")
+    );
+    setToolsText(
+      profile.externalTools
+        .map((step) => `${step.path}|${step.arguments}`)
+        .join("\n")
+    );
+    setPreText(
+      profile.preLaunch
+        .map((step) => `${step.path}|${step.arguments}`)
+        .join("\n")
+    );
+  };
+
+  const createProfile = () =>
+    startEditing({
+      id: crypto.randomUUID(),
+      name: t("advanced_profile_new_name", "New profile"),
+      executablePath: "",
+      workingDirectory: "",
+      arguments: "",
+      environment: {},
+      windowMode: "windowed",
+      externalTools: [],
+      preLaunch: [],
+      isDefault: profiles.length === 0,
+    });
+
+  const update = (patch: Partial<LaunchProfile>) =>
+    setEditing((prev) => (prev ? { ...prev, ...patch } : prev));
+
+  const textToSteps = (text: string): LaunchToolStep[] =>
+    text
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => {
+        const index = line.indexOf("|");
+        return index === -1
+          ? { path: line, arguments: "" }
+          : {
+              path: line.slice(0, index).trim(),
+              arguments: line.slice(index + 1).trim(),
+            };
+      });
+
+  const parseEnv = (text: string) => {
+    const result: Record<string, string> = {};
+    for (const line of text.split("\n")) {
+      const index = line.indexOf("=");
+      if (index > 0) result[line.slice(0, index).trim()] = line.slice(index + 1).trim();
+    }
+    return result;
+  };
+
+  const choose = async (
+    target: "executablePath" | "workingDirectory",
+    kind: "file" | "dir"
+  ) => {
+    const { canceled, filePaths } = await window.electron.showOpenDialog({
+      properties:
+        kind === "file" ? ["openFile"] : ["openDirectory", "createDirectory"],
+      filters:
+        kind === "file"
+          ? [{ name: "Executables", extensions: ["exe"] }]
+          : undefined,
+    });
+    if (!canceled && filePaths[0]) update({ [target]: filePaths[0] });
+  };
+
+  const collect = (profile: LaunchProfile): LaunchProfile => ({
+    ...profile,
+    environment: parseEnv(envText),
+    externalTools: textToSteps(toolsText),
+    preLaunch: textToSteps(preText),
+  });
+
+  const save = async () => {
+    if (!editing || !gameKey) return;
+    if (!editing.name.trim()) {
+      showErrorToast(t("advanced_profile_name_required", "The name is required."));
+      return;
+    }
+    try {
+      setProfiles(
+        await window.electron.saveLaunchProfile(gameKey, collect(editing))
+      );
+      showSuccessToast(t("advanced_profile_saved", "Profile saved"));
+      setEditing(null);
+      setValidation(null);
+    } catch (error) {
+      showErrorToast(String(error));
+    }
+  };
+
+  const check = async () => {
+    if (!editing) return;
+    setValidation(await window.electron.validateLaunchProfile(collect(editing)));
+  };
+
+  const run = async (profile: LaunchProfile) => {
+    try {
+      const result = await window.electron.launchWithProfile(
+        gameKey,
+        profile.id
+      );
+      showSuccessToast(
+        `${t("advanced_profile_launched", "Game launched")}: ${result.command}`
+      );
+    } catch (error) {
+      showErrorToast(String(error));
+    }
+  };
+
+  const duplicate = async (profile: LaunchProfile) => {
+    setProfiles(
+      await window.electron.duplicateLaunchProfile(gameKey, profile.id)
+    );
+    showSuccessToast(t("advanced_profile_duplicated", "Profile duplicated"));
+  };
+
+  const makeDefault = async (profile: LaunchProfile) => {
+    setProfiles(
+      await window.electron.setDefaultLaunchProfile(gameKey, profile.id)
+    );
+  };
+
+  const remove = async (profile: LaunchProfile) => {
+    if (
+      !window.confirm(
+        t("advanced_profile_delete_confirm", "Delete this launch profile?")
+      )
+    )
+      return;
+    setProfiles(
+      await window.electron.deleteLaunchProfile(gameKey, profile.id)
+    );
+    if (editing?.id === profile.id) setEditing(null);
+  };
+
+  const windowModes: { key: string; value: string; label: string }[] = [
+    { key: "windowed", value: "windowed", label: t("advanced_window_windowed", "Windowed") },
+    { key: "fullscreen", value: "fullscreen", label: t("advanced_window_fullscreen", "Fullscreen") },
+    { key: "borderless", value: "borderless", label: t("advanced_window_borderless", "Borderless") },
+  ];
+
+  return (
+    <div className="settings-advanced__panel">
+      <div className="settings-advanced__card">
+        <div className="settings-advanced__row">
+          <SelectField
+            theme="dark"
+            value={gameKey}
+            onChange={(e) => setGameKey(e.target.value)}
+            options={gameOptions}
+          />
+          <Button theme="primary" onClick={createProfile} disabled={!gameKey}>
+            {t("advanced_profile_create", "New profile")}
+          </Button>
+        </div>
+        <p className="settings-advanced__hint">
+          {t(
+            "advanced_profiles_hint",
+            "Each profile can use a different executable, arguments, environment variables and window mode. The default profile is used when launching the game."
+          )}
+        </p>
+        {profiles.length === 0 ? (
+          <p className="settings-advanced__empty">
+            {t("advanced_profiles_empty", "No launch profiles for this game yet.")}
+          </p>
+        ) : (
+          <div className="settings-advanced__list">
+            {profiles.map((profile) => (
+              <div className="settings-advanced__item" key={profile.id}>
+                <div className="settings-advanced__item-main">
+                  <span className="settings-advanced__item-title">
+                    {profile.name}
+                    {profile.isDefault
+                      ? ` (${t("advanced_profile_default", "default")})`
+                      : ""}
+                  </span>
+                  <span className="settings-advanced__item-meta">
+                    {profile.executablePath || "--"} · {profile.windowMode}
+                  </span>
+                </div>
+                <div className="settings-advanced__actions">
+                  <Button theme="outline" onClick={() => startEditing(profile)}>
+                    {t("advanced_edit", "Edit")}
+                  </Button>
+                  <Button theme="outline" onClick={() => void run(profile)}>
+                    {t("advanced_launch", "Launch")}
+                  </Button>
+                  <Button theme="outline" onClick={() => void duplicate(profile)}>
+                    {t("advanced_duplicate", "Duplicate")}
+                  </Button>
+                  {!profile.isDefault && (
+                    <Button theme="outline" onClick={() => void makeDefault(profile)}>
+                      {t("advanced_make_default", "Set default")}
+                    </Button>
+                  )}
+                  <Button theme="danger" onClick={() => void remove(profile)}>
+                    {t("advanced_delete", "Delete")}
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {editing && (
+        <div className="settings-advanced__card">
+          <h3 className="settings-advanced__card-title">
+            {t("advanced_profile_editor", "Profile editor")}
+          </h3>
+          <label>
+            {t("advanced_profile_name", "Name")}
+            <input
+              className="settings-advanced__input"
+              value={editing.name}
+              onChange={(e) => update({ name: e.target.value })}
+            />
+          </label>
+          <label>
+            {t("advanced_profile_executable", "Executable")}
+            <div className="settings-advanced__row">
+              <input
+                className="settings-advanced__input"
+                value={editing.executablePath}
+                onChange={(e) => update({ executablePath: e.target.value })}
+              />
+              <Button theme="outline" onClick={() => void choose("executablePath", "file")}>
+                {t("advanced_browse", "Browse")}
+              </Button>
+            </div>
+          </label>
+          <label>
+            {t("advanced_profile_workdir", "Working directory")}
+            <div className="settings-advanced__row">
+              <input
+                className="settings-advanced__input"
+                value={editing.workingDirectory}
+                onChange={(e) => update({ workingDirectory: e.target.value })}
+              />
+              <Button theme="outline" onClick={() => void choose("workingDirectory", "dir")}>
+                {t("advanced_browse", "Browse")}
+              </Button>
+            </div>
+          </label>
+          <label>
+            {t("advanced_profile_arguments", "Arguments")}
+            <input
+              className="settings-advanced__input"
+              value={editing.arguments}
+              onChange={(e) => update({ arguments: e.target.value })}
+            />
+          </label>
+          <label>
+            {t("advanced_profile_window", "Window mode")}
+            <SelectField
+              theme="dark"
+              value={editing.windowMode}
+              onChange={(e) =>
+                update({ windowMode: e.target.value as LaunchProfile["windowMode"] })
+              }
+              options={windowModes}
+            />
+          </label>
+          <label>
+            {t("advanced_profile_env", "Environment variables (one KEY=VALUE per line)")}
+            <textarea
+              className="settings-advanced__textarea"
+              rows={3}
+              value={envText}
+              onChange={(e) => setEnvText(e.target.value)}
+            />
+          </label>
+          <label>
+            {t("advanced_profile_prelaunch", "Pre-launch tools (path|arguments per line)")}
+            <textarea
+              className="settings-advanced__textarea"
+              rows={2}
+              value={preText}
+              onChange={(e) => setPreText(e.target.value)}
+            />
+          </label>
+          <label>
+            {t("advanced_profile_tools", "Tools after launch (path|arguments per line)")}
+            <textarea
+              className="settings-advanced__textarea"
+              rows={2}
+              value={toolsText}
+              onChange={(e) => setToolsText(e.target.value)}
+            />
+          </label>
+          <div className="settings-advanced__actions">
+            <Button theme="primary" onClick={() => void save()}>
+              {t("advanced_save", "Save profile")}
+            </Button>
+            <Button theme="outline" onClick={() => void check()}>
+              {t("advanced_check", "Check")}
+            </Button>
+            <Button theme="outline" onClick={() => setEditing(null)}>
+              {t("advanced_cancel", "Cancel")}
+            </Button>
+          </div>
+          {validation && (
+            <div className="settings-advanced__hint">
+              {validation.valid
+                ? t("advanced_validation_ok", "The profile is valid.")
+                : validation.messages.join(" ")}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

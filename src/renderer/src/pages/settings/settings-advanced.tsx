@@ -13,6 +13,17 @@ import {
 } from "@types";
 import { Button, SelectField } from "@renderer/components";
 import { useLibrary, useToast } from "@renderer/hooks";
+import {
+  isClipRecording,
+  saveLastClip,
+  startClipBuffer,
+  stopClipBuffer,
+} from "@renderer/lib/clip-buffer";
+import {
+  applyLorroRewards,
+  isPerformanceMode,
+  setPerformanceMode,
+} from "@renderer/lib/performance-mode";
 import "./settings-advanced.scss";
 
 type AdvancedTab =
@@ -20,7 +31,8 @@ type AdvancedTab =
   | "backups"
   | "stats"
   | "storage"
-  | "diagnostics";
+  | "diagnostics"
+  | "extras";
 
 const formatBytes = (bytes: number) => {
   if (!bytes) return "0 B";
@@ -69,6 +81,7 @@ export function SettingsAdvanced() {
     { id: "stats", label: t("advanced_tab_stats", "Statistics") },
     { id: "storage", label: t("advanced_tab_storage", "Storage") },
     { id: "diagnostics", label: t("advanced_tab_diagnostics", "Diagnostics") },
+    { id: "extras", label: t("advanced_tab_extras", "Extras") },
   ];
 
   return (
@@ -93,6 +106,7 @@ export function SettingsAdvanced() {
       {tab === "stats" && <StatsTab gameOptions={gameOptions} />}
       {tab === "storage" && <StorageTab />}
       {tab === "diagnostics" && <DiagnosticsTab gameOptions={gameOptions} />}
+      {tab === "extras" && <ExtrasTab />}
     </div>
   );
 }
@@ -1022,6 +1036,210 @@ function ProfilesTab({ gameOptions }: TabProps) {
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+function ExtrasTab() {
+  const { t } = useTranslation("settings");
+  const { library } = useLibrary();
+  const { showErrorToast, showSuccessToast } = useToast();
+  const [performance, setPerformance] = useState(isPerformanceMode());
+  const [recording, setRecording] = useState(isClipRecording());
+  const [busy, setBusy] = useState(false);
+  const [lastClip, setLastClip] = useState<string | null>(null);
+  const [spent, setSpent] = useState(() =>
+    Number(localStorage.getItem("lorro-spent") ?? 0)
+  );
+  const [rewards, setRewards] = useState<string[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem("lorro-rewards") ?? "[]");
+    } catch {
+      return [];
+    }
+  });
+
+  const unlocked = library.reduce(
+    (sum, game) => sum + (game.unlockedAchievementCount ?? 0),
+    0
+  );
+  const earned = unlocked * 10;
+  const balance = Math.max(0, earned - spent);
+
+  const togglePerformance = () => {
+    const next = !performance;
+    setPerformance(next);
+    setPerformanceMode(next);
+  };
+
+  const start = async () => {
+    setBusy(true);
+    try {
+      await startClipBuffer();
+      setRecording(true);
+      showSuccessToast(
+        t(
+          "advanced_clip_started",
+          "Capture enabled. Press Ctrl+Shift+X to save the last 35 seconds."
+        )
+      );
+    } catch (error) {
+      showErrorToast(String(error));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const save = async () => {
+    setBusy(true);
+    try {
+      const path = await saveLastClip();
+      if (path) {
+        setLastClip(path);
+        showSuccessToast(t("advanced_clip_saved", "Clip saved"));
+      } else {
+        showErrorToast(t("advanced_clip_empty", "No clip available yet."));
+      }
+    } catch (error) {
+      showErrorToast(String(error));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const stop = () => {
+    stopClipBuffer();
+    setRecording(false);
+  };
+
+  useEffect(() => {
+    if (!recording) return;
+    const handler = (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "x") {
+        event.preventDefault();
+        void save();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  });
+
+  const redeem = (id: string, cost: number) => {
+    if (rewards.includes(id)) return;
+    if (balance < cost) {
+      showErrorToast(t("advanced_points_insufficient", "Not enough LorroPoints."));
+      return;
+    }
+    const nextSpent = spent + cost;
+    const nextRewards = [...rewards, id];
+    localStorage.setItem("lorro-spent", String(nextSpent));
+    localStorage.setItem("lorro-rewards", JSON.stringify(nextRewards));
+    setSpent(nextSpent);
+    setRewards(nextRewards);
+    applyLorroRewards();
+    showSuccessToast(t("advanced_reward_unlocked", "Reward unlocked"));
+  };
+
+  return (
+    <div className="settings-advanced__panel">
+      <div className="settings-advanced__card">
+        <h3 className="settings-advanced__card-title">
+          {t("advanced_performance_title", "Performance mode")}
+        </h3>
+        <label className="settings-advanced__checkbox">
+          <input
+            type="checkbox"
+            checked={performance}
+            onChange={togglePerformance}
+          />
+          {t(
+            "advanced_performance_toggle",
+            "Reduce animations, transitions, blur and background video to use less RAM and CPU."
+          )}
+        </label>
+      </div>
+
+      <div className="settings-advanced__card">
+        <h3 className="settings-advanced__card-title">
+          {t("advanced_points_title", "LorroPoints")}
+        </h3>
+        <p className="settings-advanced__hint">
+          {t(
+            "advanced_points_balance",
+            "You earn 10 LorroPoints for every unlocked achievement."
+          )}
+        </p>
+        <div className="settings-advanced__grid">
+          <div className="settings-advanced__drive">
+            <strong>{balance}</strong>
+            <span>{t("advanced_points_available", "available")}</span>
+          </div>
+          <div className="settings-advanced__drive">
+            <strong>{earned}</strong>
+            <span>{t("advanced_points_earned", "earned")}</span>
+          </div>
+          <div className="settings-advanced__drive">
+            <strong>{spent}</strong>
+            <span>{t("advanced_points_spent", "spent")}</span>
+          </div>
+        </div>
+        <div className="settings-advanced__actions">
+          <Button
+            theme="outline"
+            disabled={rewards.includes("gold") || balance < 300}
+            onClick={() => redeem("gold", 300)}
+          >
+            {rewards.includes("gold")
+              ? t("advanced_reward_owned", "Gold theme (owned)")
+              : t("advanced_reward_gold", "Gold accent (300 pts)")}
+          </Button>
+          <Button
+            theme="outline"
+            disabled={rewards.includes("emerald") || balance < 600}
+            onClick={() => redeem("emerald", 600)}
+          >
+            {rewards.includes("emerald")
+              ? t("advanced_reward_owned_emerald", "Emerald theme (owned)")
+              : t("advanced_reward_emerald", "Emerald accent (600 pts)")}
+          </Button>
+        </div>
+      </div>
+
+      <div className="settings-advanced__card">
+        <h3 className="settings-advanced__card-title">
+          {t("advanced_clip_title", "Clip the last 35 seconds")}
+        </h3>
+        <p className="settings-advanced__hint">
+          {t(
+            "advanced_clip_hint",
+            "Enable capture, play, and press Ctrl+Shift+X to save the last 35 seconds. The clip is saved as a file you can share."
+          )}
+        </p>
+        <div className="settings-advanced__actions">
+          {recording ? (
+            <Button theme="outline" onClick={stop}>
+              {t("advanced_clip_stop", "Stop capture")}
+            </Button>
+          ) : (
+            <Button theme="primary" onClick={() => void start()} disabled={busy}>
+              {t("advanced_clip_start", "Enable capture")}
+            </Button>
+          )}
+          <Button
+            theme="outline"
+            onClick={() => void save()}
+            disabled={busy || !recording}
+          >
+            {t("advanced_clip_save", "Save last 35 s")}
+          </Button>
+          <Button theme="outline" onClick={() => void window.electron.openClipFolder()}>
+            {t("advanced_clip_folder", "Open clips folder")}
+          </Button>
+        </div>
+        {lastClip && (
+          <pre className="settings-advanced__pre">{lastClip}</pre>
+        )}
+      </div>
     </div>
   );
 }

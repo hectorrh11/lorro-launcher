@@ -1168,6 +1168,9 @@ declare global {
       gameKey: string,
       checkId: string
     ) => Promise<{ fixed: boolean; message: string }>;
+    getClipSource: () => Promise<string | null>;
+    saveClip: (data: ArrayBuffer, extension: string) => Promise<string>;
+    openClipFolder: () => Promise<string>;
     getStorageReport: () => Promise<StorageReport>;
     moveGameInstallation: (
       gameKey: string,

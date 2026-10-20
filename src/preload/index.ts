@@ -1493,6 +1493,10 @@ contextBridge.exposeInMainWorld("electron", {
   deletePlaytimeSession: (gameKey: string, sessionId: string) => ipcRenderer.invoke("deletePlaytimeSession", gameKey, sessionId),
   runGameDiagnostics: (gameKey: string) => ipcRenderer.invoke("runGameDiagnostics", gameKey),
   fixGameDiagnostic: (gameKey: string, checkId: string) => ipcRenderer.invoke("fixGameDiagnostic", gameKey, checkId),
+  getClipSource: () => ipcRenderer.invoke("getClipSource"),
+  saveClip: (data: ArrayBuffer, extension: string) =>
+    ipcRenderer.invoke("saveClip", data, extension),
+  openClipFolder: () => ipcRenderer.invoke("openClipFolder"),
   getStorageReport: () => ipcRenderer.invoke("getStorageReport"),
   moveGameInstallation: (gameKey: string, destination: string) => ipcRenderer.invoke("moveGameInstallation", gameKey, destination),
   cleanStorageCaches: (ids: string[]) => ipcRenderer.invoke("cleanStorageCaches", ids),

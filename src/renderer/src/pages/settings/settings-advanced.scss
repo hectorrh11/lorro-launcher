@@ -273,3 +273,28 @@
     white-space: pre-wrap;
   }
 }
+
+body.lorro-performance-mode {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    backdrop-filter: none !important;
+  }
+
+  video {
+    display: none !important;
+  }
+}
+
+body.lorro-reward-gold .settings-advanced__tab--active {
+  color: #ffd166;
+  border-color: #ffd166;
+}
+
+body.lorro-reward-emerald .settings-advanced__tab--active {
+  color: #3ddc97;
+  border-color: #3ddc97;
+}

@@ -7,6 +7,9 @@ import { sessionStats } from "@main/services/session-stats";
 import { gameDiagnostics } from "@main/services/game-diagnostics";
 import { storageManager } from "@main/services/storage-manager";
 import { isGameRunning } from "@main/services/game-running-state";
+import { app, desktopCapturer, shell } from "electron";
+import fs from "node:fs/promises";
+import path from "node:path";
 
 const parseGameKey = (gameKey: string) => {
   const index = gameKey.indexOf(":");
@@ -116,3 +119,32 @@ registerEvent("moveGameInstallation", (_e, gameKey: string, destination: string)
 registerEvent("cleanStorageCaches", (_e, ids: string[]) =>
   storageManager.cleanCaches(ids)
 );
+
+const clipsDirectory = () =>
+  path.join(app.getPath("videos"), "Lorro Launcher", "Clips");
+
+registerEvent("getClipSource", async () => {
+  const sources = await desktopCapturer.getSources({
+    types: ["screen"],
+    thumbnailSize: { width: 0, height: 0 },
+  });
+  return sources[0]?.id ?? null;
+});
+
+registerEvent("saveClip", async (_e, data: ArrayBuffer, extension: string) => {
+  const directory = clipsDirectory();
+  await fs.mkdir(directory, { recursive: true });
+  const safeExtension = extension === "mp4" ? "mp4" : "webm";
+  const filePath = path.join(
+    directory,
+    `lorro-clip-${new Date().toISOString().replace(/[:.]/g, "-")}.${safeExtension}`
+  );
+  await fs.writeFile(filePath, Buffer.from(data));
+  return filePath;
+});
+
+registerEvent("openClipFolder", async () => {
+  const directory = clipsDirectory();
+  await fs.mkdir(directory, { recursive: true });
+  return shell.openPath(directory);
+});

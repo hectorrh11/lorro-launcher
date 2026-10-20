@@ -7,9 +7,12 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import { installGamepadNavigation } from "./lib/gamepad-navigation";
 import { installLorroFeedbackButton } from "./lib/lorro-feedback";
+import { applyLorroRewards, applyPerformanceMode } from "./lib/performance-mode";
 
 installGamepadNavigation();
 installLorroFeedbackButton();
+applyPerformanceMode();
+applyLorroRewards();
 
 import "@fontsource/noto-sans/400.css";
 import "@fontsource/noto-sans/500.css";

@@ -1,4 +1,24 @@
 ========================================================
+VERSION 1.69.0
+========================================================
+* LANZAMIENTO: si el juego esta instalado pero no tiene ejecutable,
+  la tarjeta muestra "Seleccionar ejecutable" (icono de carpeta).
+  Al elegir el .exe se guarda y el doble clic o el boton Jugar lo
+  ejecutan.
+* ENLACES DE HYDRA: eliminados. El boton de suscripcion ya no abre
+  pagos ni paginas de Hydra; abre el GitHub de Lorro.
+* LORROPOINTS: ganas 10 puntos por cada logro desbloqueado. Se pueden
+  canjear por el acento dorado (300) y el esmeralda (600), guardados
+  en tu equipo.
+* CLIPS DE 35 SEGUNDOS: activa la captura y pulsa Ctrl+Shift+X para
+  guardar los ultimos 35 segundos en Videos\Lorro Launcher\Clips
+  (formato webm). Puedes abrir la carpeta y compartir el archivo.
+  Aviso: el enlace de comparticion online requiere un servidor de
+  subida, que todavia no existe.
+* MODO RENDIMIENTO: opcional, desactiva animaciones, transiciones,
+  desenfoques y video de fondo para consumir menos RAM y CPU.
+* Incluye todo lo anterior (1.67.0 y versiones previas).
+========================================================
 LORRO LAUNCHER - HISTORIAL DE CAMBIOS
 ========================================================
 

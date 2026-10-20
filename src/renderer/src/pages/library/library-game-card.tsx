@@ -31,6 +31,7 @@ import {
   AlertFillIcon,
   ImageIcon,
   CheckCircleFillIcon,
+  FileDirectoryOpenFillIcon,
   PlayIcon,
 } from "@primer/octicons-react";
 import {
@@ -119,6 +120,8 @@ export const LibraryGameCard = memo(function LibraryGameCard({
     userPreferences?.autoplayAnimatedArtwork ?? false;
 
   const isInstalled = isGameReadyToPlay(game);
+  const needsExecutable =
+    isInstalled && !game.executablePath && game.shop !== "launchbox";
 
   const hasPickedCover = Boolean(game.selectedArtworkTypes?.includes("grid"));
 
@@ -402,14 +405,14 @@ export const LibraryGameCard = memo(function LibraryGameCard({
         })}
         role="button"
         tabIndex={0}
-        title={t("play_game")}
-        aria-label={t("play_game")}
+        title={needsExecutable ? t("select_executable", "Select executable") : t("play_game")}
+        aria-label={needsExecutable ? t("select_executable", "Select executable") : t("play_game")}
         aria-disabled={isLaunching}
         onClick={handlePlayClick}
         onDoubleClick={(event) => event.stopPropagation()}
         onKeyDown={handlePlayKeyDown}
       >
-        <PlayIcon size={18} />
+        {needsExecutable ? <FileDirectoryOpenFillIcon size={18} /> : <PlayIcon size={18} />}
       </div>
     </button>
   );

@@ -205,7 +205,7 @@ export function CloudSubscriptionModal({
         ) : hasOpened ? (
           <iframe
             ref={iframeRef}
-            title="Hydra Cloud"
+            title="Lorro Cloud"
             className="cloud-subscription-modal__iframe"
             src={iframeSrc}
             width={CLOUD_DESIGN_WIDTH}

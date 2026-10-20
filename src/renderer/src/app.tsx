@@ -212,9 +212,6 @@ export function App() {
           workwonders as WorkWondersWithKnowledge;
         workWondersWithKnowledge.knowledge?.initKnowledgeWidget?.();
 
-        if (token) {
-          workwonders.feedback.initFeedbackWidget();
-        }
 
         workwondersRef.current = workwonders;
       } catch (error) {
@@ -330,7 +327,7 @@ export function App() {
       updateUserDetails(userDetails);
     }
 
-    // The WorkWonders widgets are remote iframes (help, changelog, feedback).
+    // The WorkWonders widgets are remote iframes (help, changelog).
     // Loading them eagerly keeps several extra renderer processes resident for
     // the whole session, so they are only initialized once the user actually
     // interacts, with a fallback timer so they are still ready if needed.

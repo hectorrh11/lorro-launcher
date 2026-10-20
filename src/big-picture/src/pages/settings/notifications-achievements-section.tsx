@@ -311,7 +311,7 @@ export function NotificationsAchievementsSection({
                           showErrorToast("Notification failed", {
                             ...SETTINGS_TOAST_OPTIONS,
                             message:
-                              "Hydra could not show the achievement preview.",
+                              "Lorro could not show the achievement preview.",
                           });
                         });
                     }}

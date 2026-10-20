@@ -24,7 +24,7 @@ const CLOSE_ANIMATION_MS = 200;
 // Only one prompt is open at a time, so the mask id can be fixed.
 const ICON_MASK_ID = "chat-leaving-icon-cut";
 
-/** Hydra's mark with an alert badge cut into its corner. */
+/** Lorro's mark with an alert badge cut into its corner. */
 function ChatLeavingIcon({ isInsecure }: Readonly<{ isInsecure: boolean }>) {
   return (
     <svg

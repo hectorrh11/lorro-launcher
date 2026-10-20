@@ -1,7 +1,7 @@
 import HydraIcon from "@renderer/assets/icons/lorro.svg?react";
 
 /**
- * Two speech bubbles with the Hydra mark cut out of the front one, for an
+ * Two speech bubbles with the Lorro mark cut out of the front one, for an
  * empty conversation. The cut-outs take the tile's background color.
  */
 export function ChatEmptyIcon() {

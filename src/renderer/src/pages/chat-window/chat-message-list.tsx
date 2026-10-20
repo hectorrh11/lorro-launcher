@@ -242,7 +242,7 @@ export function ChatMessageList({
   const [flashSeq, setFlashSeq] = useState<number | null>(null);
   // A quoted message that is still loading from older history.
   const [pendingJumpSeq, setPendingJumpSeq] = useState<number | null>(null);
-  // A link waiting for the user to confirm leaving Hydra.
+  // A link waiting for the user to confirm leaving Lorro.
   const [leavingUrl, setLeavingUrl] = useState<string | null>(null);
 
   // The message whose quick reaction bar or full emoji picker is open, and

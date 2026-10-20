@@ -148,7 +148,7 @@ export function UploadBackgroundImageButton() {
 
   if (!isMe) return null;
 
-  // Non-subscribers always see the button, but clicking it presents the Hydra
+  // Non-subscribers always see the button, but clicking it presents the Lorro
   // Cloud promo (highlighting profile customization) instead of the file picker.
   if (!hasActiveSubscription) {
     return (

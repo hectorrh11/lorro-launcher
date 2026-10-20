@@ -6,8 +6,10 @@ import { Provider } from "react-redux";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import { installGamepadNavigation } from "./lib/gamepad-navigation";
+import { installLorroFeedbackButton } from "./lib/lorro-feedback";
 
 installGamepadNavigation();
+installLorroFeedbackButton();
 
 import "@fontsource/noto-sans/400.css";
 import "@fontsource/noto-sans/500.css";

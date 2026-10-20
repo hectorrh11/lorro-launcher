@@ -10,7 +10,7 @@ export interface CloudRingProps {
 }
 
 /**
- * Animated Hydra Cloud frame for avatars, matching the mobile app's
+ * Animated Lorro Cloud frame for avatars, matching the mobile app's
  * `CloudRing`.
  */
 export function CloudRing({

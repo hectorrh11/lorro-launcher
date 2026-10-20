@@ -73,6 +73,24 @@ perfiles de lanzamiento y navegacion con mando en Big Picture.
   multi-conexion, watchdog y gestor externo, y actualizaciones
   automaticas desde GitHub.
 
+--- COMENTARIOS (FEEDBACK) ---
+* El boton de comentarios ya NO usa el widget de Hydra ni envia nada a
+  sus servidores.
+* Nuevo boton flotante "Comentarios" que abre una incidencia en el
+  GitHub de Lorro con la informacion del sistema ya rellenada.
+* Los comentarios los ve y responde el equipo de Lorro en GitHub, no
+  Hydra. Requiere cuenta de GitHub para publicar.
+
+--- IDENTIDAD INDEPENDIENTE ---
+* Todos los textos visibles de la aplicacion usan Lorro: se han
+  sustituido mas de 2.500 referencias en 42 idiomas, incluido Big
+  Picture, ajustes, avisos y errores.
+* Ya no aparece Hydra en la interfaz; Lorro se presenta como launcher
+  independiente.
+* Se conservan unicamente las piezas necesarias para que todo
+  funcione: inicio de sesion, catalogo, biblioteca, descargas y
+  actualizaciones. La atribucion al proyecto de codigo abierto
+  original se mantiene en el repositorio.
 --- NOTAS ---
 * Los datos se guardan en %APPDATA%\Lorro Launcher.
 * Compatible con descargas, biblioteca, lanzamiento y

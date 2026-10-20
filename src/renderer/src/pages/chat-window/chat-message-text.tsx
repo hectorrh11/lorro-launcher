@@ -10,7 +10,7 @@ export interface ChatMessageTextProps {
 
 /**
  * A message's text with its web links. Links never navigate the window; they
- * go through `onOpenLink`, which asks before leaving Hydra.
+ * go through `onOpenLink`, which asks before leaving Lorro.
  */
 export function ChatMessageText({
   text,

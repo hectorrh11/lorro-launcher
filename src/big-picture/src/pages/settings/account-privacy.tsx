@@ -484,8 +484,8 @@ export function AccountPrivacySettingsSection({
       </SettingsSection> */}
 
       <SettingsSection
-        title="Hydra Cloud"
-        description="Check your subscription status and manage your Hydra Cloud plan."
+        title="Lorro Cloud"
+        description="Check your subscription status and manage your Lorro Cloud plan."
       >
         <div className="account-privacy-settings-section__section-content">
           <div className="account-privacy-settings-section__subscription-copy">

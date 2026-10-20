@@ -29,6 +29,7 @@ import { SettingsContextCompatibility } from "./settings-context-compatibility";
 import { SettingsContextBigPicture } from "./settings-context-big-picture";
 import { SettingsContextEmulation } from "./emulation/settings-context-emulation";
 import { SettingsAbout } from "./settings-about";
+import { SettingsAdvanced } from "./settings-advanced";
 
 export default function Settings() {
   const { t } = useTranslation("settings");
@@ -93,6 +94,11 @@ export default function Settings() {
         group: "classics" as const,
       },
       {
+        id: "advanced" as const,
+        label: t("advanced"),
+        icon: <Wrench size={16} />,
+      },
+      {
         id: "about" as const,
         label: t("about"),
         icon: <InfoIcon size={16} />,
@@ -145,6 +151,10 @@ export default function Settings() {
 
             if (selectedCategoryId === "emulation") {
               return <SettingsContextEmulation />;
+            }
+
+            if (selectedCategoryId === "advanced") {
+              return <SettingsAdvanced />;
             }
 
             if (selectedCategoryId === "about") {

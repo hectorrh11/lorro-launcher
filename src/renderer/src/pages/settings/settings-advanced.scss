@@ -1,0 +1,254 @@
+@use "../../scss/globals.scss" as globals;
+
+.settings-advanced {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  &__tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  &__tab {
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: 1px solid globals.$border-color;
+    background: globals.$surface-color;
+    color: globals.$body-color;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.15s ease;
+
+    &:hover {
+      border-color: globals.$border-strong-color;
+      color: globals.$muted-color;
+    }
+
+    &--active {
+      background: linear-gradient(
+        135deg,
+        rgba(139, 92, 246, 0.9),
+        rgba(34, 211, 238, 0.85)
+      );
+      color: #0b0912;
+      border-color: transparent;
+    }
+  }
+
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__card {
+    background: globals.$surface-color;
+    border: 1px solid globals.$border-color;
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__card-title {
+    font-family: globals.$font-display;
+    font-size: 15px;
+    font-weight: 600;
+    color: globals.$muted-color;
+    margin: 0;
+  }
+
+  &__hint {
+    font-size: 12px;
+    color: globals.$subtle-color;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  &__row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 140px;
+
+    label {
+      font-size: 12px;
+      color: globals.$subtle-color;
+    }
+
+    input[type="number"],
+    input[type="text"] {
+      background: globals.$surface-raised-color;
+      border: 1px solid globals.$border-color;
+      border-radius: 8px;
+      color: globals.$muted-color;
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+  }
+
+  &__checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: globals.$body-color;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__item {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    background: globals.$surface-raised-color;
+    border: 1px solid globals.$border-color;
+    border-radius: 10px;
+    padding: 10px 12px;
+    flex-wrap: wrap;
+  }
+
+  &__item-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__item-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: globals.$muted-color;
+  }
+
+  &__item-meta {
+    font-size: 11px;
+    color: globals.$subtle-color;
+    word-break: break-all;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+  }
+
+  &__drive {
+    background: globals.$surface-raised-color;
+    border: 1px solid globals.$border-color;
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__bar {
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+
+    span {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(
+        90deg,
+        globals.$lorro-violet,
+        globals.$lorro-cyan
+      );
+    }
+  }
+
+  &__check {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border-left: 3px solid globals.$subtle-color;
+    background: globals.$surface-raised-color;
+
+    &--ok {
+      border-left-color: globals.$success-color;
+    }
+
+    &--warning {
+      border-left-color: globals.$warning-color;
+    }
+
+    &--error {
+      border-left-color: globals.$error-color;
+    }
+  }
+
+  &__check-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: globals.$muted-color;
+  }
+
+  &__check-message {
+    font-size: 12px;
+    color: globals.$subtle-color;
+  }
+
+  &__chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 120px;
+    padding: 8px 0;
+  }
+
+  &__chart-bar {
+    flex: 1;
+    min-width: 4px;
+    border-radius: 4px 4px 0 0;
+    background: linear-gradient(
+      180deg,
+      globals.$lorro-violet,
+      rgba(34, 211, 238, 0.4)
+    );
+  }
+
+  &__empty {
+    font-size: 13px;
+    color: globals.$subtle-color;
+    padding: 12px;
+    text-align: center;
+  }
+
+  &__pre {
+    max-height: 160px;
+    overflow: auto;
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 8px;
+    padding: 8px;
+    font-size: 11px;
+    color: globals.$body-color;
+    white-space: pre-wrap;
+  }
+}

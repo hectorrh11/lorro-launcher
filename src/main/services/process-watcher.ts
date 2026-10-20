@@ -34,6 +34,8 @@ import {
   type LinuxProcessInfo,
 } from "./linux-process-match";
 import { isWindowsBatchFile } from "@main/helpers/windows-batch-command";
+import { sessionStats } from "./session-stats";
+import { saveBackupManager } from "./save-backup-manager";
 import { HydraApi } from "./hydra-api";
 import { isSteamAppExecutable } from "./steam-integration/steam-library-executable";
 import {
@@ -444,6 +446,8 @@ async function onOpenGame(game: Game, matchedPath: string) {
   cancelSteamGameExitSync(game);
   if (game.shop === "epic") cancelEpicGameExitSync(game.objectId);
 
+  void sessionStats.startSession(game);
+
   const now = performance.now();
   const gameKey = levelKeys.game(game.shop, game.objectId);
   let countHydraPlaytime = true;
@@ -705,6 +709,16 @@ const onCloseGame = (game: Game) => {
   const gameKey = levelKeys.game(game.shop, game.objectId);
   const now = performance.now();
   const gamePlaytime = gamesPlaytime.get(gameKey);
+
+  void sessionStats.endSession(game);
+  void saveBackupManager
+    .getConfigValue()
+    .then((config) => {
+      if (!config.autoOnClose) return;
+      return saveBackupManager.createBackup(game, "close");
+    })
+    .catch((error) => logger.warn("[backups] automatic backup failed", error));
+
   if (!gamePlaytime) return;
   deleteGamePlaytime(gameKey);
   launchedGamePids.delete(gameKey);

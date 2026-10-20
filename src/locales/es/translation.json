@@ -1159,6 +1159,7 @@
   },
   "settings": {
     "epic_sync_partial": "Juegos y tiempo de juego sincronizados; se volverá a intentar sincronizar los logros de {{count}} juegos.",
+    "advanced": "Mantenimiento",
     "about": "Acerca de",
     "about_version": "Versión",
     "about_tagline": "Un lanzador de juegos premium e independiente para tu biblioteca, descargas y logros.",

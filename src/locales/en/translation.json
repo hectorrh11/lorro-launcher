@@ -1970,6 +1970,7 @@
     "epic_shutdown_failed": "Could not stop the Epic operation. Try closing Hydra again.",
     "epic_sync_achievements": "Collecting Epic achievements…",
     "epic_sync_partial": "Games and playtime synced; achievements for {{count}} games will be retried.",
+    "advanced": "Maintenance",
     "about": "About",
     "about_version": "Version",
     "about_tagline": "A premium, independent game launcher for your library, downloads and achievements.",

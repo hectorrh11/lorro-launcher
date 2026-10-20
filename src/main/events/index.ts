@@ -10,6 +10,7 @@ import {
   retryAchievementSouvenirSync,
 } from "@main/services/achievements/grouped-souvenir-worker";
 
+import "./advanced";
 import "./appearance";
 import "./auth";
 import "./autoupdater";

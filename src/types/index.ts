@@ -922,3 +922,4 @@ export type ExtractionFailure =
   | { reason: "unsupported-format"; format: string }
   | { reason: "file-not-found" };
 export type { SystemPowerAction } from "./system-power";
+export * from "./advanced.types";

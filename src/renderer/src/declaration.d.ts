@@ -1,5 +1,16 @@
 import type { AuthPage, Downloader } from "@shared";
 import type {
+  DiagnosticReport,
+  LorroGameStats,
+  LorroStatsSummary,
+  LaunchProfile,
+  LaunchProfileValidation,
+  SaveBackupConfig,
+  SaveBackupEntry,
+  SaveBackupGameConfig,
+  StorageReport,
+} from "@types";
+import type {
   SystemPowerAction,
   AppUpdaterEvent,
   GameShop,
@@ -17,7 +28,7 @@ import type {
   UserProfile,
   UpdateProfileRequest,
   OpenCheckoutOptions,
-  GameStats,
+  LorroGameStats,
   UserDetails,
   FriendRequestSync,
   FriendPresenceSync,
@@ -1098,6 +1109,73 @@ declare global {
       height?: number;
     } | null>;
     setTitlebarTheme: (theme: string) => Promise<void>;
+    getSaveBackupConfig: () => Promise<SaveBackupConfig>;
+    updateSaveBackupConfig: (
+      patch: Partial<SaveBackupConfig>
+    ) => Promise<SaveBackupConfig>;
+    getGameSaveConfig: (gameKey: string) => Promise<SaveBackupGameConfig>;
+    setGameSavePaths: (gameKey: string, paths: string[]) => Promise<void>;
+    detectSavePaths: (gameKey: string) => Promise<string[]>;
+    createSaveBackup: (gameKey: string) => Promise<SaveBackupEntry | null>;
+    listSaveBackups: (gameKey?: string) => Promise<SaveBackupEntry[]>;
+    deleteSaveBackup: (id: string) => Promise<void>;
+    restoreSaveBackup: (
+      id: string
+    ) => Promise<{ ok: boolean; message?: string }>;
+    exportSaveBackup: (id: string, destinationDir: string) => Promise<string>;
+    importSaveBackup: (
+      sourceDir: string
+    ) => Promise<SaveBackupEntry | null>;
+    listLaunchProfiles: (gameKey: string) => Promise<LaunchProfile[]>;
+    saveLaunchProfile: (
+      gameKey: string,
+      profile: LaunchProfile
+    ) => Promise<LaunchProfile[]>;
+    deleteLaunchProfile: (
+      gameKey: string,
+      profileId: string
+    ) => Promise<LaunchProfile[]>;
+    duplicateLaunchProfile: (
+      gameKey: string,
+      profileId: string
+    ) => Promise<LaunchProfile[]>;
+    setDefaultLaunchProfile: (
+      gameKey: string,
+      profileId: string
+    ) => Promise<LaunchProfile[]>;
+    validateLaunchProfile: (
+      profile: LaunchProfile
+    ) => Promise<LaunchProfileValidation>;
+    launchWithProfile: (
+      gameKey: string,
+      profileId?: string
+    ) => Promise<{ command: string; pid: number }>;
+    getPlaytimeStats: (gameKey: string) => Promise<LorroGameStats | null>;
+    getPlaytimeStatsSummary: () => Promise<LorroStatsSummary>;
+    correctPlaytimeSession: (
+      gameKey: string,
+      sessionId: string,
+      durationMs: number
+    ) => Promise<LorroGameStats | null>;
+    deletePlaytimeSession: (
+      gameKey: string,
+      sessionId: string
+    ) => Promise<LorroGameStats | null>;
+    runGameDiagnostics: (
+      gameKey: string
+    ) => Promise<DiagnosticReport | null>;
+    fixGameDiagnostic: (
+      gameKey: string,
+      checkId: string
+    ) => Promise<{ fixed: boolean; message: string }>;
+    getStorageReport: () => Promise<StorageReport>;
+    moveGameInstallation: (
+      gameKey: string,
+      destination: string
+    ) => Promise<{ moved: boolean; message: string }>;
+    cleanStorageCaches: (
+      ids: string[]
+    ) => Promise<{ cleaned: string[]; freedBytes: number }>;
     getAppSessionId: () => Promise<string>;
     isStaging: () => Promise<boolean>;
     ping: () => string;

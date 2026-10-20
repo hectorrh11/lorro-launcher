@@ -1,4 +1,77 @@
 ========================================================
+VERSION 1.67.0
+========================================================
+Actualización grande centrada en herramientas avanzadas de
+mantenimiento y control del launcher.
+
+--- COPIAS DE SEGURIDAD DE PARTIDAS ---
+* Nueva sección Ajustes -> Mantenimiento -> Copias de seguridad.
+* Rutas de guardado por juego (deteccion automatica de carpetas
+  habituales + configuracion manual).
+* Copia manual, automatica al cerrar el juego, y motivos
+  update/uninstall/pre-restore.
+* Historial con fecha, tamano y juego; restaurar, exportar,
+  importar y eliminar copias.
+* Carpeta de destino configurable (otra unidad) y retencion
+  configurable (numero maximo y antiguedad maxima).
+* No borra archivos del usuario: solo poda sus propios archivos
+  de copia y conserva siempre la mas reciente.
+* Antes de restaurar se crea una copia de seguridad del estado
+  actual; se rechaza restaurar con el juego en ejecucion.
+* Aviso: no todos los juegos tienen rutas de guardado
+  detectables; por eso existe la configuracion manual.
+
+--- PERFILES DE LANZAMIENTO POR JUEGO ---
+* Backend completo: multiples perfiles independientes por juego,
+  con nombre, ejecutable, directorio de trabajo, argumentos,
+  variables de entorno, modo de ventana, herramientas externas
+  y acciones previas.
+* Crear, duplicar, editar, eliminar, marcar predeterminado,
+  validar rutas/argumentos y lanzar mostrando el comando exacto.
+* Pendiente: interfaz grafica integrada en la ficha del juego
+  (el backend ya esta operativo por IPC).
+
+--- ESTADISTICAS DE JUEGO ---
+* Sesiones reales registradas desde el monitor de procesos
+  (inicio/fin con marcas de tiempo), recuperacion de sesiones
+  tras cierre inesperado.
+* Historial de sesiones, tiempo total, numero de sesiones,
+  juegos mas usados y actividad por dia/semana/mes.
+* Correccion manual de duraciones erroneas y borrado de sesiones.
+* Datos guardados localmente; nunca se envian a servidores
+  externos sin consentimiento.
+
+--- DIAGNOSTICO Y REPARACION ---
+* Comprobaciones por juego: ejecutable, ruta, permisos, espacio
+  libre, perfiles de lanzamiento y errores registrados.
+* Estados claros (OK, aviso, error, sin comprobar), reejecucion,
+  informe copiable y recomendaciones.
+* Reparaciones solo cuando son seguras y verificables (por
+  ejemplo, detectar y guardar rutas de partidas existentes).
+  Nunca se borran archivos personales ni se desactivan
+  protecciones del sistema.
+
+--- GESTOR DE ALMACENAMIENTO ---
+* Unidades con capacidad total/libre, juegos con su tamano y
+  ubicacion, posibles duplicados, juegos mas grandes y caches
+  temporales de Lorro.
+* Limpieza de caches identificadas con vista previa del espacio.
+* Mover instalaciones entre unidades con comprobacion de espacio,
+  verificacion posterior y restauracion del estado original si
+  algo falla.
+* Nunca se eliminan partidas, mods, capturas ni configuraciones
+  personales de forma automatica.
+
+--- BIG PICTURE ---
+* Se conserva el modo Big Picture existente y su navegacion.
+* Pendiente: mejoras especificas de mando y navegacion por
+  controlador solicitadas para esta version.
+
+--- NOTAS ---
+* Los datos nuevos se guardan en %APPDATA%\Lorro Launcher.
+* Compatible con las funciones existentes (descargas, biblioteca,
+  lanzamiento, actualizaciones).
+========================================================
  LORRO LAUNCHER - REGISTRO DE ACTUALIZACIONES
 ========================================================
 Este archivo describe, A DETALLE, todos los cambios, adiciones

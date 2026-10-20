@@ -16,6 +16,9 @@ import "@fontsource/space-grotesk/700.css";
 import "react-loading-skeleton/dist/skeleton.css";
 import "react-tooltip/dist/react-tooltip.css";
 
+import "./scss/themes.scss";
+import { initializeAppearance } from "./features/appearance";
+
 import { CollectionContextMenuProvider } from "@renderer/context";
 import { GameOptionsModalProvider } from "@renderer/context/game-options-modal/game-options-modal.context";
 
@@ -128,6 +131,8 @@ globalThis.electron.onUserPreferencesUpdated((preferences) => {
     });
   }
 });
+
+initializeAppearance();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

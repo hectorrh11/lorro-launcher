@@ -1,4 +1,5 @@
 import { BottomPanel, Header, Sidebar, Toast } from "@renderer/components";
+import { LorroBackground } from "@renderer/components/lorro-background/lorro-background";
 import { VideoIcon } from "@primer/octicons-react";
 import {
   DashIcon,
@@ -698,6 +699,7 @@ export function App() {
 
   return (
     <>
+      <LorroBackground />
       {(window.electron.platform === "win32" ||
         window.electron.platform === "linux") && (
         <div

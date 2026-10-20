@@ -6,6 +6,7 @@ import { ImportThemeModal } from "./modals/import-theme-modal";
 import { settingsContext } from "@renderer/context";
 import { useNavigate } from "react-router-dom";
 import { levelDBService } from "@renderer/services/leveldb.service";
+import { LorroAppearanceSection } from "./lorro-appearance-section";
 
 interface SettingsAppearanceProps {
   appearance: {
@@ -83,6 +84,8 @@ export function SettingsAppearance({
 
   return (
     <div className="settings-appearance">
+      <LorroAppearanceSection />
+
       <ThemeActions onListUpdated={loadThemes} themesCount={themes.length} />
 
       <div className="settings-appearance__themes">

@@ -9,6 +9,49 @@ instalado verán el aviso "Reiniciar e instalar" cuando se publique
 una versión nueva.
 
 ========================================================
+VERSION 1.3.0
+========================================================
+Temas de apariencia y fondo personalizado (imagen o vídeo).
+
+--- TEMAS ---
+* Nuevo selector de tema en Ajustes -> Apariencia:
+  - Oscuro: el tema original de Lorro.
+  - Claro: interfaz clara de alto contraste, aplicada de forma coherente
+    a todas las pantallas (incluidos modales y menús).
+  - Transparente: superficies translúcidas tipo cristal con desenfoque,
+    dejando ver el fondo personalizado.
+* El tema elegido se guarda y se aplica al abrir el launcher.
+* Los botones nativos de la ventana adaptan su color según el tema claro
+  u oscuro para que siempre se vean.
+
+--- FONDO PERSONALIZADO ---
+* Puedes poner una FOTO o un VÍDEO como fondo de la aplicación.
+* Imágenes: se reescalan automáticamente a 1920x1080 con recorte
+  inteligente (se centra en la zona de interés). No se deforman ni se
+  estiran: se reencuadran para que se vean bien y con buena calidad,
+  aunque la resolución original sea incorrecta.
+* Vídeos: se reproducen en bucle, sin sonido y sin deformarse (se
+  ajustan recortando lo que sobra, no estirando). No se recodifican para
+  no perder calidad ni consumir CPU extra.
+* Controles de DESENFOQUE (0-24) y OSCURECER (0-80%) para que el fondo no
+  reste legibilidad.
+* El fondo se puede quitar en cualquier momento.
+* El fondo y sus ajustes se guardan en tu equipo (no se suben a ningún
+  sitio).
+
+--- RENDIMIENTO ---
+* El vídeo de fondo se PAUSA automáticamente cuando la ventana no está
+  visible, para no gastar CPU/GPU en segundo plano.
+* El fondo se carga solo cuando está configurado.
+* El cambio de tema no recarga la interfaz.
+* Se mantienen las optimizaciones anteriores (carga diferida, límites de
+  memoria, reducción de procesos en reposo).
+
+--- NOTAS ---
+* Los temas personalizados (archivos de tema) siguen funcionando igual.
+* Todo es local: no se envía ninguna imagen o vídeo a servidores.
+
+========================================================
 VERSION 1.2.0
 ========================================================
 Corrección de la gráfica de velocidad de descarga.

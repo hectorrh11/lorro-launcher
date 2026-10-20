@@ -1468,6 +1468,9 @@ contextBridge.exposeInMainWorld("electron", {
   ping: () => ipcRenderer.invoke("ping"),
   getVersion: () => ipcRenderer.invoke("getVersion"),
   getAppInfo: () => ipcRenderer.invoke("getAppInfo"),
+  importBackgroundFile: () => ipcRenderer.invoke("importBackgroundFile"),
+  setTitlebarTheme: (theme: string) =>
+    ipcRenderer.invoke("setTitlebarTheme", theme),
   getDefaultDownloadsPath: () => ipcRenderer.invoke("getDefaultDownloadsPath"),
   startCustomDownload: (payload: StartCustomDownloadPayload) =>
     ipcRenderer.invoke("startCustomDownload", payload),

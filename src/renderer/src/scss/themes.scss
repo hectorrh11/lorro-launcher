@@ -1,0 +1,78 @@
+.lorro-background {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+
+  &__media {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transform: scale(1.04);
+    filter: blur(var(--lorro-bg-blur, 0px));
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    background-color: #05040a;
+    opacity: var(--lorro-bg-dim, 0);
+  }
+}
+
+/* Light theme: opt-in inversion filter that covers the whole UI, including
+   portal-rendered overlays, while keeping media (photos/videos) untouched. */
+html[data-lorro-theme="light"] body {
+  min-height: 100vh;
+  filter: invert(1) hue-rotate(180deg);
+  background-color: #f3f1fb;
+}
+
+html[data-lorro-theme="light"] img,
+html[data-lorro-theme="light"] video,
+html[data-lorro-theme="light"] canvas {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* Transparent theme and custom backgrounds turn the main surfaces into
+   frosted glass so the wallpaper (image or video) shows through. */
+html[data-lorro-theme="transparent"],
+html[data-lorro-background="image"],
+html[data-lorro-background="video"] {
+  body {
+    background-color: transparent;
+  }
+
+  .container__content {
+    background: transparent;
+  }
+
+  .sidebar,
+  .header,
+  .bottom-panel,
+  .settings__content,
+  .settings__sidebar,
+  .settings__sidebar-button,
+  .library-game-card__wrapper,
+  .notification-item,
+  .game-item,
+  .achievement-panel,
+  .download-group {
+    background: rgba(12, 10, 20, 0.62);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+  }
+
+  .title-bar {
+    background-color: rgba(8, 7, 13, 0.72);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+  }
+}
+
+html[data-lorro-theme="light"][data-lorro-background="image"] body,
+html[data-lorro-theme="light"][data-lorro-background="video"] body {
+  background-color: transparent;
+}

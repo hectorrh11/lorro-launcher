@@ -1091,6 +1091,13 @@ declare global {
       updateChannelConfigured: boolean;
       userDataPath: string;
     }>;
+    importBackgroundFile: () => Promise<{
+      kind: "image" | "video";
+      path: string;
+      width?: number;
+      height?: number;
+    } | null>;
+    setTitlebarTheme: (theme: string) => Promise<void>;
     getAppSessionId: () => Promise<string>;
     isStaging: () => Promise<boolean>;
     ping: () => string;

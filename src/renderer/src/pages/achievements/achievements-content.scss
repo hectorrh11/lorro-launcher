@@ -25,20 +25,6 @@ $logo-max-width: 200px;
       gap: globals.$spacing-unit;
       border-radius: 4px;
       justify-content: center;
-
-      &__subscription-required-button {
-        text-decoration: none;
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        gap: calc(globals.$spacing-unit / 2);
-        color: globals.$body-color;
-        cursor: pointer;
-
-        &:hover {
-          text-decoration: underline;
-        }
-      }
     }
 
     &__blured-avatar {
@@ -63,20 +49,6 @@ $logo-max-width: 200px;
       align-items: center;
       position: relative;
       object-fit: cover;
-    }
-  }
-
-  &__subscription-required-button {
-    text-decoration: none;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    gap: 8px;
-    color: globals.$body-color;
-    cursor: pointer;
-
-    &:hover {
-      text-decoration: underline;
     }
   }
 

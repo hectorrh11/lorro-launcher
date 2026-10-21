@@ -1,7 +1,10 @@
 import { ASSETS_PATH } from "@main/constants";
 import { getGameAssets } from "@main/events/catalogue/get-game-assets";
 import { getDirectorySize } from "@main/events/helpers/get-directory-size";
-import { findGameExecutableInFolder } from "@main/helpers/find-game-executable";
+import {
+  findGameExecutableInFolder,
+  findLikelyGameExecutableInFolder,
+} from "@main/helpers/find-game-executable";
 import { updateGameExecutablePath } from "@main/helpers/update-executable-path";
 import { runAchievementMetadataExport } from "@main/services/achievements/metadata-export";
 import { db, downloadsSublevel, gamesSublevel, levelKeys } from "@main/level";
@@ -527,10 +530,6 @@ export class GameFilesManager {
 
       const executables = GameExecutables.getExecutablesForGame(this.objectId);
 
-      if (!executables || executables.length === 0) {
-        return;
-      }
-
       if (!download.folderName) {
         return;
       }
@@ -544,10 +543,10 @@ export class GameFilesManager {
         return;
       }
 
-      const foundExePath = await findGameExecutableInFolder(
-        gameFolderPath,
-        executables
-      );
+      const foundExePath =
+        (executables?.length
+          ? await findGameExecutableInFolder(gameFolderPath, executables)
+          : null) ?? (await findLikelyGameExecutableInFolder(gameFolderPath));
 
       if (foundExePath) {
         logger.info(
@@ -566,6 +565,12 @@ export class GameFilesManager {
         void runAchievementMetadataExport(this.gameKey, updatedGame);
 
         WindowManager.sendToAppWindows("on-library-batch-complete");
+        WindowManager.sendToAppWindows("on-executable-detected", {
+          shop: this.shop,
+          objectId: this.objectId,
+          title: game.title,
+          executablePath: foundExePath,
+        });
 
         await this.createDesktopShortcutForGame(game.title);
       }

@@ -17,6 +17,7 @@ import "./autoupdater";
 import "./big-picture";
 import "./catalogue";
 import "./chat";
+import "./clips";
 import "./cloud-save";
 import "./connectivity";
 import "./custom-download";
@@ -64,12 +65,4 @@ ipcMain.handle("retryAchievementSouvenirSync", () =>
 ipcMain.handle("cleanupAchievementSouvenirSync", () =>
   cleanupAchievementSouvenirSync()
 );
-ipcMain.handle("getCloudIframeUrl", () => {
-  const checkoutUrl = import.meta.env.MAIN_VITE_CHECKOUT_URL;
-  if (!checkoutUrl) return "";
-  try {
-    return new URL("/cloud", checkoutUrl).toString();
-  } catch {
-    return "";
-  }
-});
+

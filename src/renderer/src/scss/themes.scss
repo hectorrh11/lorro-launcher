@@ -22,6 +22,43 @@
   }
 }
 
+/* Accent palette: default violet values, overridden by purchased themes. */
+:root {
+  --lorro-accent: #8b5cf6;
+  --lorro-accent-soft: #c4b5fd;
+  --lorro-accent-2: #4f46e5;
+  --lorro-accent-3: #22d3ee;
+  --lorro-accent-3-soft: #a5f3fc;
+  --lorro-accent-glow: rgba(139, 92, 246, 0.45);
+}
+
+html[data-lorro-theme="golden"] {
+  --lorro-accent: #f4b942;
+  --lorro-accent-soft: #ffe08a;
+  --lorro-accent-2: #d97706;
+  --lorro-accent-3: #fde68a;
+  --lorro-accent-3-soft: #fff3c4;
+  --lorro-accent-glow: rgba(244, 185, 66, 0.45);
+}
+
+html[data-lorro-theme="esmeralda"] {
+  --lorro-accent: #34d399;
+  --lorro-accent-soft: #a7f3d0;
+  --lorro-accent-2: #10b981;
+  --lorro-accent-3: #6ee7b7;
+  --lorro-accent-3-soft: #d1fae5;
+  --lorro-accent-glow: rgba(52, 211, 153, 0.45);
+}
+
+html[data-lorro-theme="ruby"] {
+  --lorro-accent: #f43f5e;
+  --lorro-accent-soft: #fda4af;
+  --lorro-accent-2: #be123c;
+  --lorro-accent-3: #fb7185;
+  --lorro-accent-3-soft: #ffe4e6;
+  --lorro-accent-glow: rgba(244, 63, 94, 0.45);
+}
+
 /* Light theme: opt-in inversion filter that covers the whole UI, including
    portal-rendered overlays, while keeping media (photos/videos) untouched. */
 html[data-lorro-theme="light"] body {
@@ -34,6 +71,28 @@ html[data-lorro-theme="light"] img,
 html[data-lorro-theme="light"] video,
 html[data-lorro-theme="light"] canvas {
   filter: invert(1) hue-rotate(180deg);
+}
+
+html[data-lorro-theme="light"] {
+  .settings__content,
+  .settings-context-panel__group,
+  .settings-advanced__card,
+  .settings-advanced__stat,
+  .settings-advanced__drive,
+  .settings-advanced__tab--active,
+  .settings-account__section,
+  .settings-about__hero,
+  .lorro-appearance__group,
+  .lorro-appearance__theme--active,
+  .theme-card,
+  .settings-integration-card,
+  .settings-download-sources__item {
+    box-shadow: none;
+  }
+
+  .settings__sidebar-button--active {
+    box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.04);
+  }
 }
 
 /* Transparent theme and custom backgrounds turn the main surfaces into
@@ -54,7 +113,23 @@ html[data-lorro-background="video"] {
   .bottom-panel,
   .settings__content,
   .settings__sidebar,
-  .settings__sidebar-button,
+  .settings-context-panel__group,
+  .settings-advanced__tabs,
+  .settings-advanced__card,
+  .settings-advanced__item,
+  .settings-advanced__stat,
+  .settings-advanced__drive,
+  .settings-advanced__checkbox,
+  .settings-advanced__check,
+  .settings-advanced__empty,
+  .settings-account__section,
+  .settings-account__blocked-user,
+  .settings-download-sources__item,
+  .settings-integration-card,
+  .settings-about__hero,
+  .lorro-appearance__group,
+  .theme-card,
+  .theme-placeholder,
   .library-game-card__wrapper,
   .notification-item,
   .game-item,
@@ -63,6 +138,27 @@ html[data-lorro-background="video"] {
     background: rgba(12, 10, 20, 0.62);
     -webkit-backdrop-filter: blur(16px);
     backdrop-filter: blur(16px);
+  }
+
+  .settings__sidebar-button--active {
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--lorro-accent) 26%, transparent) 0%,
+      color-mix(in srgb, var(--lorro-accent) 8%, transparent) 100%
+    );
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+  }
+
+  .settings-advanced__card,
+  .settings-context-panel__group,
+  .settings-account__section,
+  .lorro-appearance__group,
+  .theme-card,
+  .settings-integration-card,
+  .settings-download-sources__item {
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: none;
   }
 
   .title-bar {

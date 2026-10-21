@@ -61,7 +61,6 @@ export function GameEmulationSaves({
   objectId,
 }: Readonly<GameEmulationSavesProps>) {
   const { t } = useTranslation("settings");
-  const { t: tHydraCloud } = useTranslation("hydra_cloud");
   const { showSuccessToast, showErrorToast } = useToast();
   const { hasActiveSubscription } = useUserDetails();
   const navigate = useNavigate();
@@ -160,16 +159,7 @@ export function GameEmulationSaves({
     load();
   }, [deleteFor, showSuccessToast, t, load]);
 
-  if (!hasActiveSubscription) {
-    return (
-      <div className="game-emulation-saves__upgrade">
-        <p>{tHydraCloud("hydra_cloud_feature_found")}</p>
-        <Button onClick={() => window.electron.openCheckout()}>
-          {tHydraCloud("learn_more")}
-        </Button>
-      </div>
-    );
-  }
+  if (!hasActiveSubscription) return null;
 
   return (
     <>

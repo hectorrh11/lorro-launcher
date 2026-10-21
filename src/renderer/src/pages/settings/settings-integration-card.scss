@@ -4,10 +4,21 @@
   display: flex;
   flex-direction: column;
   gap: calc(globals.$spacing-unit * 2);
-  padding: calc(globals.$spacing-unit * 2);
+  padding: 20px;
   border: 1px solid globals.$border-color;
-  border-radius: 8px;
-  background: rgba(0, 0, 0, 0.12);
+  border-radius: 14px;
+  background:
+    linear-gradient(
+      160deg,
+      rgba(255, 255, 255, 0.03) 0%,
+      rgba(255, 255, 255, 0.008) 100%
+    ),
+    globals.$surface-color;
+  transition: border-color 0.16s ease;
+
+  &:hover {
+    border-color: globals.$border-strong-color;
+  }
 
   &__header {
     display: flex;
@@ -44,8 +55,10 @@
   &__title {
     margin: 0;
     color: globals.$muted-color;
-    font-size: 1rem;
+    font-family: globals.$font-display;
+    font-size: 14px;
     font-weight: 600;
+    letter-spacing: 0.01em;
   }
 
   &__status {
@@ -175,7 +188,11 @@
   &__progress-fill {
     height: 100%;
     border-radius: inherit;
-    background: globals.$muted-color;
+    background: linear-gradient(
+      90deg,
+      globals.$lorro-violet,
+      globals.$lorro-cyan
+    );
     transition: width 0.2s ease;
 
     &--indeterminate {

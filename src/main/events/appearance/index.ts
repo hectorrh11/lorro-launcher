@@ -133,3 +133,7 @@ registerEvent("setTitlebarTheme", (_event, theme: string) => {
     height: 34,
   });
 });
+
+registerEvent("setRealWindowTransparency", async (_event, enabled: boolean) => {
+  return WindowManager.setRealWindowTransparency(Boolean(enabled));
+});

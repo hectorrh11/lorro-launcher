@@ -4,7 +4,6 @@ import {
   BlockedIcon,
   CheckCircleFillIcon,
   CopyIcon,
-  GiftIcon,
   PencilIcon,
   PersonAddIcon,
   SignOutIcon,
@@ -136,31 +135,6 @@ export function ProfileHero() {
       userDetails,
     ]
   );
-
-  const giftAction = useMemo(() => {
-    if (!userProfile || isMe || !userProfile.canReceiveCloudGift) return null;
-
-    return (
-      <Button
-        theme="cloud"
-        onClick={() => {
-          if (!userDetails) {
-            window.electron.openAuthWindow(AuthPage.SignIn);
-            return;
-          }
-
-          window.electron.openCheckout({
-            path: "/gift",
-            recipientId: userProfile.id,
-          });
-        }}
-        disabled={isPerformingAction}
-      >
-        <GiftIcon size={16} className="profile-hero__gift-icon" />
-        {t("gift_cloud")}
-      </Button>
-    );
-  }, [isMe, isPerformingAction, t, userDetails, userProfile]);
 
   const profileActions = useMemo(() => {
     if (!userProfile) return null;
@@ -354,10 +328,6 @@ export function ProfileHero() {
         className="profile-hero__content-box"
         style={{ background: !backgroundImage ? heroBackground : undefined }}
       >
-        {giftAction && (
-          <div className="profile-hero__gift-action">{giftAction}</div>
-        )}
-
         {backgroundImage && (
           <img
             src={backgroundImage}

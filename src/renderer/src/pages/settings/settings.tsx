@@ -30,6 +30,7 @@ import { SettingsContextBigPicture } from "./settings-context-big-picture";
 import { SettingsContextEmulation } from "./emulation/settings-context-emulation";
 import { SettingsAbout } from "./settings-about";
 import { SettingsAdvanced } from "./settings-advanced";
+import { SettingsClips } from "./settings-clips";
 
 export default function Settings() {
   const { t } = useTranslation("settings");
@@ -41,36 +42,73 @@ export default function Settings() {
       {
         id: "general" as const,
         label: t("general"),
+        description: t(
+          "settings_description_general",
+          "Language, startup behavior and app basics."
+        ),
         icon: <GearIcon size={16} />,
       },
       {
         id: "downloads" as const,
         label: t("downloads"),
+        description: t(
+          "settings_description_downloads",
+          "Download behavior, speed limits and network adapter."
+        ),
         icon: <DownloadIcon size={16} />,
+      },
+      {
+        id: "clips" as const,
+        label: t("clips"),
+        description: t(
+          "settings_description_clips",
+          "Shortcut, length and audio for Lorro clips."
+        ),
+        icon: <VideoIcon size={16} />,
       },
       {
         id: "download_sources" as const,
         label: t("download_sources"),
+        description: t(
+          "settings_description_download_sources",
+          "Sources Lorro uses to find download links."
+        ),
         icon: <LinkIcon size={16} />,
       },
       {
         id: "notifications" as const,
         label: t("notifications"),
+        description: t(
+          "settings_description_notifications",
+          "Choose which library and achievement alerts you receive."
+        ),
         icon: <BellIcon size={16} />,
       },
       {
         id: "content_gameplay" as const,
         label: t("content_gameplay"),
+        description: t(
+          "settings_description_content_gameplay",
+          "Content preferences, metadata and library appearance."
+        ),
         icon: <PlayIcon size={16} />,
       },
       {
         id: "integrations" as const,
         label: t("integrations"),
+        description: t(
+          "settings_description_integrations",
+          "Steam, Epic, RetroAchievements and debrid services."
+        ),
         icon: <CloudIcon size={16} />,
       },
       {
         id: "compatibility" as const,
         label: t("compatibility"),
+        description: t(
+          "settings_description_compatibility",
+          "Wine, Proton and Linux compatibility options."
+        ),
         icon: <Wrench size={16} />,
       },
       ...(userDetails
@@ -78,6 +116,10 @@ export default function Settings() {
             {
               id: "account_privacy" as const,
               label: `${t("account")} & ${t("privacy")}`,
+              description: t(
+                "settings_description_account",
+                "Account details, visibility and blocked users."
+              ),
               icon: <ShieldCheckIcon size={16} />,
             },
           ]
@@ -85,22 +127,38 @@ export default function Settings() {
       {
         id: "big_picture" as const,
         label: t("big_picture"),
+        description: t(
+          "settings_description_big_picture",
+          "Startup, audio, input and diagnostics for Big Picture."
+        ),
         icon: <VideoIcon size={16} />,
       },
       {
         id: "emulation" as const,
         label: t("emulation"),
+        description: t(
+          "settings_description_emulation",
+          "Classics emulation, BIOS and console setup."
+        ),
         icon: <Gamepad2 size={16} />,
         group: "classics" as const,
       },
       {
         id: "advanced" as const,
         label: t("advanced"),
+        description: t(
+          "settings_description_advanced",
+          "Backups, statistics, storage, diagnostics and extras."
+        ),
         icon: <Wrench size={16} />,
       },
       {
         id: "about" as const,
         label: t("about"),
+        description: t(
+          "settings_description_about",
+          "Version, credits and project information."
+        ),
         icon: <InfoIcon size={16} />,
       },
     ],
@@ -123,6 +181,10 @@ export default function Settings() {
 
             if (selectedCategoryId === "downloads") {
               return <SettingsContextDownloads />;
+            }
+
+            if (selectedCategoryId === "clips") {
+              return <SettingsClips />;
             }
 
             if (selectedCategoryId === "download_sources") {
@@ -197,6 +259,11 @@ export default function Settings() {
                               : ""
                           }`}
                           onClick={() => setCurrentCategoryId(category.id)}
+                          aria-current={
+                            currentCategory.id === category.id
+                              ? "page"
+                              : undefined
+                          }
                         >
                           <span className="settings__sidebar-button-icon">
                             {category.icon}
@@ -212,7 +279,17 @@ export default function Settings() {
 
                 <div className="settings__panel">
                   {selectedCategoryId !== "emulation" && (
-                    <h2>{currentCategory.label}</h2>
+                    <header className="settings__header">
+                      <span className="settings__header-eyebrow">
+                        {t("settings_title", "Settings")}
+                      </span>
+                      <h2 className="settings__header-title">
+                        {currentCategory.label}
+                      </h2>
+                      <p className="settings__header-description">
+                        {currentCategory.description}
+                      </p>
+                    </header>
                   )}
                   {renderCategory()}
                 </div>

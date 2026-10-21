@@ -1,10 +1,18 @@
 # Lorro Launcher — Status
 
-Lorro Launcher is a rebranding and product-personalization of the open-source
+Lorro Launcher is an independent desktop game launcher built on the open-source
 **Hydra Launcher** codebase (MIT, © Los Broxas / Hydra Launcher contributors).
-It keeps the original architecture and feature set and replaces the visual and
-product identity. This document tracks what has been completed, what has been
-verified, what is still pending, and what is required to distribute the app.
+It keeps the original architecture where useful and ships its own identity,
+release channel, installer and data folder. This document tracks what has been
+completed, what has been verified, what is still pending, and what is required
+to distribute the app.
+
+**Current status (estado tras 1.80.0):** **1.80.0** is the latest
+public release. It includes 1.77.0, 1.78.0 and 1.79.0: real playtime on library
+cards, LorroPoints based on achievement points, the Golden/Esmeralda/Ruby theme
+store with real window transparency, a dedicated Clips page with global hotkey
+and system audio, automatic executable detection, default collections, and the
+removal of the last commercial surface and the launch-profile system.
 
 ---
 
@@ -99,8 +107,8 @@ verified, what is still pending, and what is required to distribute the app.
   attribution, dev/build instructions, distribution variables).
 
 ### 1.8 Runtime fixes (from user testing)
-- **Backend endpoints required.** Lorro reuses the upstream Hydra API for the
-  catalogue, accounts/login, download sources, profiles, reviews and cloud saves.
+- **Backend endpoints required.** Lorro reuses the upstream API for the
+  catalogue, accounts/login, download sources, reviews and cloud saves.
   Those URLs were previously supplied only by CI, so without them the app showed
   axios `Invalid URL` errors and the login/sources features did nothing. A repo
   `.env` (gitignored) now provides the documented public production endpoints, and
@@ -172,8 +180,8 @@ verified, what is still pending, and what is required to distribute the app.
   transitions.
 - Chromium switches: `enable-low-end-device-mode` and a capped V8 heap
   (`--max-old-space-size=512 --max-semi-space-size=8`).
-- The Hydra Cloud checkout iframe is now mounted only after the modal is opened
-  (it used to stay resident for the whole session).
+- The old cloud checkout modal/iframe was removed together with the commercial
+  surface; `window.electron.openCheckout()` now opens the user's GitHub profile.
 - The WorkWonders widgets (help/changelog/feedback iframes) are initialized only
   on real interaction (or after a fallback timer) instead of at startup, so an
   idle launcher does not keep their renderer processes alive.
@@ -193,8 +201,8 @@ verified, what is still pending, and what is required to distribute the app.
   `RENDERER_VITE_RELEASES_URL=https://github.com/hectorrh11/lorro-launcher/releases/latest`).
 - The packaged app contains `resources/app-update.yml` with the same provider, so
   installed clients check this repository for new versions.
-- Version baseline is **1.0.0** (package.json). `update.txt` at the repository root
-  is the detailed, user-facing changelog and must be updated with every release.
+- Latest public version is **1.80.0**; `update.txt` at the repository root is the
+  detailed, user-facing changelog and must be updated with every release.
 - Publishing a new version:
   1. Make the changes and bump `version` in `package.json` (e.g. `1.1.0`).
   2. Update `update.txt` with a detailed changelog entry.
@@ -207,12 +215,40 @@ verified, what is still pending, and what is required to distribute the app.
   include `latest.yml`, and `https://github.com/hectorrh11/lorro-launcher/releases/latest/download/latest.yml`
   returns HTTP 200.
 - Note on version numbers: clients only accept updates whose version is **greater**
-  than the installed one. Any installation on the old `4.1.6` build must install the
-  `1.0.0` setup once; from `1.0.0` onward in-app auto-update works.
+  than the installed one. Any installation older than `1.0.0` must install the
+  current setup once; from `1.0.0` onward in-app auto-update works.
+
+### 1.12 Current feature state (1.80.0)
+- **Real playtime on library cards**: `LibraryGame.lorroPlaytimeMs` is computed
+  from `src/main/services/session-stats.ts` when the library is listed, shown on
+  the cards and refreshed when a game session ends.
+- **LorroPoints**: `src/main/services/lorro-points.ts` adds the real
+  `achievement.points` value of each unlocked achievement. The summary
+  (`earned`, `spent`, `balance`, `exact`) is exposed via
+  `getLorroPoints`. Because `AchievementMemoryStore` lives in memory, the balance
+  can show as estimated (`exact: false`) after a restart until achievements sync.
+- **Theme store**: purchasable **gold** (300), **emerald** (600) and **ruby**
+  (900) accents defined in `src/shared/lorro-themes.ts`, bought through
+  `purchaseLorroTheme`. Real window transparency on Windows is implemented by
+  `WindowManager.setRealWindowTransparency`, which recreates the `BrowserWindow`
+  with `transparent: true` and `backgroundColor: "#00000000"` and persists
+  `realTransparentWindow`.
+- **Commercial surface removed**: subscription modal, paywall banners, achievement
+  and profile upsells, gift modal, cloud-ring, subscription slice and
+  `allow_cloud_gifts` are gone. `openCheckout()` opens the user's GitHub profile
+  and "support the project" links there; no Hydra/Lorro Cloud ads remain.
+- **Launch profiles removed**: the profile service, IPC, types and UI were
+  deleted. Per-profile save/config isolation is discarded and must not return.
+- **Independent README**: presents Lorro Launcher as an independent launcher with
+  a Releases section; attribution to the original project is kept at the end.
 
 ---
 
 ## 2. Tests and verification performed
+
+> The rows below record the initial rebrand/1.0.0 verification cycle. Version
+> strings, artifact names and sizes are historical; the current public release is
+> 1.80.0.
 
 | Check | Command | Result |
 | --- | --- | --- |
@@ -254,13 +290,11 @@ Installer defines verified: `APP_ID=com.lorro.launcher`, `PRODUCT_NAME=Lorro Lau
    use, clone/build from a path without `$`, e.g. `C:\dev\lorro-launcher`.
 2. **14 pre-existing unit-test failures** are Windows path/cleanup issues in the
    original project and are unrelated to the rebrand.
-3. **Auto-update backend not configured.** Update publishing must be wired to a
-   Lorro-owned release repository before auto-update can be enabled.
-4. **Code signing** is not configured; installers are unsigned. Windows SmartScreen
+3. **Code signing** is not configured; installers are unsigned. Windows SmartScreen
    may warn until a certificate is provided.
-5. **Full install → update → uninstall cycle** on a physical machine has not been
+4. **Full install → update → uninstall cycle** on a physical machine has not been
    executed in CI; it should be validated manually before release.
-6. **Running the NSIS setup/portable from inside `C:\Windows\System32`.**
+5. **Running the NSIS setup/portable from inside `C:\Windows\System32`.**
    NSIS stubs cannot relaunch themselves when executed from `System32` (a known
    NSIS/Windows limitation, unrelated to Lorro); doing so shows
    `NSIS error: Error launching installer`. The installers themselves are valid.
@@ -274,7 +308,7 @@ Installer defines verified: `APP_ID=com.lorro.launcher`, `PRODUCT_NAME=Lorro Lau
     to `C:\Program Files\Lorro Launcher`, the installed `app.asar` contains the
     configured API endpoint, and `Lorro Launcher.exe` starts with window title
     `Lorro Launcher` (no `Error` dialog, no `Invalid URL`, no uncaught exception).
-7. **No preconfigured download sources.** Lorro deliberately ships **no** default
+6. **No preconfigured download sources.** Lorro deliberately ships **no** default
    source catalogues. Requests to bundle catalogues of unauthorized/pirated copies
    are out of scope: it would mean redistributing other people's copyrighted games
    and bypassing the access controls those catalogues and hosts rely on. The
@@ -288,14 +322,15 @@ Installer defines verified: `APP_ID=com.lorro.launcher`, `PRODUCT_NAME=Lorro Lau
 
 Set these environment variables (see `.env.example`) before building releases:
 
-- **Backend (required for login / catalogue / sources / profiles):**
+- **Backend (required for login / catalogue / sources / cloud saves):**
   - `MAIN_VITE_API_URL` — e.g. `https://hydra-api-us-east-1.losbroxas.org`
   - `MAIN_VITE_AUTH_URL` — e.g. `https://auth.hydralauncher.gg`
-  - `MAIN_VITE_CHECKOUT_URL` — e.g. `https://checkout.hydralauncher.gg`
+  - `MAIN_VITE_CHECKOUT_URL` — legacy value; the cloud checkout modal was removed
+    and the UI no longer opens it.
   - `MAIN_VITE_EXTERNAL_RESOURCES_URL` / `RENDERER_VITE_EXTERNAL_RESOURCES_URL` —
     e.g. `https://assets.hydralauncher.gg`
-- `MAIN_VITE_UPDATE_REPOSITORY` — `owner/repo` of the Lorro release repository.
-  Leave empty to keep auto-update disabled (recommended until the repo exists).
+- `MAIN_VITE_UPDATE_REPOSITORY` — `hectorrh11/lorro-launcher` in release builds.
+  Leave empty only when auto-update must be disabled.
 - `RENDERER_VITE_RELEASES_URL` — public releases page URL shown to users.
 - `MAIN_VITE_USER_DATA_PATH` — only for development (custom user-data directory).
 - Optional: `MAIN_VITE_LAUNCHER_SUBDOMAIN`, referral IDs, Sentry DSN — keep the
@@ -304,8 +339,8 @@ Set these environment variables (see `.env.example`) before building releases:
 A ready-to-use `.env` with the public upstream endpoints is included locally
 (gitignored) so the app works out of the box in development.
 
-No publishing URL, API key or endpoint is hardcoded. Do not enable auto-update
-until a Lorro-owned repository is configured.
+No publishing URL, API key or endpoint is hardcoded. Auto-update points to
+`hectorrh11/lorro-launcher`; do not redirect it to another repository.
 
 ---
 
@@ -330,7 +365,8 @@ Output installers are written to `dist/`:
 
 - Original project: **Hydra Launcher** — MIT License, © Los Broxas / Hydra
   Launcher contributors. License and copyright notices are preserved.
-- Lorro Launcher is a customized distribution, not a from-scratch rewrite.
+- Lorro Launcher is an independent launcher built on the original codebase, not
+  a from-scratch rewrite.
 - Third-party components (Electron, React, legendary, ludusavi, sharp, Space
   Grotesk/Noto Sans fonts, icon sets, etc.) keep their own licenses; see the
   About screen and package manifests for details.

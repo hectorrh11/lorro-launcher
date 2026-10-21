@@ -1,6 +1,12 @@
 import { useSyncExternalStore } from "react";
 
-export type LorroTheme = "dark" | "light" | "transparent";
+export type LorroTheme =
+  | "dark"
+  | "light"
+  | "transparent"
+  | "golden"
+  | "esmeralda"
+  | "ruby";
 
 export interface LorroBackground {
   kind: "image" | "video";
@@ -24,7 +30,27 @@ const DEFAULT_STATE: AppearanceState = {
 };
 
 function isTheme(value: unknown): value is LorroTheme {
-  return value === "dark" || value === "light" || value === "transparent";
+  return (
+    value === "dark" ||
+    value === "light" ||
+    value === "transparent" ||
+    value === "golden" ||
+    value === "esmeralda" ||
+    value === "ruby"
+  );
+}
+
+const LEGACY_THEME_ALIASES: Record<string, LorroTheme> = {
+  gold: "golden",
+  emerald: "esmeralda",
+};
+
+function normalizeTheme(value: unknown): LorroTheme | null {
+  if (typeof value !== "string") return null;
+
+  const mapped = LEGACY_THEME_ALIASES[value] ?? value;
+
+  return isTheme(mapped) ? mapped : null;
 }
 
 function loadState(): AppearanceState {
@@ -42,7 +68,7 @@ function loadState(): AppearanceState {
         : null;
 
     return {
-      theme: isTheme(parsed.theme) ? parsed.theme : DEFAULT_STATE.theme,
+      theme: normalizeTheme(parsed.theme) ?? DEFAULT_STATE.theme,
       background,
       blur: typeof parsed.blur === "number" ? parsed.blur : 0,
       dim: typeof parsed.dim === "number" ? parsed.dim : 0,

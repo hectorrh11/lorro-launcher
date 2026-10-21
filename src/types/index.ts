@@ -16,13 +16,6 @@ export type FriendRequestAction = "ACCEPTED" | "REFUSED" | "CANCEL";
 export * from "./download-contract";
 export * from "./custom-download.types";
 
-export type HydraCloudFeature =
-  | "achievements"
-  | "backup"
-  | "achievements-points"
-  | "customization"
-  | "vikingfile";
-
 export interface DiskUsage {
   free: number;
   total: number;
@@ -426,7 +419,6 @@ export interface UserDetails {
   profileImageUrl: string | null;
   backgroundImageUrl: string | null;
   profileVisibility: ProfileVisibility;
-  allowCloudGifts: boolean;
   souvenirsVisibility: ProfileVisibility;
   bio: string;
   workwondersJwt: string;
@@ -514,7 +506,6 @@ export interface UserProfile {
   bio: string;
   hasActiveSubscription: boolean;
   canReceiveCloudGift: boolean;
-  allowCloudGifts?: boolean;
   karma: number;
   quirks: {
     backupsPerGameLimit: number;
@@ -532,11 +523,10 @@ export interface UpdateProfileRequest {
   backgroundImageUrl?: string | null;
   bio?: string;
   language?: string;
-  allowCloudGifts?: boolean;
 }
 
 export interface OpenCheckoutOptions {
-  path?: "/" | "/gift" | `/gifts/${string}`;
+  path?: "/";
   recipientId?: string;
 }
 
@@ -873,6 +863,7 @@ export type LibraryGame = Game &
     download: Download | null;
     unlockedAchievementCount?: number;
     achievementCount?: number;
+    lorroPlaytimeMs?: number | null;
   };
 
 /** Read-only catalogue projection; writes must use its original members. */

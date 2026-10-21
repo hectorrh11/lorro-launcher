@@ -136,6 +136,9 @@ function fixture(
       ) => persisted ?? 0,
       resolveUnlockedAchievementCount: () => 0,
     },
+    "@main/services/session-stats": {
+      sessionStats: { list: async () => [] },
+    },
   };
   runInNewContext(handlerCode, {
     exports: {},

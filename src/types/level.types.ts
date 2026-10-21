@@ -244,6 +244,14 @@ export interface UserPreferences {
   hideLibraryAchievementProgress?: boolean;
   autoplayAnimatedArtwork?: boolean;
   persistFiltersAndSorting?: boolean;
+  ownedLorroThemes?: string[];
+  lorroSpentPoints?: number;
+  realTransparentWindow?: boolean;
+  clipsEnabled?: boolean;
+  clipsHotkey?: string;
+  clipsDurationSeconds?: number;
+  clipsSystemAudio?: boolean;
+  clipsMicrophone?: boolean;
 }
 
 export interface NetworkInterface {

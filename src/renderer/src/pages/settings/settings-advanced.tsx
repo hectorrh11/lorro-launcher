@@ -2,9 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   DiagnosticReport,
-  LaunchProfile,
-  LaunchProfileValidation,
-  LaunchToolStep,
   LorroGameStats,
   LorroStatsSummary,
   SaveBackupConfig,
@@ -14,20 +11,19 @@ import {
 import { Button, SelectField } from "@renderer/components";
 import { useLibrary, useToast } from "@renderer/hooks";
 import {
-  isClipRecording,
-  saveLastClip,
-  startClipBuffer,
-  stopClipBuffer,
-} from "@renderer/lib/clip-buffer";
-import {
-  applyLorroRewards,
   isPerformanceMode,
   setPerformanceMode,
 } from "@renderer/lib/performance-mode";
+import {
+  LORRO_THEME_PRICES,
+  LORRO_PURCHASABLE_THEMES,
+  normalizeLorroThemeIds,
+  type LorroPointsSummary,
+  type LorroPurchasableTheme,
+} from "@shared";
 import "./settings-advanced.scss";
 
 type AdvancedTab =
-  | "profiles"
   | "backups"
   | "stats"
   | "storage"
@@ -45,7 +41,7 @@ const formatBytes = (bytes: number) => {
 };
 
 const formatDate = (value: string | Date | null) => {
-  if (!value) return "—";
+  if (!value) return "Ã¢â‚¬â€";
   return new Date(value).toLocaleString();
 };
 
@@ -62,7 +58,7 @@ function gameKeyOf(game: { shop: string; objectId: string }) {
 
 export function SettingsAdvanced() {
   const { t } = useTranslation("settings");
-  const [tab, setTab] = useState<AdvancedTab>("profiles");
+  const [tab, setTab] = useState<AdvancedTab>("backups");
   const { library } = useLibrary();
 
   const gameOptions = useMemo(
@@ -76,7 +72,6 @@ export function SettingsAdvanced() {
   );
 
   const tabs: { id: AdvancedTab; label: string }[] = [
-    { id: "profiles", label: t("advanced_tab_profiles", "Launch profiles") },
     { id: "backups", label: t("advanced_tab_backups", "Backups") },
     { id: "stats", label: t("advanced_tab_stats", "Statistics") },
     { id: "storage", label: t("advanced_tab_storage", "Storage") },
@@ -101,7 +96,6 @@ export function SettingsAdvanced() {
         ))}
       </div>
 
-      {tab === "profiles" && <ProfilesTab gameOptions={gameOptions} />}
       {tab === "backups" && <BackupsTab gameOptions={gameOptions} />}
       {tab === "stats" && <StatsTab gameOptions={gameOptions} />}
       {tab === "storage" && <StorageTab />}
@@ -320,7 +314,7 @@ function BackupsTab({ gameOptions }: TabProps) {
             <div>
               <strong>{entry.gameTitle}</strong>
               <span className="settings-advanced__meta">
-                {formatDate(entry.createdAt)} · {formatBytes(entry.sizeBytes)} ·{" "}
+                {formatDate(entry.createdAt)} Ãƒâ€šÃ‚Â· {formatBytes(entry.sizeBytes)} Ãƒâ€šÃ‚Â·{" "}
                 {entry.reason}
               </span>
             </div>
@@ -431,7 +425,7 @@ function StatsTab({ gameOptions }: TabProps) {
                 <div
                   key={day.date}
                   className="settings-advanced__bar"
-                  title={`${day.date} · ${formatDuration(day.playtimeMs)}`}
+                  title={`${day.date} Ãƒâ€šÃ‚Â· ${formatDuration(day.playtimeMs)}`}
                   style={{ height: `${Math.max(4, (day.playtimeMs / max) * 100)}%` }}
                 />
               );
@@ -581,7 +575,7 @@ function StorageTab() {
 
           <div className="settings-advanced__card">
             <h3 className="settings-advanced__subtitle">
-              {t("advanced_games_size", "Games")} ·{" "}
+              {t("advanced_games_size", "Games")} Ãƒâ€šÃ‚Â·{" "}
               {formatBytes(report.totalGamesBytes)}
             </h3>
             {report.games.map((game) => (
@@ -589,8 +583,8 @@ function StorageTab() {
                 <div>
                   <strong>{game.title}</strong>
                   <span className="settings-advanced__meta">
-                    {game.installPath ?? "—"}
-                    {game.possibleDuplicateOf ? " · possible duplicate" : ""}
+                    {game.installPath ?? "ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â"}
+                    {game.possibleDuplicateOf ? " Ãƒâ€šÃ‚Â· possible duplicate" : ""}
                   </span>
                 </div>
                 <span className="settings-advanced__meta">
@@ -687,384 +681,33 @@ function DiagnosticsTab({ gameOptions }: TabProps) {
   );
 }
 
-function ProfilesTab({ gameOptions }: TabProps) {
-  const { t } = useTranslation("settings");
-  const { showErrorToast, showSuccessToast } = useToast();
-  const [gameKey, setGameKey] = useState("");
-  const [profiles, setProfiles] = useState<LaunchProfile[]>([]);
-  const [editing, setEditing] = useState<LaunchProfile | null>(null);
-  const [validation, setValidation] = useState<LaunchProfileValidation | null>(
-    null
-  );
-  const [envText, setEnvText] = useState("");
-  const [toolsText, setToolsText] = useState("");
-  const [preText, setPreText] = useState("");
-
-  useEffect(() => {
-    if (!gameKey && gameOptions.length) setGameKey(gameOptions[0].value);
-  }, [gameKey, gameOptions]);
-
-  const load = useCallback(async (key: string) => {
-    if (!key) return;
-    setProfiles(await window.electron.listLaunchProfiles(key));
-    setEditing(null);
-    setValidation(null);
-  }, []);
-
-  useEffect(() => {
-    void load(gameKey);
-  }, [gameKey, load]);
-
-  const startEditing = (profile: LaunchProfile) => {
-    setEditing(profile);
-    setValidation(null);
-    setEnvText(
-      Object.entries(profile.environment)
-        .map(([key, value]) => `${key}=${value}`)
-        .join("\n")
-    );
-    setToolsText(
-      profile.externalTools
-        .map((step) => `${step.path}|${step.arguments}`)
-        .join("\n")
-    );
-    setPreText(
-      profile.preLaunch
-        .map((step) => `${step.path}|${step.arguments}`)
-        .join("\n")
-    );
-  };
-
-  const createProfile = () =>
-    startEditing({
-      id: crypto.randomUUID(),
-      name: t("advanced_profile_new_name", "New profile"),
-      executablePath: "",
-      workingDirectory: "",
-      arguments: "",
-      environment: {},
-      windowMode: "windowed",
-      externalTools: [],
-      preLaunch: [],
-      isDefault: profiles.length === 0,
-    });
-
-  const update = (patch: Partial<LaunchProfile>) =>
-    setEditing((prev) => (prev ? { ...prev, ...patch } : prev));
-
-  const textToSteps = (text: string): LaunchToolStep[] =>
-    text
-      .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean)
-      .map((line) => {
-        const index = line.indexOf("|");
-        return index === -1
-          ? { path: line, arguments: "" }
-          : {
-              path: line.slice(0, index).trim(),
-              arguments: line.slice(index + 1).trim(),
-            };
-      });
-
-  const parseEnv = (text: string) => {
-    const result: Record<string, string> = {};
-    for (const line of text.split("\n")) {
-      const index = line.indexOf("=");
-      if (index > 0) result[line.slice(0, index).trim()] = line.slice(index + 1).trim();
-    }
-    return result;
-  };
-
-  const choose = async (
-    target: "executablePath" | "workingDirectory",
-    kind: "file" | "dir"
-  ) => {
-    const { canceled, filePaths } = await window.electron.showOpenDialog({
-      properties:
-        kind === "file" ? ["openFile"] : ["openDirectory", "createDirectory"],
-      filters:
-        kind === "file"
-          ? [{ name: "Executables", extensions: ["exe"] }]
-          : undefined,
-    });
-    if (!canceled && filePaths[0]) update({ [target]: filePaths[0] });
-  };
-
-  const collect = (profile: LaunchProfile): LaunchProfile => ({
-    ...profile,
-    environment: parseEnv(envText),
-    externalTools: textToSteps(toolsText),
-    preLaunch: textToSteps(preText),
-  });
-
-  const save = async () => {
-    if (!editing || !gameKey) return;
-    if (!editing.name.trim()) {
-      showErrorToast(t("advanced_profile_name_required", "The name is required."));
-      return;
-    }
-    try {
-      setProfiles(
-        await window.electron.saveLaunchProfile(gameKey, collect(editing))
-      );
-      showSuccessToast(t("advanced_profile_saved", "Profile saved"));
-      setEditing(null);
-      setValidation(null);
-    } catch (error) {
-      showErrorToast(String(error));
-    }
-  };
-
-  const check = async () => {
-    if (!editing) return;
-    setValidation(await window.electron.validateLaunchProfile(collect(editing)));
-  };
-
-  const run = async (profile: LaunchProfile) => {
-    try {
-      const result = await window.electron.launchWithProfile(
-        gameKey,
-        profile.id
-      );
-      showSuccessToast(
-        `${t("advanced_profile_launched", "Game launched")}: ${result.command}`
-      );
-    } catch (error) {
-      showErrorToast(String(error));
-    }
-  };
-
-  const duplicate = async (profile: LaunchProfile) => {
-    setProfiles(
-      await window.electron.duplicateLaunchProfile(gameKey, profile.id)
-    );
-    showSuccessToast(t("advanced_profile_duplicated", "Profile duplicated"));
-  };
-
-  const makeDefault = async (profile: LaunchProfile) => {
-    setProfiles(
-      await window.electron.setDefaultLaunchProfile(gameKey, profile.id)
-    );
-  };
-
-  const remove = async (profile: LaunchProfile) => {
-    if (
-      !window.confirm(
-        t("advanced_profile_delete_confirm", "Delete this launch profile?")
-      )
-    )
-      return;
-    setProfiles(
-      await window.electron.deleteLaunchProfile(gameKey, profile.id)
-    );
-    if (editing?.id === profile.id) setEditing(null);
-  };
-
-  const windowModes: { key: string; value: string; label: string }[] = [
-    { key: "windowed", value: "windowed", label: t("advanced_window_windowed", "Windowed") },
-    { key: "fullscreen", value: "fullscreen", label: t("advanced_window_fullscreen", "Fullscreen") },
-    { key: "borderless", value: "borderless", label: t("advanced_window_borderless", "Borderless") },
-  ];
-
-  return (
-    <div className="settings-advanced__panel">
-      <div className="settings-advanced__card">
-        <div className="settings-advanced__row">
-          <SelectField
-            theme="dark"
-            value={gameKey}
-            onChange={(e) => setGameKey(e.target.value)}
-            options={gameOptions}
-          />
-          <Button theme="primary" onClick={createProfile} disabled={!gameKey}>
-            {t("advanced_profile_create", "New profile")}
-          </Button>
-        </div>
-        <p className="settings-advanced__hint">
-          {t(
-            "advanced_profiles_hint",
-            "Each profile can use a different executable, arguments, environment variables and window mode. The default profile is used when launching the game."
-          )}
-        </p>
-        {profiles.length === 0 ? (
-          <p className="settings-advanced__empty">
-            {t("advanced_profiles_empty", "No launch profiles for this game yet.")}
-          </p>
-        ) : (
-          <div className="settings-advanced__list">
-            {profiles.map((profile) => (
-              <div className="settings-advanced__item" key={profile.id}>
-                <div className="settings-advanced__item-main">
-                  <span className="settings-advanced__item-title">
-                    {profile.name}
-                    {profile.isDefault
-                      ? ` (${t("advanced_profile_default", "default")})`
-                      : ""}
-                  </span>
-                  <span className="settings-advanced__item-meta">
-                    {profile.executablePath || "--"} · {profile.windowMode}
-                  </span>
-                </div>
-                <div className="settings-advanced__actions">
-                  <Button theme="outline" onClick={() => startEditing(profile)}>
-                    {t("advanced_edit", "Edit")}
-                  </Button>
-                  <Button theme="outline" onClick={() => void run(profile)}>
-                    {t("advanced_launch", "Launch")}
-                  </Button>
-                  <Button theme="outline" onClick={() => void duplicate(profile)}>
-                    {t("advanced_duplicate", "Duplicate")}
-                  </Button>
-                  {!profile.isDefault && (
-                    <Button theme="outline" onClick={() => void makeDefault(profile)}>
-                      {t("advanced_make_default", "Set default")}
-                    </Button>
-                  )}
-                  <Button theme="danger" onClick={() => void remove(profile)}>
-                    {t("advanced_delete", "Delete")}
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {editing && (
-        <div className="settings-advanced__card">
-          <h3 className="settings-advanced__card-title">
-            {t("advanced_profile_editor", "Profile editor")}
-          </h3>
-          <label>
-            {t("advanced_profile_name", "Name")}
-            <input
-              className="settings-advanced__input"
-              value={editing.name}
-              onChange={(e) => update({ name: e.target.value })}
-            />
-          </label>
-          <label>
-            {t("advanced_profile_executable", "Executable")}
-            <div className="settings-advanced__row">
-              <input
-                className="settings-advanced__input"
-                value={editing.executablePath}
-                onChange={(e) => update({ executablePath: e.target.value })}
-              />
-              <Button theme="outline" onClick={() => void choose("executablePath", "file")}>
-                {t("advanced_browse", "Browse")}
-              </Button>
-            </div>
-          </label>
-          <label>
-            {t("advanced_profile_workdir", "Working directory")}
-            <div className="settings-advanced__row">
-              <input
-                className="settings-advanced__input"
-                value={editing.workingDirectory}
-                onChange={(e) => update({ workingDirectory: e.target.value })}
-              />
-              <Button theme="outline" onClick={() => void choose("workingDirectory", "dir")}>
-                {t("advanced_browse", "Browse")}
-              </Button>
-            </div>
-          </label>
-          <label>
-            {t("advanced_profile_arguments", "Arguments")}
-            <input
-              className="settings-advanced__input"
-              value={editing.arguments}
-              onChange={(e) => update({ arguments: e.target.value })}
-            />
-          </label>
-          <label>
-            {t("advanced_profile_window", "Window mode")}
-            <SelectField
-              theme="dark"
-              value={editing.windowMode}
-              onChange={(e) =>
-                update({ windowMode: e.target.value as LaunchProfile["windowMode"] })
-              }
-              options={windowModes}
-            />
-          </label>
-          <label>
-            {t("advanced_profile_env", "Environment variables (one KEY=VALUE per line)")}
-            <textarea
-              className="settings-advanced__textarea"
-              rows={3}
-              value={envText}
-              onChange={(e) => setEnvText(e.target.value)}
-            />
-          </label>
-          <label>
-            {t("advanced_profile_prelaunch", "Pre-launch tools (path|arguments per line)")}
-            <textarea
-              className="settings-advanced__textarea"
-              rows={2}
-              value={preText}
-              onChange={(e) => setPreText(e.target.value)}
-            />
-          </label>
-          <label>
-            {t("advanced_profile_tools", "Tools after launch (path|arguments per line)")}
-            <textarea
-              className="settings-advanced__textarea"
-              rows={2}
-              value={toolsText}
-              onChange={(e) => setToolsText(e.target.value)}
-            />
-          </label>
-          <div className="settings-advanced__actions">
-            <Button theme="primary" onClick={() => void save()}>
-              {t("advanced_save", "Save profile")}
-            </Button>
-            <Button theme="outline" onClick={() => void check()}>
-              {t("advanced_check", "Check")}
-            </Button>
-            <Button theme="outline" onClick={() => setEditing(null)}>
-              {t("advanced_cancel", "Cancel")}
-            </Button>
-          </div>
-          {validation && (
-            <div className="settings-advanced__hint">
-              {validation.valid
-                ? t("advanced_validation_ok", "The profile is valid.")
-                : validation.messages.join(" ")}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
 
 function ExtrasTab() {
   const { t } = useTranslation("settings");
-  const { library } = useLibrary();
   const { showErrorToast, showSuccessToast } = useToast();
   const [performance, setPerformance] = useState(isPerformanceMode());
-  const [recording, setRecording] = useState(isClipRecording());
-  const [busy, setBusy] = useState(false);
-  const [lastClip, setLastClip] = useState<string | null>(null);
-  const [spent, setSpent] = useState(() =>
-    Number(localStorage.getItem("lorro-spent") ?? 0)
-  );
-  const [rewards, setRewards] = useState<string[]>(() => {
-    try {
-      return JSON.parse(localStorage.getItem("lorro-rewards") ?? "[]");
-    } catch {
-      return [];
-    }
-  });
+  const [points, setPoints] = useState<LorroPointsSummary | null>(null);
+  const [ownedThemes, setOwnedThemes] = useState<string[]>([]);
+  const [purchasing, setPurchasing] = useState<string | null>(null);
 
-  const unlocked = library.reduce(
-    (sum, game) => sum + (game.unlockedAchievementCount ?? 0),
-    0
-  );
-  const earned = unlocked * 10;
-  const balance = Math.max(0, earned - spent);
+  const loadPoints = useCallback(async () => {
+    try {
+      const [summary, preferences] = await Promise.all([
+        window.electron.getLorroPoints(),
+        window.electron.getUserPreferences(),
+      ]);
+      setPoints(summary);
+      setOwnedThemes(
+        normalizeLorroThemeIds(preferences?.ownedLorroThemes)
+      );
+    } catch {
+      setPoints(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadPoints();
+  }, [loadPoints]);
 
   const togglePerformance = () => {
     const next = !performance;
@@ -1072,72 +715,21 @@ function ExtrasTab() {
     setPerformanceMode(next);
   };
 
-  const start = async () => {
-    setBusy(true);
+  const purchase = async (themeId: LorroPurchasableTheme) => {
+    setPurchasing(themeId);
     try {
-      await startClipBuffer();
-      setRecording(true);
-      showSuccessToast(
-        t(
-          "advanced_clip_started",
-          "Capture enabled. Press Ctrl+Shift+X to save the last 35 seconds."
-        )
-      );
-    } catch (error) {
-      showErrorToast(String(error));
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const save = async () => {
-    setBusy(true);
-    try {
-      const path = await saveLastClip();
-      if (path) {
-        setLastClip(path);
-        showSuccessToast(t("advanced_clip_saved", "Clip saved"));
+      const result = await window.electron.purchaseLorroTheme(themeId);
+      if (result.ok) {
+        showSuccessToast(
+          t("advanced_reward_unlocked", "Reward unlocked")
+        );
+        await loadPoints();
       } else {
-        showErrorToast(t("advanced_clip_empty", "No clip available yet."));
+        showErrorToast(result.message);
       }
-    } catch (error) {
-      showErrorToast(String(error));
     } finally {
-      setBusy(false);
+      setPurchasing(null);
     }
-  };
-
-  const stop = () => {
-    stopClipBuffer();
-    setRecording(false);
-  };
-
-  useEffect(() => {
-    if (!recording) return;
-    const handler = (event: KeyboardEvent) => {
-      if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "x") {
-        event.preventDefault();
-        void save();
-      }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  });
-
-  const redeem = (id: string, cost: number) => {
-    if (rewards.includes(id)) return;
-    if (balance < cost) {
-      showErrorToast(t("advanced_points_insufficient", "Not enough LorroPoints."));
-      return;
-    }
-    const nextSpent = spent + cost;
-    const nextRewards = [...rewards, id];
-    localStorage.setItem("lorro-spent", String(nextSpent));
-    localStorage.setItem("lorro-rewards", JSON.stringify(nextRewards));
-    setSpent(nextSpent);
-    setRewards(nextRewards);
-    applyLorroRewards();
-    showSuccessToast(t("advanced_reward_unlocked", "Reward unlocked"));
   };
 
   return (
@@ -1166,79 +758,56 @@ function ExtrasTab() {
         <p className="settings-advanced__hint">
           {t(
             "advanced_points_balance",
-            "You earn 10 LorroPoints for every unlocked achievement."
+            "You earn the achievement's own LorroPoints for every unlocked achievement."
           )}
         </p>
         <div className="settings-advanced__grid">
           <div className="settings-advanced__drive">
-            <strong>{balance}</strong>
+            <strong>{points?.balance ?? 0}</strong>
             <span>{t("advanced_points_available", "available")}</span>
           </div>
           <div className="settings-advanced__drive">
-            <strong>{earned}</strong>
+            <strong>{points?.earned ?? 0}</strong>
             <span>{t("advanced_points_earned", "earned")}</span>
           </div>
           <div className="settings-advanced__drive">
-            <strong>{spent}</strong>
+            <strong>{points?.spent ?? 0}</strong>
             <span>{t("advanced_points_spent", "spent")}</span>
           </div>
         </div>
-        <div className="settings-advanced__actions">
-          <Button
-            theme="outline"
-            disabled={rewards.includes("gold") || balance < 300}
-            onClick={() => redeem("gold", 300)}
-          >
-            {rewards.includes("gold")
-              ? t("advanced_reward_owned", "Gold theme (owned)")
-              : t("advanced_reward_gold", "Gold accent (300 pts)")}
-          </Button>
-          <Button
-            theme="outline"
-            disabled={rewards.includes("emerald") || balance < 600}
-            onClick={() => redeem("emerald", 600)}
-          >
-            {rewards.includes("emerald")
-              ? t("advanced_reward_owned_emerald", "Emerald theme (owned)")
-              : t("advanced_reward_emerald", "Emerald accent (600 pts)")}
-          </Button>
-        </div>
-      </div>
-
-      <div className="settings-advanced__card">
-        <h3 className="settings-advanced__card-title">
-          {t("advanced_clip_title", "Clip the last 35 seconds")}
-        </h3>
-        <p className="settings-advanced__hint">
-          {t(
-            "advanced_clip_hint",
-            "Enable capture, play, and press Ctrl+Shift+X to save the last 35 seconds. The clip is saved as a file you can share."
-          )}
-        </p>
-        <div className="settings-advanced__actions">
-          {recording ? (
-            <Button theme="outline" onClick={stop}>
-              {t("advanced_clip_stop", "Stop capture")}
-            </Button>
-          ) : (
-            <Button theme="primary" onClick={() => void start()} disabled={busy}>
-              {t("advanced_clip_start", "Enable capture")}
-            </Button>
-          )}
-          <Button
-            theme="outline"
-            onClick={() => void save()}
-            disabled={busy || !recording}
-          >
-            {t("advanced_clip_save", "Save last 35 s")}
-          </Button>
-          <Button theme="outline" onClick={() => void window.electron.openClipFolder()}>
-            {t("advanced_clip_folder", "Open clips folder")}
-          </Button>
-        </div>
-        {lastClip && (
-          <pre className="settings-advanced__pre">{lastClip}</pre>
+        {points && !points.exact && (
+          <p className="settings-advanced__hint">
+            {t(
+              "advanced_points_estimate",
+              "Some achievements are still being read: totals update as games sync."
+            )}
+          </p>
         )}
+        <div className="settings-advanced__actions">
+          {LORRO_PURCHASABLE_THEMES.map((themeId) => {
+            const owned = ownedThemes.includes(themeId);
+            const price = LORRO_THEME_PRICES[themeId];
+            const labelKey =
+              themeId === "golden"
+                ? "advanced_theme_golden"
+                : themeId === "esmeralda"
+                  ? "advanced_theme_esmeralda"
+                  : "advanced_theme_ruby";
+
+            return (
+              <Button
+                key={themeId}
+                theme="outline"
+                disabled={owned || purchasing === themeId}
+                onClick={() => void purchase(themeId)}
+              >
+                {owned
+                  ? t("advanced_theme_owned", "Owned")
+                  : `${t(labelKey, themeId)} (${price} pts)`}
+              </Button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

@@ -9,147 +9,27 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
 
-    &-left {
+    &-left,
+    &-right {
       display: flex;
       gap: 8px;
+      flex-wrap: wrap;
     }
+  }
+
+  &__button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   &__themes {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-
-    &__theme {
-      width: 100%;
-      min-height: 160px;
-      display: flex;
-      flex-direction: column;
-      background-color: rgba(globals.$border-color, 0.01);
-      border: 1px solid globals.$border-color;
-      border-radius: 12px;
-      gap: 4px;
-      transition: background-color 0.2s ease;
-      padding: 16px;
-      position: relative;
-
-      &--active {
-        background-color: rgba(globals.$border-color, 0.04);
-      }
-
-      &__header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-direction: row;
-        gap: 16px;
-
-        &__title {
-          font-size: 18px;
-          font-weight: 600;
-          color: globals.$muted-color;
-          text-transform: capitalize;
-        }
-
-        &__colors {
-          display: flex;
-          flex-direction: row;
-          gap: 8px;
-
-          &__color {
-            width: 16px;
-            height: 16px;
-            border-radius: 4px;
-            border: 1px solid globals.$border-color;
-          }
-        }
-      }
-
-      &__author {
-        font-size: 12px;
-        color: globals.$body-color;
-        font-weight: 400;
-
-        &__name {
-          font-weight: 600;
-          color: rgba(globals.$muted-color, 0.8);
-          margin-left: 4px;
-
-          &:hover {
-            color: globals.$muted-color;
-            cursor: pointer;
-            text-decoration: underline;
-            text-underline-offset: 2px;
-          }
-        }
-      }
-
-      &__actions {
-        display: flex;
-        flex-direction: row;
-        position: absolute;
-        bottom: 16px;
-        left: 16px;
-        right: 16px;
-        gap: 8px;
-        justify-content: space-between;
-
-        &__left {
-          display: flex;
-          flex-direction: row;
-          gap: 8px;
-        }
-
-        &__right {
-          display: flex;
-          flex-direction: row;
-          gap: 8px;
-
-          Button {
-            padding: 8px 11px;
-          }
-        }
-      }
-    }
-  }
-
-  &__no-themes {
-    width: 100%;
-    min-height: 160px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 40px 24px;
-    background-color: rgba(globals.$border-color, 0.01);
-    cursor: pointer;
-    border: 1px dashed globals.$border-color;
-    border-radius: 12px;
     gap: 12px;
-    transition: background-color 0.2s ease;
-
-    &:hover {
-      background-color: rgba(globals.$border-color, 0.03);
-    }
-
-    &__icon {
-      svg {
-        width: 32px;
-        height: 32px;
-        color: globals.$body-color;
-        opacity: 0.7;
-      }
-    }
-
-    &__text {
-      text-align: center;
-      max-width: 400px;
-      font-size: 14.5px;
-      line-height: 1.6;
-      font-weight: 400;
-      color: rgba(globals.$body-color, 0.85);
-    }
   }
 }
 
@@ -161,25 +41,34 @@
   &__group {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 18px;
+    gap: 14px;
+    padding: 20px;
     border: 1px solid globals.$border-color;
     border-radius: 14px;
-    background: linear-gradient(
-      160deg,
-      rgba(139, 92, 246, 0.08),
-      rgba(34, 211, 238, 0.03)
-    );
+    background:
+      linear-gradient(
+        160deg,
+        color-mix(in srgb, var(--lorro-accent) 9%, transparent) 0%,
+        rgba(255, 255, 255, 0.008) 100%
+      ),
+      globals.$surface-color;
+    box-shadow: 0 18px 40px -36px rgba(0, 0, 0, 0.9);
   }
 
   &__title {
+    margin: 0 0 2px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid globals.$border-color;
     font-family: globals.$font-display;
-    font-size: 15px;
-    font-weight: 600;
-    color: globals.$muted-color;
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: globals.$lorro-violet-soft;
   }
 
   &__hint {
+    margin: 0;
     font-size: 12.5px;
     line-height: 1.5;
     color: globals.$subtle-color;
@@ -188,7 +77,7 @@
   &__themes {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
   }
 
   &__theme {
@@ -196,28 +85,42 @@
     align-items: center;
     gap: 8px;
     padding: 9px 14px;
-    border-radius: 10px;
+    border-radius: 999px;
     border: 1px solid globals.$border-color;
     background: globals.$surface-raised-color;
     color: globals.$body-color;
     font-size: 13px;
     font-weight: 600;
+    cursor: pointer;
     transition:
-      border-color 0.15s ease,
-      background 0.15s ease;
+      border-color 0.16s ease,
+      background 0.16s ease,
+      color 0.16s ease,
+      box-shadow 0.16s ease;
 
     &:hover {
       border-color: globals.$border-strong-color;
+      color: globals.$muted-color;
+    }
+
+    &:focus-visible {
+      outline: 2px solid globals.$lorro-violet;
+      outline-offset: 2px;
     }
 
     &--active {
-      border-color: globals.$lorro-violet;
+      border-color: color-mix(in srgb, var(--lorro-accent) 55%, transparent);
       background: linear-gradient(
         135deg,
-        rgba(139, 92, 246, 0.28),
-        rgba(34, 211, 238, 0.16)
+        color-mix(in srgb, var(--lorro-accent) 28%, transparent) 0%,
+        color-mix(in srgb, var(--lorro-accent) 10%, transparent) 100%
       );
       color: globals.$muted-color;
+      box-shadow: 0 8px 22px -10px var(--lorro-accent-glow);
+    }
+
+    &--locked {
+      opacity: 0.55;
     }
   }
 
@@ -226,6 +129,7 @@
     height: 18px;
     border-radius: 6px;
     border: 1px solid rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
 
     &--dark {
       background: #0b0912;
@@ -237,6 +141,18 @@
 
     &--transparent {
       background: linear-gradient(135deg, #2a2440, #141020);
+    }
+
+    &--golden {
+      background: linear-gradient(135deg, #f4b942, #d97706);
+    }
+
+    &--esmeralda {
+      background: linear-gradient(135deg, #34d399, #10b981);
+    }
+
+    &--ruby {
+      background: linear-gradient(135deg, #f43f5e, #be123c);
     }
   }
 
@@ -280,6 +196,7 @@
     input[type="range"] {
       width: 100%;
       accent-color: globals.$lorro-violet;
+      cursor: pointer;
     }
   }
 }

@@ -7,12 +7,11 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import { installGamepadNavigation } from "./lib/gamepad-navigation";
 import { installLorroFeedbackButton } from "./lib/lorro-feedback";
-import { applyLorroRewards, applyPerformanceMode } from "./lib/performance-mode";
+import { applyPerformanceMode } from "./lib/performance-mode";
 
 installGamepadNavigation();
 installLorroFeedbackButton();
 applyPerformanceMode();
-applyLorroRewards();
 
 import "@fontsource/noto-sans/400.css";
 import "@fontsource/noto-sans/500.css";
@@ -45,6 +44,7 @@ import { levelDBService } from "./services/leveldb.service";
 import Catalogue from "./pages/catalogue/catalogue";
 import Home from "./pages/home/home";
 import Downloads from "./pages/downloads/downloads";
+import Clips from "./pages/clips";
 import GameDetails from "./pages/game-details/game-details";
 import Settings from "./pages/settings/settings";
 import Profile from "./pages/profile/profile";
@@ -156,6 +156,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                   <Route path="/catalogue" element={<Catalogue />} />
                   <Route path="/library" element={<Library />} />
                   <Route path="/downloads" element={<Downloads />} />
+                  <Route path="/clips" element={<Clips />} />
                   <Route
                     path="/game/:shop/:objectId"
                     element={<GameDetails />}

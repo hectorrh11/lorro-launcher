@@ -37,14 +37,6 @@
     align-items: center;
   }
 
-  &__automatic-sync-badge {
-    background: linear-gradient(270deg, #16b195 50%, #3e62c0 100%);
-    color: #fff;
-    padding: 0 globals.$spacing-unit;
-    border-radius: 4px;
-    font-size: globals.$small-font-size;
-  }
-
   &__title-container {
     display: flex;
     gap: calc(globals.$spacing-unit / 2);
@@ -176,12 +168,5 @@
     display: flex;
     align-items: center;
     gap: 8px;
-  }
-
-  &__upgrade {
-    display: flex;
-    flex-direction: column;
-    gap: globals.$spacing-unit;
-    width: min(500px, 100%);
   }
 }

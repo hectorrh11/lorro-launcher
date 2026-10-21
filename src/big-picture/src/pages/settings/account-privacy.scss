@@ -12,7 +12,6 @@
   }
 
   &__select,
-  &__cloud-button,
   &__readonly-field {
     width: 100%;
   }
@@ -37,7 +36,6 @@
 
   &__detail-label,
   &__detail-value,
-  &__subscription-line,
   &__empty,
   &__blocked-user-name {
     margin: 0;
@@ -70,12 +68,6 @@
   &__action-button {
     flex: 1 1 0;
     min-width: 0;
-  }
-
-  &__subscription-copy {
-    display: flex;
-    flex-direction: column;
-    gap: calc(var(--spacing-unit) * 1.5);
   }
 
   &__subscription-line,

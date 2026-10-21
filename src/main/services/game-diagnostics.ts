@@ -3,7 +3,6 @@ import path from "node:path";
 import { app } from "electron";
 import type { DiagnosticCheck, DiagnosticReport, Game } from "@types";
 import { getDiskUsage } from "./disk-usage";
-import { launchProfileManager } from "./launch-profile-manager";
 import { saveBackupManager } from "./save-backup-manager";
 
 async function exists(target: string) {
@@ -77,24 +76,6 @@ export class GameDiagnostics {
           message: `${freeGb.toFixed(1)} GB free on the installation drive.`,
         });
       }
-
-      const profiles = await launchProfileManager.list(gameKey);
-      const invalid: string[] = [];
-      for (const profile of profiles) {
-        const validation = await launchProfileManager.validate(profile);
-        if (!validation.valid) invalid.push(profile.name);
-      }
-      checks.push({
-        id: "launch-profiles",
-        label: "Launch profiles",
-        status: profiles.length === 0 ? "unknown" : invalid.length ? "warning" : "ok",
-        message:
-          profiles.length === 0
-            ? "No launch profiles configured."
-            : invalid.length
-              ? `Check these profiles: ${invalid.join(", ")}.`
-              : `${profiles.length} launch profile(s) look valid.`,
-      });
     }
 
     const saveConfig = await saveBackupManager.getGameConfig(gameKey);

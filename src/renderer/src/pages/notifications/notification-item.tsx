@@ -17,7 +17,6 @@ import cn from "classnames";
 import { buildSouvenirNotificationTarget } from "@shared";
 
 import type { Notification, Badge } from "@types";
-import { openCloudGiftModal } from "../shared-modals/cloud-gift-modal.events";
 import "./notification-item.scss";
 
 const parseNotificationUrl = (notificationUrl: string): string => {
@@ -94,14 +93,6 @@ export function NotificationItem({
   const handleClick = useCallback(() => {
     if (!notification.isRead) {
       onMarkAsRead(notification.id);
-    }
-
-    if (
-      notification.type === "CLOUD_GIFT_RECEIVED" &&
-      notification.variables.giftId
-    ) {
-      openCloudGiftModal(notification);
-      return;
     }
 
     const target = getNotificationTarget(notification);

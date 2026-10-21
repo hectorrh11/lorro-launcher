@@ -18,6 +18,44 @@ import {
 import { getLibraryGroupCollectionAssignments } from "../../../shared/library-group-actions";
 import { useLibrary } from "./use-library";
 
+const DEFAULT_COLLECTION_NAMES = [
+  "Terminado",
+  "En proceso",
+  "Abandonado",
+  "No instalado",
+] as const;
+
+const ensureDefaultCollections = async (
+  collections: GameCollection[]
+): Promise<GameCollection[]> => {
+  const existingNames = new Set(
+    collections.map((collection) => collection.name.trim().toLowerCase())
+  );
+  const created: GameCollection[] = [];
+
+  for (const name of DEFAULT_COLLECTION_NAMES) {
+    if (existingNames.has(name.toLowerCase())) continue;
+
+    try {
+      const collection = await window.electron.hydraApi.post<GameCollection>(
+        "/profile/games/collections",
+        {
+          data: { name },
+          needsAuth: true,
+        }
+      );
+
+      created.push(collection);
+      existingNames.add(name.toLowerCase());
+    } catch {
+      // A collection may already exist on the server or the profile may be
+      // offline; either way the library keeps working without it.
+    }
+  }
+
+  return created.length > 0 ? [...collections, ...created] : collections;
+};
+
 export function useGameCollections() {
   const dispatch = useAppDispatch();
   const loadCollectionsRequestRef = useRef<Promise<GameCollection[]> | null>(
@@ -44,9 +82,8 @@ export function useGameCollections() {
           { needsAuth: true }
         );
 
-        const collections = ensureArray<GameCollection>(
-          response,
-          "/profile/games/collections"
+        const collections = await ensureDefaultCollections(
+          ensureArray<GameCollection>(response, "/profile/games/collections")
         );
 
         dispatch(setCollections(collections));

@@ -11,11 +11,18 @@ import {
   useAppDispatch,
   useAppSelector,
   useDownload,
+  useGameCollections,
   useLibrary,
   useToast,
   useUserDetails,
 } from "@renderer/hooks";
 import { useDownloadOptionsListener } from "@renderer/hooks/use-download-options-listener";
+import {
+  saveLastClip,
+  startClipBuffer,
+  stopClipBuffer,
+} from "@renderer/lib/clip-buffer";
+import type { LorroClipSettings } from "@types";
 import i18n from "i18next";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { WorkWonders } from "workwonders-sdk";
@@ -41,13 +48,14 @@ import {
 } from "@renderer/features";
 import { useTranslation } from "react-i18next";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useSubscription } from "./hooks/use-subscription";
 import { ArchiveDeletionModal } from "./pages/downloads/archive-deletion-error-modal";
-import { CloudSubscriptionModal } from "./pages/shared-modals/hydra-cloud/cloud-subscription-modal";
+import {
+  ExecutableDetectedModal,
+  type DetectedExecutable,
+} from "./pages/shared-modals/executable-detected-modal";
 import { AddFriendModal } from "./pages/profile/profile-content/add-friend-modal";
 import { ClassicsScanModal } from "./pages/settings/emulation/classics-scan-modal";
 import { RetroArchScanModal } from "./pages/settings/emulation/retroarch-scan-modal";
-import { CloudGiftNotificationModal } from "./pages/shared-modals/cloud-gift-notification-modal";
 import { playMessageSound } from "./pages/chat-window/chat-sounds";
 
 import type { UserPreferences } from "@types";
@@ -75,6 +83,8 @@ type WorkWondersWithKnowledge = WorkWonders & {
 export function App() {
   const contentRef = useRef<HTMLDivElement>(null);
   const { updateLibrary, library, downloadLibrary } = useLibrary();
+  const { loadCollections } = useGameCollections();
+  const gamesRunningCountRef = useRef(0);
 
   // Listen for new download options updates
   useDownloadOptionsListener();
@@ -87,14 +97,10 @@ export function App() {
   const workwondersInitializingRef = useRef(false);
 
   const {
-    hasActiveSubscription,
     fetchUserDetails,
     updateUserDetails,
     clearUserDetails,
   } = useUserDetails();
-
-  const { hideHydraCloudModal, isHydraCloudModalVisible, hydraCloudFeature } =
-    useSubscription();
 
   const dispatch = useAppDispatch();
 
@@ -113,6 +119,8 @@ export function App() {
     useState(false);
   const [archivePaths, setArchivePaths] = useState<string[]>([]);
   const [showAddFriendModal, setShowAddFriendModal] = useState(false);
+  const [detectedExecutable, setDetectedExecutable] =
+    useState<DetectedExecutable | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -165,6 +173,65 @@ export function App() {
       unsubscribe();
     };
   }, [clearDownload, setLastPacket, updateLibrary]);
+
+  useEffect(() => {
+    let disposed = false;
+
+    const applySettings = async (settings: LorroClipSettings) => {
+      if (disposed) return;
+
+      if (!settings.enabled) {
+        stopClipBuffer();
+        return;
+      }
+
+      try {
+        await startClipBuffer({
+          durationSeconds: settings.durationSeconds,
+          systemAudio: settings.systemAudio,
+          microphone: settings.microphone,
+        });
+      } catch {
+        showErrorToast(
+          t(
+            "clips.start_failed",
+            "Could not start clip recording. Check screen capture permissions."
+          )
+        );
+      }
+    };
+
+    const unsubscribeSettings = window.electron.onClipSettingsUpdated(
+      (settings) => {
+        void applySettings(settings);
+      }
+    );
+
+    const unsubscribeSave = window.electron.onClipSaveRequest(() => {
+      void saveLastClip().then((path) => {
+        if (path) {
+          showSuccessToast(t("clips.saved", "Clip saved"));
+        } else {
+          showErrorToast(
+            t("clips.save_failed", "Could not save the clip.")
+          );
+        }
+      });
+    });
+
+    void window.electron
+      .getClipSettings()
+      .then(applySettings)
+      .catch(() => undefined);
+
+    return () => {
+      disposed = true;
+      unsubscribeSettings();
+      unsubscribeSave();
+      stopClipBuffer();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const unsubscribe = window.electron.onHardDelete(() => {
@@ -325,6 +392,7 @@ export function App() {
 
     if (userDetails) {
       updateUserDetails(userDetails);
+      void loadCollections();
     }
 
     // The WorkWonders widgets are remote iframes (help, changelog).
@@ -372,7 +440,13 @@ export function App() {
       $script.src = `${import.meta.env.RENDERER_VITE_EXTERNAL_RESOURCES_URL}/bundle.js?t=${Date.now()}`;
       document.head.appendChild($script);
     }
-  }, [fetchUserDetails, updateUserDetails, dispatch, setupWorkWonders]);
+  }, [
+    fetchUserDetails,
+    updateUserDetails,
+    dispatch,
+    setupWorkWonders,
+    loadCollections,
+  ]);
 
   useEffect(() => {
     setupExternalResources();
@@ -390,6 +464,7 @@ export function App() {
   useEffect(() => {
     const unsubscribe = window.electron.onGamesRunning((gamesRunning) => {
       if (gamesRunning.length) {
+        gamesRunningCountRef.current = gamesRunning.length;
         const lastGame = gamesRunning[gamesRunning.length - 1];
         const libraryGame = library.find(
           (library) => library.id === lastGame.id
@@ -406,13 +481,16 @@ export function App() {
           return;
         }
       }
+      const hadGamesRunning = gamesRunningCountRef.current > 0;
+      gamesRunningCountRef.current = 0;
       dispatch(setGameRunning(null));
+      if (hadGamesRunning) void updateLibrary();
     });
 
     return () => {
       unsubscribe();
     };
-  }, [dispatch, library]);
+  }, [dispatch, library, updateLibrary]);
 
   useEffect(() => {
     window.electron.getActiveClassicsImport().then((snapshot) => {
@@ -636,6 +714,17 @@ export function App() {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const unsubscribe = globalThis.electron.onExecutableDetected(
+      (detection) => {
+        setDetectedExecutable(detection);
+        void updateLibrary();
+      }
+    );
+
+    return () => unsubscribe();
+  }, [updateLibrary]);
+
   const playAudio = useCallback(async () => {
     const soundUrl = await getAchievementSoundUrl();
     const volume = await getAchievementSoundVolume();
@@ -711,10 +800,7 @@ export function App() {
               alt=""
               draggable={false}
             />
-            <span className="title-bar__brand-name">
-              LORRO
-              {hasActiveSubscription && <strong> CLOUD</strong>}
-            </span>
+            <span className="title-bar__brand-name">LORRO</span>
           </div>
 
           <button
@@ -777,14 +863,6 @@ export function App() {
         duration={toast.duration}
       />
 
-      <CloudSubscriptionModal
-        visible={isHydraCloudModalVisible}
-        onClose={hideHydraCloudModal}
-        feature={hydraCloudFeature || undefined}
-      />
-
-      <CloudGiftNotificationModal />
-
       <ArchiveDeletionModal
         visible={showArchiveDeletionModal}
         archivePaths={archivePaths}
@@ -794,6 +872,11 @@ export function App() {
       <AddFriendModal
         visible={showAddFriendModal}
         onClose={() => setShowAddFriendModal(false)}
+      />
+
+      <ExecutableDetectedModal
+        detection={detectedExecutable}
+        onClose={() => setDetectedExecutable(null)}
       />
 
       <ClassicsScanModal />

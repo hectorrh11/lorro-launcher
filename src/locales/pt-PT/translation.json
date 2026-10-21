@@ -124,8 +124,7 @@
     "steamgriddb_artwork_updated": "Arte atualizada",
     "steamgriddb_artwork_reset": "Arte reposta para a predefinição",
     "classics_hero_layout_warning": "Para mostrar o logo e o hero, ative o esquema logo + hero na página de jogos clássicos.",
-    "classics_hero_layout_open_settings": "Abrir definições",
-    "custom_assets_not_sync": "As tuas artes personalizadas não serão sincronizadas com a tua conta."
+    "classics_hero_layout_open_settings": "Abrir definições"
   },
   "header": {
     "minimize": "Minimizar",
@@ -904,20 +903,11 @@
     "show_hidden_achievement_description": "Mostrar descrição de conquistas ocultas antes de as desbloquear",
     "account": "Conta",
     "no_users_blocked": "Não tem utilizadores bloqueados",
-    "subscription_active_until": "O teu Lorro Cloud está ativo até {{date}}",
-    "manage_subscription": "Gerir subscrições",
     "update_email": "Atualizar email",
     "update_password": "Atualizar password",
     "current_email": "Email atual:",
     "no_email_account": "Ainda não adicionou nenhum email à sua conta",
     "account_data_updated_successfully": "Dados da conta atualizados com sucesso",
-    "renew_subscription": "Renovar Lorro Cloud",
-    "subscription_expired_at": "A sua subscrição expirou a {{date}}",
-    "no_subscription": "Aproveite o Lorro da melhor forma possível",
-    "become_subscriber": "Subscreva o Lorro Cloud",
-    "subscription_renew_cancelled": "A renovação automática está desativada",
-    "subscription_renews_on": "Sua assinatura renova dia {{date}}",
-    "bill_sent_until": "A próxima cobrança será enviada até esse dia",
     "no_themes": "Parece que ainda não tem nenhum tema. Não se preocupe, clique aqui para criar a sua primeira obra de arte.",
     "editor_tab_code": "Código",
     "editor_tab_info": "Info",
@@ -1242,8 +1232,6 @@
     "playing": "A jogar {{game}}",
     "achievements_unlocked": "Conquistas desbloqueadas",
     "earned_points": "Pontos ganhos",
-    "show_achievements_on_profile": "Mostre as suas conquistas no perfil",
-    "show_points_on_profile": "Mostra os teus pontos ganhos no perfil",
     "error_adding_friend": "Não foi possível enviar pedido de amizade. Por favor, verifica o código de amigo",
     "friend_code_length_error": "O código de amigo deve ter 8 caracteres",
     "user_reviews": "Avaliações",
@@ -1319,22 +1307,11 @@
     "hardcore_unlocked_at": "Desbloqueada em hardcore em: {{date}}",
     "achievement_earn_points": "Ganhe {{points}} pontos com essa conquista",
     "earned_points": "Pontos ganhos:",
-    "available_points": "Pontos disponíveis:",
-    "how_to_earn_achievements_points": "Como desbloquear pontos nas conquistas?"
+    "available_points": "Pontos disponíveis:"
   },
   "hydra_cloud": {
-    "subscription_tour_title": "Subscrição Lorro Cloud",
     "hydra_cloud": "Lorro Cloud",
-    "subscribe_now": "Subscreve agora",
-    "cloud_achievements": "Gravação de conquistas na nuvem",
-    "debrid_description": "Transfere até 4x mais rápido com Nimbus",
-    "animated_profile_picture": "Fotos de perfil animadas",
-    "premium_support": "Suporte Premium",
-    "show_and_compare_achievements": "Mostra e compara as tuas conquistas com as de outros utilizadores",
-    "animated_profile_banner": "Banner animado no perfil",
-    "cloud_saving": "Progresso dos jogos na nuvem",
-    "hydra_cloud_feature_found": "Descobriste uma funcionalidade Lorro Cloud!",
-    "learn_more": "Saber mais"
+    "debrid_description": "Transfere até 4x mais rápido com Nimbus"
   },
   "notifications_page": {
     "title": "Notificações",

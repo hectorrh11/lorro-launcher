@@ -32,7 +32,6 @@ import {
   ScrollArea,
   VerticalFocusGroup,
 } from "../../components";
-import { openBigPictureCloudGiftModal } from "../../components/cloud-gift-modal.events";
 import { FocusRegionContext } from "../../components/context";
 import { IS_DESKTOP } from "../../constants";
 import {
@@ -53,8 +52,6 @@ import type {
 } from "@types";
 import {
   buildSouvenirNotificationTarget,
-  CLOUD_GIFT_ID_VARIABLE,
-  CLOUD_GIFT_RECEIVED_NOTIFICATION,
   NOTIFICATIONS_FETCH_FILTER,
   NOTIFICATIONS_FETCH_TAKE,
 } from "@shared";
@@ -118,7 +115,7 @@ function resolveBigPicturePath(path: string) {
 
 function getApiNotificationContent(
   notification: Notification,
-  t: (key: string, options?: Record<string, unknown>) => string
+  _t: (key: string, options?: Record<string, unknown>) => string
 ) {
   switch (notification.type) {
     case "FRIEND_REQUEST_RECEIVED":
@@ -151,18 +148,6 @@ function getApiNotificationContent(
         title: `Your reply for ${notification.variables.gameTitle ?? "a review"} got an upvote`,
         description: `${notification.variables.upvoteCount ?? "1"} upvotes on your reply.`,
       };
-    case CLOUD_GIFT_RECEIVED_NOTIFICATION: {
-      const durationMonths = Number(notification.variables.durationMonths);
-
-      return {
-        title: Number.isFinite(durationMonths)
-          ? t("cloud_gift_received_title", { count: durationMonths })
-          : t("cloud_gift_received_title"),
-        description: t("cloud_gift_received_description", {
-          displayName: notification.variables.buyerDisplayName,
-        }),
-      };
-    }
     case "SOUVENIR_LIKE": {
       const likeCount = Number(notification.variables.likeCount ?? 1);
       return {
@@ -588,16 +573,6 @@ export function SidebarNotificationsDropdown({
   const openNotification = async (notification: MergedNotification) => {
     if (!notification.isRead) {
       await markAsRead(notification);
-    }
-
-    if (
-      notification.source === "api" &&
-      notification.type === CLOUD_GIFT_RECEIVED_NOTIFICATION &&
-      notification.variables[CLOUD_GIFT_ID_VARIABLE]
-    ) {
-      openBigPictureCloudGiftModal(notification);
-      closeAndRestoreFocus();
-      return;
     }
 
     const url = getNotificationUrl(notification);

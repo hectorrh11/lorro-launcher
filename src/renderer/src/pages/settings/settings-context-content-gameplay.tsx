@@ -10,7 +10,6 @@ import {
 } from "@renderer/components";
 import { settingsContext } from "@renderer/context";
 import { useAppSelector, useUserDetails } from "@renderer/hooks";
-import { useSubscription } from "@renderer/hooks/use-subscription";
 import { FileDirectoryIcon, HistoryIcon } from "@primer/octicons-react";
 import { useLocation } from "react-router-dom";
 import { isAchievementSouvenirsEnabled } from "@shared";
@@ -47,7 +46,6 @@ export function SettingsContextContentGameplay() {
   const { t } = useTranslation("settings");
   const { updateUserPreferences } = useContext(settingsContext);
   const { hasActiveSubscription } = useUserDetails();
-  const { showHydraCloudModal } = useSubscription();
   const { hash } = useLocation();
 
   const userPreferences = useAppSelector(
@@ -216,32 +214,18 @@ export function SettingsContextContentGameplay() {
           }
         />
 
-        {hasActiveSubscription ? (
-          <CheckboxField
-            id="achievement-souvenirs"
-            label={t("enable_achievement_souvenirs")}
-            checked={form.enableAchievementSouvenirs}
-            onChange={handleAchievementSouvenirsChange}
-          />
-        ) : (
-          <button
-            type="button"
-            className="settings-behavior__hydra-cloud-row"
-            onClick={() => showHydraCloudModal("achievements")}
-          >
-            <CheckboxField
-              id="achievement-souvenirs"
-              label={t("enable_achievement_souvenirs")}
-              checked={false}
-              disabled
-              readOnly
-            />
-
-            <span className="settings-behavior__hydra-cloud-badge">
-              Lorro Cloud
-            </span>
-          </button>
-        )}
+        <CheckboxField
+          id="achievement-souvenirs"
+          label={t("enable_achievement_souvenirs")}
+          checked={
+            hasActiveSubscription && form.enableAchievementSouvenirs
+          }
+          onChange={
+            hasActiveSubscription
+              ? handleAchievementSouvenirsChange
+              : undefined
+          }
+        />
 
         <div className="settings-behavior__screenshots-directory">
           <TextField

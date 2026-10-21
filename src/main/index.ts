@@ -3,9 +3,11 @@ import {
   BrowserWindow,
   crashReporter,
   dialog,
+  desktopCapturer,
   net,
   powerMonitor,
   protocol,
+  session,
 } from "electron";
 import updater from "electron-updater";
 import i18n from "i18next";
@@ -32,6 +34,7 @@ import resources from "@locales";
 import { TorrentService } from "./services/torrent-service";
 import { DownloadManager } from "./services/download/download-manager";
 import { customDownloadManager } from "./services/custom-download-manager";
+import { clipManager } from "./services/clip-manager";
 import { db, gamesSublevel, levelKeys } from "./level";
 import { GameShop, UserPreferences } from "@types";
 import { launchGame, openClassicsGame } from "./helpers";
@@ -228,11 +231,43 @@ const initializeApp = async () => {
     });
   });
 
+  session.defaultSession.setDisplayMediaRequestHandler(
+    (_request, callback) => {
+      desktopCapturer
+        .getSources({
+          types: ["screen"],
+          thumbnailSize: { width: 0, height: 0 },
+        })
+        .then((sources) => {
+          const source = sources[0];
+          if (!source) {
+            callback({});
+            return;
+          }
+          callback({
+            video: source,
+            ...(process.platform === "win32"
+              ? { audio: "loopback" as const }
+              : {}),
+          });
+        })
+        .catch((error) => {
+          logger.error("[clips] failed to resolve screen source", error);
+          callback({});
+        });
+    },
+    { useSystemPicker: false }
+  );
+
   try {
     await loadState();
   } catch (error) {
     logger.error("Failed to load app state during startup", error);
   }
+
+  await clipManager.initialize().catch((error) => {
+    logger.error("[clips] failed to initialize clip manager", error);
+  });
   // Optional integration failures must not interrupt launcher startup.
   await initializeEpicIntegration().catch(() => {
     logger.warn("Epic integration initialization unavailable");
@@ -467,6 +502,7 @@ app.on("before-quit", async (e) => {
     }
     DownloadOrchestrator.cancelPendingDebridPreparations();
     PowerSaveBlockerManager.reset();
+    clipManager.dispose();
     try {
       await DownloadManager.pauseDownload();
     } catch (error) {

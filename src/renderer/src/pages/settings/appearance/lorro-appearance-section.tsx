@@ -1,7 +1,9 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { LockIcon } from "@primer/octicons-react";
 import { Button } from "@renderer/components";
 import { useToast } from "@renderer/hooks";
+import { normalizeLorroThemeIds } from "@shared";
 import {
   type LorroTheme,
   setAppearance,
@@ -11,10 +13,17 @@ import {
   useAppearance,
 } from "@renderer/features/appearance";
 
-const THEME_OPTIONS: { id: LorroTheme; labelKey: string }[] = [
+const THEME_OPTIONS: { id: LorroTheme; labelKey: string; purchasable?: boolean }[] = [
   { id: "dark", labelKey: "appearance_theme_dark" },
   { id: "light", labelKey: "appearance_theme_light" },
   { id: "transparent", labelKey: "appearance_theme_transparent" },
+  { id: "golden", labelKey: "appearance_theme_golden", purchasable: true },
+  {
+    id: "esmeralda",
+    labelKey: "appearance_theme_esmeralda",
+    purchasable: true,
+  },
+  { id: "ruby", labelKey: "appearance_theme_ruby", purchasable: true },
 ];
 
 export function LorroAppearanceSection() {
@@ -22,6 +31,55 @@ export function LorroAppearanceSection() {
   const { showErrorToast } = useToast();
   const appearance = useAppearance();
   const [isImporting, setIsImporting] = useState(false);
+  const [ownedThemes, setOwnedThemes] = useState<string[]>(() => []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    window.electron
+      .getUserPreferences()
+      .then((preferences) => {
+        if (!cancelled) {
+          setOwnedThemes(
+            normalizeLorroThemeIds(preferences?.ownedLorroThemes)
+          );
+        }
+      })
+      .catch(() => undefined);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [appearance.theme]);
+
+  const handleSelectTheme = useCallback(
+    (theme: (typeof THEME_OPTIONS)[number]) => {
+      if (theme.purchasable && !ownedThemes.includes(theme.id)) {
+        showErrorToast(
+          t(
+            "appearance_theme_locked_hint",
+            "This theme is locked. Unlock it with LorroPoints in Settings > Advanced."
+          )
+        );
+        return;
+      }
+
+      const wasTransparent = appearance.theme === "transparent";
+      setTheme(theme.id);
+
+      if (theme.id !== "transparent" && !wasTransparent) return;
+
+      window.electron
+        .setRealWindowTransparency?.(theme.id === "transparent")
+        .then((result) => {
+          if (result && !result.ok) {
+            setTheme("dark");
+          }
+        })
+        .catch(() => undefined);
+    },
+    [appearance.theme, ownedThemes, t, showErrorToast]
+  );
 
   const handlePickBackground = useCallback(async () => {
     setIsImporting(true);
@@ -46,23 +104,29 @@ export function LorroAppearanceSection() {
         <h3 className="lorro-appearance__title">{t("appearance_theme")}</h3>
 
         <div className="lorro-appearance__themes">
-          {THEME_OPTIONS.map((theme) => (
-            <button
-              key={theme.id}
-              type="button"
-              className={`lorro-appearance__theme${
-                appearance.theme === theme.id
-                  ? " lorro-appearance__theme--active"
-                  : ""
-              }`}
-              onClick={() => setTheme(theme.id)}
-            >
-              <span
-                className={`lorro-appearance__swatch lorro-appearance__swatch--${theme.id}`}
-              />
-              {t(theme.labelKey)}
-            </button>
-          ))}
+          {THEME_OPTIONS.map((theme) => {
+            const isLocked =
+              theme.purchasable && !ownedThemes.includes(theme.id);
+
+            return (
+              <button
+                key={theme.id}
+                type="button"
+                className={`lorro-appearance__theme${
+                  appearance.theme === theme.id
+                    ? " lorro-appearance__theme--active"
+                    : ""
+                }${isLocked ? " lorro-appearance__theme--locked" : ""}`}
+                onClick={() => handleSelectTheme(theme)}
+              >
+                <span
+                  className={`lorro-appearance__swatch lorro-appearance__swatch--${theme.id}`}
+                />
+                {isLocked ? <LockIcon size={11} /> : null}
+                {t(theme.labelKey)}
+              </button>
+            );
+          })}
         </div>
       </div>
 

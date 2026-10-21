@@ -41,8 +41,8 @@
     padding: 12px;
     border: 1px solid globals.$border-color;
     border-radius: 8px;
-    background: globals.$dark-background-color;
-    color: #dadbe1;
+    background: rgba(0, 0, 0, 0.22);
+    color: globals.$body-color;
     font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
     font-size: 12px;
     line-height: 1.5;
@@ -50,7 +50,9 @@
 
     &:focus {
       outline: none;
-      border-color: #dadbe1;
+      border-color: globals.$lorro-violet;
+      box-shadow: 0 0 0 3px
+        color-mix(in srgb, var(--lorro-accent) 20%, transparent);
     }
 
     &::placeholder {
@@ -63,14 +65,16 @@
     padding: 12px;
     border: 1px solid globals.$border-color;
     border-radius: 8px;
-    background: globals.$dark-background-color;
-    color: #dadbe1;
+    background: rgba(0, 0, 0, 0.22);
+    color: globals.$body-color;
     font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
     font-size: 12px;
 
     &:focus {
       outline: none;
-      border-color: #dadbe1;
+      border-color: globals.$lorro-violet;
+      box-shadow: 0 0 0 3px
+        color-mix(in srgb, var(--lorro-accent) 20%, transparent);
     }
 
     &::placeholder {

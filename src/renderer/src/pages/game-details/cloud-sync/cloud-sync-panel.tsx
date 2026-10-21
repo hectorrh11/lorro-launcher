@@ -50,7 +50,6 @@ export function CloudSyncPanel({
   );
 
   const { t } = useTranslation("game_details");
-  const { t: tHydraCloud } = useTranslation("hydra_cloud");
   const { formatDate, formatDateTime } = useDate();
   const { formatNumber } = useFormat();
   const { hasActiveSubscription } = useUserDetails();
@@ -189,16 +188,7 @@ export function CloudSyncPanel({
   const disableActions =
     uploadingBackup || restoringBackup || deletingArtifact || freezingArtifact;
 
-  if (!hasActiveSubscription) {
-    return (
-      <div className="cloud-sync-panel__upgrade">
-        <p>{tHydraCloud("hydra_cloud_feature_found")}</p>
-        <Button onClick={() => window.electron.openCheckout()}>
-          {tHydraCloud("learn_more")}
-        </Button>
-      </div>
-    );
-  }
+  if (!hasActiveSubscription) return null;
 
   return (
     <>
@@ -218,9 +208,6 @@ export function CloudSyncPanel({
           label={
             <div className="cloud-sync-panel__automatic-sync-label">
               {t("enable_automatic_cloud_sync")}
-              <span className="cloud-sync-panel__automatic-sync-badge">
-                Lorro Cloud
-              </span>
             </div>
           }
           checked={automaticCloudSync}

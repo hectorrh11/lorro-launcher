@@ -1,4 +1,100 @@
 ========================================================
+VERSION 1.80.0
+========================================================
+* ARREGLO VISUAL EN LA FICHA: Play y "Mas versiones" vuelven a
+  estar en la misma fila. Antes se apilaban y el boton se salia de
+  la barra transparente de la cabecera. El nombre del ejecutable
+  queda al lado, con recorte elegante si no cabe.
+* TEMAS RENOMBRADOS: los acentos de pago ahora se llaman Golden,
+  Esmeralda y Rubi, tanto en Apariencia como en la tienda de
+  LorroPoints. Las compras anteriores se reconocen y se migran
+  automaticamente.
+* CUATRO COLECCIONES POR DEFECTO: tu perfil crea una sola vez las
+  colecciones Terminado, En proceso, Abandonado y No instalado,
+  listas para clasificar tus juegos desde el menu contextual. No se
+  duplican si ya existen ni pisan las tuyas.
+* TEXTOS DE LA TIENDA Y MODO RENDIMIENTO: la pestana Extras de
+  Ajustes > Avanzado deja de mostrar claves o textos en ingles en
+  espanol; las etiquetas, el saldo y los avisos estan traducidos.
+* PULIDO GENERAL: se revisaron typecheck y compilacion completos,
+  estados vacios, textos y botones de las pantallas tocadas.
+========================================================
+VERSION 1.79.0
+========================================================
+* DETECCION AUTOMATICA DEL EJECUTABLE: al terminar una descarga
+  y extraer el juego, Lorro busca el .exe dentro de la carpeta
+  instalada. Primero prueba los nombres conocidos del catalogo y,
+  si no hay coincidencia, elige el ejecutable mas probable
+  ignorando instaladores y redistribuibles (DirectX, vcredist,
+  anticheat, crash handlers, etc.).
+* AVISO CON OPCION DE CAMBIO: cuando se selecciona un ejecutable
+  automaticamente aparece un aviso: "Se ha seleccionado X.exe
+  como ejecutable, quieres cambiarlo?". Puedes mantenerlo o abrir
+  el selector y elegir otro archivo en ese momento.
+* EJECUTABLE VISIBLE EN LA FICHA: debajo de los botones de Play y
+  Mas versiones aparece el nombre del ejecutable seleccionado.
+  Al pulsarlo se abre la configuracion del juego para cambiarlo.
+* SIN BOTON DE DESCARGA DUPLICADO: si el juego ya tiene ejecutable
+  asignado, la ficha muestra Play y Mas versiones, nunca Descargar.
+* MAS VERSIONES: abre la lista de versiones y fuentes de descarga
+  disponibles del juego, ordenadas por fecha.
+========================================================
+VERSION 1.78.0
+========================================================
+* CLIPS COMO SECCION PROPIA: nueva pagina "Clips" en la barra
+  lateral, fuera de Ajustes > Avanzado. Lista todos los clips
+  guardados, los reproduce en la app (con controles), permite
+  mostrarlos en su carpeta y borrarlos con confirmacion.
+* ATAJO GLOBAL CONFIGURABLE: el atajo para guardar un clip ya no
+  depende de que la ventana este enfocada. Se registra en el sistema
+  (predeterminado Ctrl+Shift+X) y funciona con el launcher en
+  segundo plano, incluso mientras juegas. Se puede cambiar desde
+  Ajustes > Clips; si otro programa ocupa la combinacion, se avisa.
+* TODO EL AUDIO DEL SISTEMA: los clips ahora graban el audio que
+  suena en el equipo (incluido Discord, musica o el propio juego),
+  mediante captura loopback de Windows. El microfono es opcional y
+  se mezcla con el audio del sistema si lo activas.
+* DURACION AJUSTABLE: de 5 a 90 segundos en pasos de 5 (antes eran
+  35 s fijos). El buffer se mantiene en memoria y solo se escriben
+  en disco los clips que guardas.
+* ACTIVACION PERSISTENTE: el estado activado/desactivado, el atajo,
+  la duracion y las opciones de audio se guardan en tus preferencias
+  y se restauran al arrancar. Tras actualizar hay que activar los
+  clips una vez.
+* LOS CLIPS SALEN DE "EXTRAS": esa pestana de Ajustes > Avanzado
+  queda solo con el modo rendimiento y la tienda de temas.
+========================================================
+VERSION 1.77.0
+========================================================
+* ESTADISTICAS EN LA BIBLIOTECA: cada tarjeta muestra el tiempo
+  real de juego registrado por el monitor de procesos (no datos
+  simulados). Se refresca automaticamente al cerrar un juego.
+* LORROPOINTS REALES: ahora sumas los puntos reales de cada logro
+  desbloqueado (el numero que aparece junto al icono del logro), no
+  10 puntos fijos. Solo cuentan los logros desbloqueados. Justo
+  despues de reiniciar puede aparecer un saldo estimado hasta que
+  los logros se sincronicen; se abrevia y se recalcula solo.
+* TIENDA DE TEMAS: acentos dorado (300 pts), esmeralda (600 pts) y
+  rubi (900 pts). Se compran con LorroPoints y quedan guardados en
+  tu equipo. El tema transparente ahora usa transparencia real de
+  ventana en Windows (se ve el escritorio detras, no solo un fondo
+  borroso).
+* AJUSTES REDISENADOS: botones, celdas, controles y pestanas con un
+  acabado mas limpio y consistente. Los temas claro, oscuro,
+  transparente y los tres acentos pintan todos los componentes.
+* SIN SUPERFICIE COMERCIAL: eliminados el modal de suscripcion, los
+  banners de "necesitas Lorro Cloud", los upsells de logros, perfil,
+  fondos y descargadores, el modal de regalos y el anillo de perfil.
+  "Apoya el proyecto" abre el GitHub del proyecto.
+* SIN PERFILES DE LANZAMIENTO: se elimino el sistema de perfiles
+  (servicio, canales internos y pestana de Ajustes). Se mantiene el
+  lanzamiento normal con el ejecutable del juego.
+* MAS VERSIONES: el boton aparece junto a Jugar solo cuando el juego
+  ya esta instalado y abre el historial de versiones/repacks. Si no
+  esta instalado, el boton sigue siendo Descargar.
+* README independiente con seccion de Releases e instaladores.
+* Incluye todo lo anterior (1.69.0 y versiones previas).
+========================================================
 VERSION 1.69.0
 ========================================================
 * LANZAMIENTO: si el juego esta instalado pero no tiene ejecutable,

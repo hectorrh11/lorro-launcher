@@ -2,14 +2,11 @@ import { registerEvent } from "../register-event";
 import { gamesSublevel, levelKeys } from "@main/level";
 import { Game, GameShop } from "@types";
 import { saveBackupManager } from "@main/services/save-backup-manager";
-import { launchProfileManager } from "@main/services/launch-profile-manager";
 import { sessionStats } from "@main/services/session-stats";
+import { lorroPointsManager } from "@main/services/lorro-points";
 import { gameDiagnostics } from "@main/services/game-diagnostics";
 import { storageManager } from "@main/services/storage-manager";
 import { isGameRunning } from "@main/services/game-running-state";
-import { app, desktopCapturer, shell } from "electron";
-import fs from "node:fs/promises";
-import path from "node:path";
 
 const parseGameKey = (gameKey: string) => {
   const index = gameKey.indexOf(":");
@@ -70,30 +67,12 @@ registerEvent("importSaveBackup", (_e, sourceDir: string) =>
   saveBackupManager.importBackup(sourceDir)
 );
 
-registerEvent("listLaunchProfiles", (_e, gameKey: string) =>
-  launchProfileManager.list(gameKey)
-);
-registerEvent("saveLaunchProfile", (_e, gameKey: string, profile) =>
-  launchProfileManager.save(gameKey, profile)
-);
-registerEvent("deleteLaunchProfile", (_e, gameKey: string, profileId: string) =>
-  launchProfileManager.remove(gameKey, profileId)
-);
-registerEvent("duplicateLaunchProfile", (_e, gameKey: string, profileId: string) =>
-  launchProfileManager.duplicate(gameKey, profileId)
-);
-registerEvent("setDefaultLaunchProfile", (_e, gameKey: string, profileId: string) =>
-  launchProfileManager.setDefault(gameKey, profileId)
-);
-registerEvent("validateLaunchProfile", (_e, profile) =>
-  launchProfileManager.validate(profile)
-);
-registerEvent("launchWithProfile", (_e, gameKey: string, profileId?: string) =>
-  launchProfileManager.launch(gameKey, profileId)
-);
-
 registerEvent("getPlaytimeStats", (_e, gameKey: string) => sessionStats.get(gameKey));
 registerEvent("getPlaytimeStatsSummary", () => sessionStats.summary());
+registerEvent("getLorroPoints", () => lorroPointsManager.getSummary());
+registerEvent("purchaseLorroTheme", (_e, themeId: string) =>
+  lorroPointsManager.purchaseTheme(themeId)
+);
 registerEvent("correctPlaytimeSession", (_e, gameKey: string, sessionId: string, durationMs: number) =>
   sessionStats.correctSession(gameKey, sessionId, durationMs)
 );
@@ -119,32 +98,3 @@ registerEvent("moveGameInstallation", (_e, gameKey: string, destination: string)
 registerEvent("cleanStorageCaches", (_e, ids: string[]) =>
   storageManager.cleanCaches(ids)
 );
-
-const clipsDirectory = () =>
-  path.join(app.getPath("videos"), "Lorro Launcher", "Clips");
-
-registerEvent("getClipSource", async () => {
-  const sources = await desktopCapturer.getSources({
-    types: ["screen"],
-    thumbnailSize: { width: 0, height: 0 },
-  });
-  return sources[0]?.id ?? null;
-});
-
-registerEvent("saveClip", async (_e, data: ArrayBuffer, extension: string) => {
-  const directory = clipsDirectory();
-  await fs.mkdir(directory, { recursive: true });
-  const safeExtension = extension === "mp4" ? "mp4" : "webm";
-  const filePath = path.join(
-    directory,
-    `lorro-clip-${new Date().toISOString().replace(/[:.]/g, "-")}.${safeExtension}`
-  );
-  await fs.writeFile(filePath, Buffer.from(data));
-  return filePath;
-});
-
-registerEvent("openClipFolder", async () => {
-  const directory = clipsDirectory();
-  await fs.mkdir(directory, { recursive: true });
-  return shell.openPath(directory);
-});

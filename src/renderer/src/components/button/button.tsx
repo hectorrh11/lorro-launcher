@@ -8,7 +8,7 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   tooltip?: string;
   tooltipPlace?: PlacesType;
-  theme?: "primary" | "outline" | "dark" | "danger" | "cloud";
+  theme?: "primary" | "outline" | "dark" | "danger";
   /** `small` fits compact rows (list headers, card footers). */
   size?: "medium" | "small";
 }

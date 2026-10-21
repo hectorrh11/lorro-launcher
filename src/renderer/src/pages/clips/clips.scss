@@ -1,0 +1,130 @@
+@use "../../scss/globals.scss";
+
+.clips {
+  display: flex;
+  flex-direction: column;
+  gap: calc(globals.$spacing-unit * 3);
+  width: 100%;
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: calc(globals.$spacing-unit * 2);
+    flex-wrap: wrap;
+  }
+
+  &__title {
+    margin: 0 0 calc(globals.$spacing-unit * 0.5);
+    font-family: globals.$font-display;
+    font-size: 24px;
+  }
+
+  &__description {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.64);
+    font-size: 14px;
+  }
+
+  &__header-actions {
+    display: flex;
+    gap: globals.$spacing-unit;
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: globals.$spacing-unit;
+    padding: calc(globals.$spacing-unit * 8);
+    border-radius: 12px;
+    border: 1px dashed rgba(255, 255, 255, 0.14);
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  &__empty-hint {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  &__layout {
+    display: grid;
+    grid-template-columns: minmax(220px, 320px) 1fr;
+    gap: calc(globals.$spacing-unit * 2);
+    align-items: start;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: calc(globals.$spacing-unit * 0.5);
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: calc(globals.$spacing-unit * 0.5);
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    padding: calc(globals.$spacing-unit * 1.25);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.03);
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.06);
+    }
+
+    &--active {
+      border-color: var(--lorro-accent);
+      background-color: rgba(139, 92, 246, 0.14);
+    }
+  }
+
+  &__item-name {
+    font-size: 13px;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__item-meta {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+  }
+
+  &__player {
+    display: flex;
+    flex-direction: column;
+    gap: calc(globals.$spacing-unit * 1.5);
+  }
+
+  &__video {
+    width: 100%;
+    max-height: 60vh;
+    border-radius: 12px;
+    background-color: #000;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  &__player-actions {
+    display: flex;
+    gap: globals.$spacing-unit;
+    flex-wrap: wrap;
+  }
+}

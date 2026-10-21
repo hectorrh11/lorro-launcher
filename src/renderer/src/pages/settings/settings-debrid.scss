@@ -7,7 +7,8 @@
 
   &__description {
     margin: 0 0 calc(globals.$spacing-unit * 2) 0;
-    color: var(--text-secondary);
+    color: globals.$subtle-color;
+    font-size: 12.5px;
     line-height: 1.6;
   }
 
@@ -29,9 +30,10 @@
 
   &__section-title {
     margin: 0;
-    font-size: 1.125rem;
+    font-family: globals.$font-display;
+    font-size: 14px;
     font-weight: 600;
-    color: var(--text-primary);
+    color: globals.$muted-color;
   }
 
   &__collapse-button {
@@ -40,15 +42,23 @@
     color: rgba(255, 255, 255, 0.7);
     cursor: pointer;
     padding: 4px;
-    border-radius: 4px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    transition:
+      color 0.16s ease,
+      background-color 0.16s ease;
 
     &:hover {
-      color: rgba(255, 255, 255, 0.9);
+      color: globals.$muted-color;
       background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    &:focus-visible {
+      outline: 2px solid globals.$lorro-violet;
+      outline-offset: 2px;
     }
   }
 

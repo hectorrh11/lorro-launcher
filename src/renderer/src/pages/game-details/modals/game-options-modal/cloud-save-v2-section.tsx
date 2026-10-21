@@ -2,13 +2,13 @@ import { useTranslation } from "react-i18next";
 
 import { CloudSavePanel, useCloudSaveV2 } from "../../cloud-save-v2";
 
-interface HydraCloudV2SettingsSectionProps {
+interface CloudSaveV2SectionProps {
   onSelectExecutable: () => void;
 }
 
-export function HydraCloudV2SettingsSection({
+export function CloudSaveV2Section({
   onSelectExecutable,
-}: Readonly<HydraCloudV2SettingsSectionProps>) {
+}: Readonly<CloudSaveV2SectionProps>) {
   const { t } = useTranslation("game_details");
   const {
     overview,

@@ -1,10 +1,10 @@
-import type { AuthPage, Downloader } from "@shared";
+import type { AuthPage, Downloader, LorroPointsSummary } from "@shared";
 import type {
   DiagnosticReport,
+  LorroClipInfo,
+  LorroClipSettings,
   LorroGameStats,
   LorroStatsSummary,
-  LaunchProfile,
-  LaunchProfileValidation,
   SaveBackupConfig,
   SaveBackupEntry,
   SaveBackupGameConfig,
@@ -994,6 +994,14 @@ declare global {
     onExtractionComplete: (
       cb: (shop: GameShop, objectId: string) => void
     ) => () => Electron.IpcRenderer;
+    onExecutableDetected: (
+      cb: (payload: {
+        shop: GameShop;
+        objectId: string;
+        title: string;
+        executablePath: string;
+      }) => void
+    ) => () => Electron.IpcRenderer;
     onExtractionProgress: (
       cb: (shop: GameShop, objectId: string, progress: number) => void
     ) => () => Electron.IpcRenderer;
@@ -1126,32 +1134,15 @@ declare global {
     importSaveBackup: (
       sourceDir: string
     ) => Promise<SaveBackupEntry | null>;
-    listLaunchProfiles: (gameKey: string) => Promise<LaunchProfile[]>;
-    saveLaunchProfile: (
-      gameKey: string,
-      profile: LaunchProfile
-    ) => Promise<LaunchProfile[]>;
-    deleteLaunchProfile: (
-      gameKey: string,
-      profileId: string
-    ) => Promise<LaunchProfile[]>;
-    duplicateLaunchProfile: (
-      gameKey: string,
-      profileId: string
-    ) => Promise<LaunchProfile[]>;
-    setDefaultLaunchProfile: (
-      gameKey: string,
-      profileId: string
-    ) => Promise<LaunchProfile[]>;
-    validateLaunchProfile: (
-      profile: LaunchProfile
-    ) => Promise<LaunchProfileValidation>;
-    launchWithProfile: (
-      gameKey: string,
-      profileId?: string
-    ) => Promise<{ command: string; pid: number }>;
     getPlaytimeStats: (gameKey: string) => Promise<LorroGameStats | null>;
     getPlaytimeStatsSummary: () => Promise<LorroStatsSummary>;
+    getLorroPoints: () => Promise<LorroPointsSummary>;
+    purchaseLorroTheme: (
+      themeId: string
+    ) => Promise<{ ok: boolean; message: string }>;
+    setRealWindowTransparency: (
+      enabled: boolean
+    ) => Promise<{ ok: boolean; message: string }>;
     correctPlaytimeSession: (
       gameKey: string,
       sessionId: string,
@@ -1168,9 +1159,26 @@ declare global {
       gameKey: string,
       checkId: string
     ) => Promise<{ fixed: boolean; message: string }>;
-    getClipSource: () => Promise<string | null>;
-    saveClip: (data: ArrayBuffer, extension: string) => Promise<string>;
-    openClipFolder: () => Promise<string>;
+    getClipSettings: () => Promise<LorroClipSettings>;
+    updateClipSettings: (
+      patch: Partial<LorroClipSettings>
+    ) => Promise<{
+      ok: boolean;
+      message: string;
+      settings: LorroClipSettings;
+    }>;
+    listClips: () => Promise<LorroClipInfo[]>;
+    deleteClip: (name: string) => Promise<{ ok: boolean; message: string }>;
+    revealClip: (name: string) => Promise<{ ok: boolean; message: string }>;
+    openClipsFolder: () => Promise<{ ok: boolean; message: string }>;
+    saveClip: (
+      data: ArrayBuffer,
+      extension: string
+    ) => Promise<{ ok: boolean; message: string; path: string | null }>;
+    onClipSaveRequest: (cb: () => void) => () => void;
+    onClipSettingsUpdated: (
+      cb: (settings: LorroClipSettings) => void
+    ) => () => void;
     getStorageReport: () => Promise<StorageReport>;
     moveGameInstallation: (
       gameKey: string,
@@ -1448,10 +1456,6 @@ declare global {
     onSyncNotificationCount: (
       cb: (notification: NotificationSync) => void
     ) => () => Electron.IpcRenderer;
-    onCloudGiftResolved: (
-      cb: (giftId: string) => void
-    ) => () => Electron.IpcRenderer;
-    notifyCloudGiftResolved: (giftId: string) => Promise<void>;
     syncFriendRequests: (friendRequestCount: number) => Promise<void>;
 
     /* Notifications */

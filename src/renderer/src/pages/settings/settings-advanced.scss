@@ -3,37 +3,57 @@
 .settings-advanced {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 
   &__tabs {
-    display: flex;
-    gap: 8px;
+    display: inline-flex;
+    align-self: flex-start;
+    gap: 4px;
+    padding: 4px;
     flex-wrap: wrap;
+    border: 1px solid globals.$border-color;
+    border-radius: 999px;
+    background: globals.$surface-color;
   }
 
   &__tab {
-    padding: 8px 14px;
-    border-radius: 10px;
-    border: 1px solid globals.$border-color;
-    background: globals.$surface-color;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    background: transparent;
     color: globals.$body-color;
     cursor: pointer;
+    font-size: 12.5px;
     font-weight: 600;
-    transition: 0.15s ease;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    transition:
+      color 0.16s ease,
+      background-color 0.16s ease,
+      border-color 0.16s ease,
+      box-shadow 0.16s ease;
 
     &:hover {
-      border-color: globals.$border-strong-color;
+      background: color-mix(in srgb, var(--lorro-accent) 9%, transparent);
       color: globals.$muted-color;
     }
 
+    &:focus-visible {
+      outline: 2px solid globals.$lorro-violet;
+      outline-offset: 2px;
+    }
+
     &--active {
+      color: globals.$muted-color;
+      border-color: color-mix(in srgb, var(--lorro-accent) 55%, transparent);
       background: linear-gradient(
         135deg,
-        rgba(139, 92, 246, 0.9),
-        rgba(34, 211, 238, 0.85)
+        color-mix(in srgb, var(--lorro-accent) 28%, transparent) 0%,
+        color-mix(in srgb, var(--lorro-accent) 10%, transparent) 100%
       );
-      color: #0b0912;
-      border-color: transparent;
+      box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--lorro-accent) 22%, transparent),
+        0 8px 22px -10px var(--lorro-accent-glow);
     }
   }
 
@@ -43,87 +63,136 @@
     gap: 16px;
   }
 
+  &__title {
+    margin: 0;
+    font-family: globals.$font-display;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: globals.$muted-color;
+  }
+
   &__card {
-    background: globals.$surface-color;
+    background:
+      linear-gradient(
+        160deg,
+        rgba(255, 255, 255, 0.03) 0%,
+        rgba(255, 255, 255, 0.008) 100%
+      ),
+      globals.$surface-color;
     border: 1px solid globals.$border-color;
     border-radius: 14px;
-    padding: 16px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
+    box-shadow: 0 18px 40px -36px rgba(0, 0, 0, 0.9);
+
+    > .settings-advanced__row + .settings-advanced__row {
+      padding-top: 12px;
+      border-top: 1px solid globals.$border-color;
+    }
+
+    > label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      color: globals.$subtle-color;
+      font-size: 12px;
+      font-weight: 500;
+    }
   }
 
   &__card-title {
-    font-family: globals.$font-display;
-    font-size: 15px;
-    font-weight: 600;
-    color: globals.$muted-color;
     margin: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid globals.$border-color;
+    font-family: globals.$font-display;
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: globals.$lorro-violet-soft;
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-family: globals.$font-display;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: globals.$subtle-color;
   }
 
   &__hint {
-    font-size: 12px;
+    font-size: 12.5px;
     color: globals.$subtle-color;
     margin: 0;
-    line-height: 1.5;
+    max-width: 76ch;
+    line-height: 1.55;
   }
 
   &__row {
     display: flex;
     gap: 12px;
-    align-items: flex-end;
+    align-items: center;
     flex-wrap: wrap;
-  }
 
-  &__field {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    min-width: 140px;
-
-    label {
-      font-size: 12px;
-      color: globals.$subtle-color;
-    }
-
-    input[type="number"],
-    input[type="text"] {
-      background: globals.$surface-raised-color;
-      border: 1px solid globals.$border-color;
-      border-radius: 8px;
+    strong {
       color: globals.$muted-color;
-      padding: 8px 10px;
-      font-size: 13px;
+      font-weight: 600;
     }
   }
 
-  &__input,
-  &__textarea {
+  &__input {
     width: 100%;
-    background: globals.$surface-raised-color;
+    background: rgba(0, 0, 0, 0.22);
     border: 1px solid globals.$border-color;
-    border-radius: 8px;
-    color: globals.$muted-color;
-    padding: 8px 10px;
+    border-radius: 9px;
+    color: globals.$body-color;
+    padding: 8px 11px;
     font-size: 13px;
     font-family: inherit;
-    resize: vertical;
-  }
+    outline: none;
+    transition:
+      border-color 0.16s ease,
+      box-shadow 0.16s ease;
 
-  &__card > label {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    font-size: 12px;
-    color: globals.$subtle-color;
+    &:hover {
+      border-color: globals.$border-strong-color;
+    }
+
+    &:focus {
+      border-color: globals.$lorro-violet;
+      box-shadow: 0 0 0 3px
+        color-mix(in srgb, var(--lorro-accent) 20%, transparent);
+    }
   }
 
   &__checkbox {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 13px;
+    gap: 10px;
+    padding: 11px 14px;
+    border: 1px solid globals.$border-color;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.018);
     color: globals.$body-color;
+    font-size: 13px;
+    cursor: pointer;
+    transition:
+      border-color 0.16s ease,
+      background-color 0.16s ease;
+
+    &:hover {
+      border-color: color-mix(in srgb, var(--lorro-accent) 24%, transparent);
+      background: color-mix(in srgb, var(--lorro-accent) 6%, transparent);
+    }
+
+    input[type="checkbox"] {
+      accent-color: globals.$lorro-violet;
+    }
   }
 
   &__list {
@@ -139,9 +208,17 @@
     justify-content: space-between;
     background: globals.$surface-raised-color;
     border: 1px solid globals.$border-color;
-    border-radius: 10px;
-    padding: 10px 12px;
+    border-radius: 12px;
+    padding: 12px 14px;
     flex-wrap: wrap;
+    transition:
+      border-color 0.16s ease,
+      background-color 0.16s ease;
+
+    &:hover {
+      border-color: color-mix(in srgb, var(--lorro-accent) 28%, transparent);
+      background: color-mix(in srgb, var(--lorro-accent) 4%, transparent);
+    }
   }
 
   &__item-main {
@@ -163,6 +240,29 @@
     word-break: break-all;
   }
 
+  &__meta {
+    display: block;
+    margin-top: 3px;
+    font-size: 11.5px;
+    color: globals.$subtle-color;
+    word-break: break-word;
+  }
+
+  &__path {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 9px 12px;
+    border-radius: 9px;
+    border: 1px solid globals.$border-color;
+    background: rgba(0, 0, 0, 0.22);
+    color: globals.$body-color;
+    font-family: "JetBrains Mono", "SF Mono", monospace;
+    font-size: 12px;
+  }
+
   &__actions {
     display: flex;
     gap: 8px;
@@ -175,42 +275,100 @@
     gap: 12px;
   }
 
+  &__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    border: 1px solid globals.$border-color;
+    border-radius: 12px;
+    background:
+      linear-gradient(
+        160deg,
+        color-mix(in srgb, var(--lorro-accent) 9%, transparent) 0%,
+        transparent 100%
+      ),
+      globals.$surface-raised-color;
+
+    > span:not(.settings-advanced__meta) {
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: globals.$subtle-color;
+    }
+
+    > strong {
+      font-family: globals.$font-display;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: globals.$muted-color;
+    }
+  }
+
   &__drive {
     background: globals.$surface-raised-color;
     border: 1px solid globals.$border-color;
     border-radius: 12px;
-    padding: 12px;
+    padding: 14px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
+
+    > strong {
+      font-family: globals.$font-display;
+      font-size: 20px;
+      font-weight: 600;
+      color: globals.$muted-color;
+    }
+
+    > span {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: globals.$subtle-color;
+    }
+  }
+
+  &__bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+    height: 120px;
+    padding: 8px 0 0;
+    border-bottom: 1px solid globals.$border-color;
   }
 
   &__bar {
-    height: 8px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.08);
-    overflow: hidden;
+    flex: 1;
+    min-width: 4px;
+    min-height: 4px;
+    border-radius: 4px 4px 0 0;
+    background: linear-gradient(
+      180deg,
+      globals.$lorro-violet 0%,
+      color-mix(in srgb, var(--lorro-accent-3) 55%, transparent) 100%
+    );
+    transition: filter 0.16s ease;
 
-    span {
-      display: block;
-      height: 100%;
-      border-radius: 999px;
-      background: linear-gradient(
-        90deg,
-        globals.$lorro-violet,
-        globals.$lorro-cyan
-      );
+    &:hover {
+      filter: brightness(1.25);
     }
   }
 
   &__check {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: 10px 12px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
     border-radius: 10px;
+    border: 1px solid globals.$border-color;
     border-left: 3px solid globals.$subtle-color;
     background: globals.$surface-raised-color;
+    flex-wrap: wrap;
 
     &--ok {
       border-left-color: globals.$success-color;
@@ -222,6 +380,16 @@
 
     &--error {
       border-left-color: globals.$error-color;
+    }
+
+    > div {
+      min-width: 0;
+
+      strong {
+        font-size: 13px;
+        font-weight: 600;
+        color: globals.$muted-color;
+      }
     }
   }
 
@@ -236,41 +404,37 @@
     color: globals.$subtle-color;
   }
 
-  &__chart {
-    display: flex;
-    align-items: flex-end;
-    gap: 4px;
-    height: 120px;
-    padding: 8px 0;
-  }
-
-  &__chart-bar {
-    flex: 1;
-    min-width: 4px;
-    border-radius: 4px 4px 0 0;
-    background: linear-gradient(
-      180deg,
-      globals.$lorro-violet,
-      rgba(34, 211, 238, 0.4)
-    );
-  }
-
   &__empty {
     font-size: 13px;
     color: globals.$subtle-color;
-    padding: 12px;
+    padding: 16px;
     text-align: center;
+    border: 1px dashed globals.$border-color;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.012);
   }
 
   &__pre {
     max-height: 160px;
     overflow: auto;
-    background: rgba(0, 0, 0, 0.35);
-    border-radius: 8px;
-    padding: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid globals.$border-color;
+    border-radius: 9px;
+    padding: 10px 12px;
+    font-family: "JetBrains Mono", "SF Mono", monospace;
     font-size: 11px;
     color: globals.$body-color;
     white-space: pre-wrap;
+  }
+
+  @media (max-width: 720px) {
+    &__tabs {
+      border-radius: 14px;
+    }
+
+    &__card {
+      padding: 16px;
+    }
   }
 }
 
@@ -287,14 +451,4 @@ body.lorro-performance-mode {
   video {
     display: none !important;
   }
-}
-
-body.lorro-reward-gold .settings-advanced__tab--active {
-  color: #ffd166;
-  border-color: #ffd166;
-}
-
-body.lorro-reward-emerald .settings-advanced__tab--active {
-  color: #3ddc97;
-  border-color: #3ddc97;
 }

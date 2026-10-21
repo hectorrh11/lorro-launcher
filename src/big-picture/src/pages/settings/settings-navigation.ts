@@ -43,8 +43,6 @@ export const COMPATIBILITY_SECTION_REGION_ID = "compatibility-section-region";
 export const INTEGRATIONS_SECTION_REGION_ID = "integrations-section-region";
 export const ACCOUNT_PRIVACY_PRIVACY_SELECT_ID =
   "account-privacy-profile-visibility";
-export const ACCOUNT_PRIVACY_CLOUD_GIFTS_CHECKBOX_ID =
-  "account-privacy-cloud-gifts";
 export const ACCOUNT_PRIVACY_SOUVENIRS_SELECT_ID =
   "account-privacy-souvenirs-visibility";
 export const COMPATIBILITY_GAMEMODE_FOCUS_ID = "compatibility-gamemode";
@@ -55,8 +53,6 @@ export const ACCOUNT_PRIVACY_UPDATE_EMAIL_BUTTON_ID =
   "account-privacy-update-email";
 export const ACCOUNT_PRIVACY_UPDATE_PASSWORD_BUTTON_ID =
   "account-privacy-update-password";
-export const ACCOUNT_PRIVACY_HYDRA_CLOUD_BUTTON_ID =
-  "account-privacy-hydra-cloud";
 export const EMULATION_OVERVIEW_REGION_ID = "emulation-overview-region";
 export const EMULATION_DETAIL_REGION_ID = "emulation-detail-region";
 export const EMULATION_DETAIL_EXECUTABLE_REGION_ID =

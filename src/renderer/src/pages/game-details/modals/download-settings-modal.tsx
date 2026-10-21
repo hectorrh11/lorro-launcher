@@ -25,7 +25,6 @@ import {
   useToast,
   useUserDetails,
 } from "@renderer/hooks";
-import { useSubscription } from "@renderer/hooks/use-subscription";
 import {
   DownloadError,
   Downloader,
@@ -343,7 +342,6 @@ export function DownloadSettingsModal({
 
   const { isFeatureEnabled, Feature } = useFeature();
   const { hasActiveSubscription } = useUserDetails();
-  const { showHydraCloudModal } = useSubscription();
 
   const selectedUri = useMemo(() => {
     if (!repack || selectedDownloader === null) return null;
@@ -1446,19 +1444,6 @@ export function DownloadSettingsModal({
                     );
                   }
 
-                  if (
-                    option.downloader === Downloader.VikingFile &&
-                    option.isAvailableButNotConfigured
-                  ) {
-                    return (
-                      <div className="download-settings-modal__recommendation-badge">
-                        <span className="download-settings-modal__hydra-cloud-badge">
-                          Lorro Cloud
-                        </span>
-                      </div>
-                    );
-                  }
-
                   return null;
                 };
 
@@ -1493,7 +1478,10 @@ export function DownloadSettingsModal({
                           option.downloader === Downloader.VikingFile &&
                           option.isAvailableButNotConfigured
                         ) {
-                          showHydraCloudModal("vikingfile");
+                          showErrorToast(
+                            t("download_error"),
+                            t("download_error_vikingfile_subscription_required")
+                          );
                         } else {
                           setSelectedDownloader(option.downloader);
                         }

@@ -1,5 +1,6 @@
 import {
   DownloadIcon,
+  FileIcon,
   GearIcon,
   HeartFillIcon,
   HeartIcon,
@@ -451,15 +452,26 @@ export function HeroPanelActions() {
 
     if (game?.executablePath || isPlayableClassics) {
       return (
-        <Button
-          onClick={openGame}
-          theme="outline"
-          disabled={deleting || isGameRunning}
-          className="hero-panel-actions__action"
-        >
-          <PlayIcon />
-          {t("play")}
-        </Button>
+        <>
+          <Button
+            onClick={openGame}
+            theme="outline"
+            disabled={deleting || isGameRunning}
+            className="hero-panel-actions__action"
+          >
+            <PlayIcon />
+            {t("play")}
+          </Button>
+          <Button
+            onClick={() => setShowRepacksModal(true)}
+            theme="outline"
+            disabled={deleting}
+            className="hero-panel-actions__action"
+          >
+            <DownloadIcon />
+            {t("more_versions", "More versions")}
+          </Button>
+        </>
       );
     }
 
@@ -522,7 +534,27 @@ export function HeroPanelActions() {
             )}
           </div>
         </Modal>
-        {gameActionButton()}
+        <div className="hero-panel-actions__primary">
+          <div className="hero-panel-actions__buttons">
+            {gameActionButton()}
+          </div>
+          {game.executablePath && (
+            <button
+              type="button"
+              className="hero-panel-actions__executable"
+              title={game.executablePath}
+              onClick={() => {
+                setGameOptionsInitialCategory("general");
+                setShowGameOptionsModal(true);
+              }}
+            >
+              <FileIcon size={13} />
+              <span>
+                {game.executablePath.split(/[/\\]/).filter(Boolean).pop()}
+              </span>
+            </button>
+          )}
+        </div>
         <div className="hero-panel-actions__separator" />
         <Button
           onClick={toggleGameFavorite}

@@ -1,30 +1,3 @@
-export interface LaunchToolStep {
-  path: string;
-  arguments: string;
-}
-
-export type LaunchWindowMode = "windowed" | "fullscreen" | "borderless";
-
-export interface LaunchProfile {
-  id: string;
-  name: string;
-  executablePath: string;
-  workingDirectory: string;
-  arguments: string;
-  environment: Record<string, string>;
-  windowMode: LaunchWindowMode;
-  externalTools: LaunchToolStep[];
-  preLaunch: LaunchToolStep[];
-  isDefault: boolean;
-}
-
-export interface LaunchProfileValidation {
-  valid: boolean;
-  executableExists: boolean;
-  workingDirectoryExists: boolean;
-  messages: string[];
-}
-
 export interface SaveBackupConfig {
   destinationDir: string | null;
   maxCount: number;
@@ -118,4 +91,21 @@ export interface StorageReport {
   games: StorageGameEntry[];
   caches: StorageCacheEntry[];
   totalGamesBytes: number;
+}
+
+export interface LorroClipSettings {
+  enabled: boolean;
+  hotkey: string;
+  durationSeconds: number;
+  systemAudio: boolean;
+  microphone: boolean;
+  registered?: boolean;
+}
+
+export interface LorroClipInfo {
+  name: string;
+  path: string;
+  url: string;
+  sizeBytes: number;
+  createdAt: string;
 }

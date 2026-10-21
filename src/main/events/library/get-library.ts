@@ -22,6 +22,7 @@ import {
   resolveAchievementCount,
   resolveUnlockedAchievementCount,
 } from "@main/services/achievements/achievement-memory-store";
+import { sessionStats } from "@main/services/session-stats";
 
 export const lookupCachedPlatform = async (
   gameKey: string
@@ -47,6 +48,16 @@ export const lookupCachedPlatform = async (
 const getLibrary = async (
   collection: "visible" | "hidden" | "all" = "visible"
 ): Promise<LibraryGame[]> => {
+  const playtimeByGameKey = new Map(
+    (await sessionStats.list()).map((stats) => [
+      stats.gameKey,
+      stats.sessions.reduce(
+        (total, session) => total + (session.end ? session.durationMs : 0),
+        0
+      ),
+    ])
+  );
+
   return gamesSublevel
     .iterator()
     .all()
@@ -171,6 +182,7 @@ const getLibrary = async (
               objectId: game.objectId,
               unlockedAchievementCount,
               achievementCount,
+              lorroPlaytimeMs: playtimeByGameKey.get(key) ?? null,
               ...(game.shop === "epic" &&
                 game.catalogueGame?.shop !== "steam" && {
                   iconUrl: composedAssets?.iconUrl ?? null,

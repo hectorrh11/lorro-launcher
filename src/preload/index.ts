@@ -72,6 +72,8 @@ import type {
   LegacySaveExportProgress,
   LegacySaveExportResult,
   OpenCheckoutOptions,
+  LorroClipSettings,
+  LorroClipInfo,
   AchievementSouvenirSyncStatus,
   SteamSyncState,
   SteamSyncFinishedPayload,
@@ -1322,6 +1324,26 @@ contextBridge.exposeInMainWorld("electron", {
     ipcRenderer.on("on-extraction-complete", listener);
     return () => ipcRenderer.removeListener("on-extraction-complete", listener);
   },
+  onExecutableDetected: (
+    cb: (payload: {
+      shop: GameShop;
+      objectId: string;
+      title: string;
+      executablePath: string;
+    }) => void
+  ) => {
+    const listener = (
+      _event: Electron.IpcRendererEvent,
+      payload: {
+        shop: GameShop;
+        objectId: string;
+        title: string;
+        executablePath: string;
+      }
+    ) => cb(payload);
+    ipcRenderer.on("on-executable-detected", listener);
+    return () => ipcRenderer.removeListener("on-executable-detected", listener);
+  },
   onExtractionProgress: (
     cb: (shop: GameShop, objectId: string, progress: number) => void
   ) => {
@@ -1480,23 +1502,41 @@ contextBridge.exposeInMainWorld("electron", {
   restoreSaveBackup: (id: string) => ipcRenderer.invoke("restoreSaveBackup", id),
   exportSaveBackup: (id: string, destinationDir: string) => ipcRenderer.invoke("exportSaveBackup", id, destinationDir),
   importSaveBackup: (sourceDir: string) => ipcRenderer.invoke("importSaveBackup", sourceDir),
-  listLaunchProfiles: (gameKey: string) => ipcRenderer.invoke("listLaunchProfiles", gameKey),
-  saveLaunchProfile: (gameKey: string, profile: unknown) => ipcRenderer.invoke("saveLaunchProfile", gameKey, profile),
-  deleteLaunchProfile: (gameKey: string, profileId: string) => ipcRenderer.invoke("deleteLaunchProfile", gameKey, profileId),
-  duplicateLaunchProfile: (gameKey: string, profileId: string) => ipcRenderer.invoke("duplicateLaunchProfile", gameKey, profileId),
-  setDefaultLaunchProfile: (gameKey: string, profileId: string) => ipcRenderer.invoke("setDefaultLaunchProfile", gameKey, profileId),
-  validateLaunchProfile: (profile: unknown) => ipcRenderer.invoke("validateLaunchProfile", profile),
-  launchWithProfile: (gameKey: string, profileId?: string) => ipcRenderer.invoke("launchWithProfile", gameKey, profileId),
   getPlaytimeStats: (gameKey: string) => ipcRenderer.invoke("getPlaytimeStats", gameKey),
+  getLorroPoints: () => ipcRenderer.invoke("getLorroPoints"),
+  purchaseLorroTheme: (themeId: string) =>
+    ipcRenderer.invoke("purchaseLorroTheme", themeId),
+  setRealWindowTransparency: (enabled: boolean) =>
+    ipcRenderer.invoke("setRealWindowTransparency", enabled),
   getPlaytimeStatsSummary: () => ipcRenderer.invoke("getPlaytimeStatsSummary"),
   correctPlaytimeSession: (gameKey: string, sessionId: string, durationMs: number) => ipcRenderer.invoke("correctPlaytimeSession", gameKey, sessionId, durationMs),
   deletePlaytimeSession: (gameKey: string, sessionId: string) => ipcRenderer.invoke("deletePlaytimeSession", gameKey, sessionId),
   runGameDiagnostics: (gameKey: string) => ipcRenderer.invoke("runGameDiagnostics", gameKey),
   fixGameDiagnostic: (gameKey: string, checkId: string) => ipcRenderer.invoke("fixGameDiagnostic", gameKey, checkId),
-  getClipSource: () => ipcRenderer.invoke("getClipSource"),
+  getClipSettings: () => ipcRenderer.invoke("getClipSettings"),
+  updateClipSettings: (patch: Partial<LorroClipSettings>) =>
+    ipcRenderer.invoke("updateClipSettings", patch),
+  listClips: () =>
+    ipcRenderer.invoke("listClips") as Promise<LorroClipInfo[]>,
+  deleteClip: (name: string) => ipcRenderer.invoke("deleteClip", name),
+  revealClip: (name: string) => ipcRenderer.invoke("revealClip", name),
+  openClipsFolder: () => ipcRenderer.invoke("openClipsFolder"),
   saveClip: (data: ArrayBuffer, extension: string) =>
     ipcRenderer.invoke("saveClip", data, extension),
-  openClipFolder: () => ipcRenderer.invoke("openClipFolder"),
+  onClipSaveRequest: (cb: () => void) => {
+    const listener = () => cb();
+    ipcRenderer.on("on-clip-save-request", listener);
+    return () => ipcRenderer.removeListener("on-clip-save-request", listener);
+  },
+  onClipSettingsUpdated: (cb: (settings: LorroClipSettings) => void) => {
+    const listener = (
+      _event: Electron.IpcRendererEvent,
+      settings: LorroClipSettings
+    ) => cb(settings);
+    ipcRenderer.on("on-clip-settings-updated", listener);
+    return () =>
+      ipcRenderer.removeListener("on-clip-settings-updated", listener);
+  },
   getStorageReport: () => ipcRenderer.invoke("getStorageReport"),
   moveGameInstallation: (gameKey: string, destination: string) => ipcRenderer.invoke("moveGameInstallation", gameKey, destination),
   cleanStorageCaches: (ids: string[]) => ipcRenderer.invoke("cleanStorageCaches", ids),
@@ -1585,8 +1625,6 @@ contextBridge.exposeInMainWorld("electron", {
   openExternal: (src: string) => ipcRenderer.invoke("openExternal", src),
   openCheckout: (options?: OpenCheckoutOptions) =>
     ipcRenderer.invoke("openCheckout", options),
-  notifyCloudGiftResolved: (giftId: string) =>
-    ipcRenderer.invoke("notifyCloudGiftResolved", giftId),
   getCloudIframeUrl: () => ipcRenderer.invoke("getCloudIframeUrl"),
   showOpenDialog: (options: Electron.OpenDialogOptions) =>
     ipcRenderer.invoke("showOpenDialog", options),
@@ -1805,13 +1843,6 @@ contextBridge.exposeInMainWorld("electron", {
   },
   syncFriendRequests: (friendRequestCount: number) =>
     ipcRenderer.invoke("syncFriendRequests", friendRequestCount),
-
-  onCloudGiftResolved: (cb: (giftId: string) => void) => {
-    const listener = (_event: Electron.IpcRendererEvent, giftId: string) =>
-      cb(giftId);
-    ipcRenderer.on("on-cloud-gift-resolved", listener);
-    return () => ipcRenderer.removeListener("on-cloud-gift-resolved", listener);
-  },
 
   /* User */
   getComparedUnlockedAchievements: (

@@ -141,9 +141,7 @@ export class WindowManager {
               height: 34,
             },
           }),
-    };
-
-  private static formatVersionNumber(version: string) {
+    };  private static formatVersionNumber(version: string) {
     return version.replaceAll(".", "-");
   }
 
@@ -310,6 +308,16 @@ export class WindowManager {
 
     this.updateInitialConfig(this.fitToWorkArea(configWithoutMaximized));
 
+    const realTransparent =
+      process.platform === "win32" &&
+      Boolean(userPreferences?.realTransparentWindow);
+
+    this.updateInitialConfig(
+      realTransparent
+        ? { transparent: true, backgroundColor: "#00000000" }
+        : { transparent: false, backgroundColor: "#1c1c1c" }
+    );
+
     const mainWindow = new BrowserWindow(
       this.initialConfigInitializationMainWindow
     );
@@ -463,7 +471,7 @@ export class WindowManager {
 
       await this.saveScreenConfig(screenConfig);
 
-      if (userPreferences?.preferQuitInsteadOfHiding) {
+      if (userPreferences?.preferQuitInsteadOfHiding && !this.isRecreatingMainWindow) {
         app.quit();
       }
     });
@@ -472,6 +480,58 @@ export class WindowManager {
       shell.openExternal(handler.url);
       return { action: "deny" };
     });
+  }
+
+  private static isRecreatingMainWindow = false;
+
+  public static async setRealWindowTransparency(
+    enabled: boolean
+  ): Promise<{ ok: boolean; message: string }> {
+    if (process.platform !== "win32") {
+      return {
+        ok: true,
+        message: "The transparent theme uses the window's own styling here.",
+      };
+    }
+
+    const userPreferences = await db
+      .get<string, UserPreferences | null>(levelKeys.userPreferences, {
+        valueEncoding: "json",
+      })
+      .catch(() => null);
+
+    if (!userPreferences) {
+      return { ok: false, message: "User preferences are unavailable." };
+    }
+
+    if (Boolean(userPreferences.realTransparentWindow) === enabled) {
+      return { ok: true, message: "Nothing to change." };
+    }
+
+    try {
+      await db.put<string, UserPreferences>(
+        levelKeys.userPreferences,
+        { ...userPreferences, realTransparentWindow: enabled },
+        { valueEncoding: "json" }
+      );
+    } catch (error) {
+      logger.error("[window] failed to persist transparency preference", error);
+      return { ok: false, message: "Could not save the preference." };
+    }
+
+    const window = this.mainWindow;
+    if (window && !window.isDestroyed()) {
+      this.isRecreatingMainWindow = true;
+      window.close();
+      await new Promise((resolve) => setTimeout(resolve, 400));
+      this.isRecreatingMainWindow = false;
+      await this.createMainWindow();
+    }
+
+    return {
+      ok: true,
+      message: enabled ? "Transparency enabled." : "Transparency disabled.",
+    };
   }
 
   public static isBigPictureSender(sender: Electron.WebContents) {

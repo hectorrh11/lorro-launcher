@@ -4,13 +4,11 @@ import { useTranslation } from "react-i18next";
 import { useFormat, useUserDetails } from "@renderer/hooks";
 import { MAX_MINUTES_TO_SHOW_IN_PLAYTIME } from "@renderer/constants";
 import HydraIcon from "@renderer/assets/icons/lorro.svg?react";
-import { useSubscription } from "@renderer/hooks/use-subscription";
 import { ClockIcon, TrophyIcon } from "@primer/octicons-react";
 import { Award } from "lucide-react";
 import "./user-stats-box.scss";
 
 export function UserStatsBox() {
-  const { showHydraCloudModal } = useSubscription();
   const { userStats, isMe, userProfile } = useContext(userProfileContext);
   const { userDetails } = useUserDetails();
   const { t } = useTranslation("user_profile");
@@ -46,23 +44,13 @@ export function UserStatsBox() {
             <h3 className="user-stats__list-title">
               {t("achievements_unlocked")}
             </h3>
-            {userStats.unlockedAchievementSum !== undefined ? (
+            {userStats.unlockedAchievementSum !== undefined && (
               <div className="user-stats__stats-row">
                 <p className="user-stats__list-description">
                   <TrophyIcon /> {userStats.unlockedAchievementSum}{" "}
                   {t("achievements")}
                 </p>
               </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => showHydraCloudModal("achievements")}
-                className="user-stats__link"
-              >
-                <small className="user-stats__link--warning">
-                  {t("show_achievements_on_profile")}
-                </small>
-              </button>
             )}
           </li>
         )}
@@ -70,7 +58,7 @@ export function UserStatsBox() {
         {(isMe || userStats.achievementsPointsEarnedSum !== undefined) && (
           <li className="user-stats__list-item">
             <h3 className="user-stats__list-title">{t("earned_points")}</h3>
-            {userStats.achievementsPointsEarnedSum !== undefined ? (
+            {userStats.achievementsPointsEarnedSum !== undefined && (
               <div className="user-stats__stats-row">
                 <p className="user-stats__list-description">
                   <HydraIcon width={20} height={20} />
@@ -85,16 +73,6 @@ export function UserStatsBox() {
                   })}
                 </p>
               </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => showHydraCloudModal("achievements-points")}
-                className="user-stats__link"
-              >
-                <small className="user-stats__link--warning">
-                  {t("show_points_on_profile")}
-                </small>
-              </button>
             )}
           </li>
         )}

@@ -312,11 +312,15 @@ export const LibraryGameCard = memo(function LibraryGameCard({
                   <ClockIcon size={11} />
                 )}
                 <span className="library-game-card__playtime-long">
-                  {formatPlayTime(getDisplayedPlayTimeInMilliseconds(game))}
+                  {formatPlayTime(
+                    game.lorroPlaytimeMs ??
+                      getDisplayedPlayTimeInMilliseconds(game)
+                  )}
                 </span>
                 <span className="library-game-card__playtime-short">
                   {formatPlayTime(
-                    getDisplayedPlayTimeInMilliseconds(game),
+                    game.lorroPlaytimeMs ??
+                      getDisplayedPlayTimeInMilliseconds(game),
                     true
                   )}
                 </span>

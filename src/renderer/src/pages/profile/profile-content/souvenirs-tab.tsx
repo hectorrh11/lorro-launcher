@@ -45,8 +45,6 @@ import {
   readStoredSouvenirSort,
   type SouvenirGrouping,
 } from "@renderer/helpers";
-import HydraIcon from "@renderer/assets/icons/lorro.svg?react";
-import { useSubscription } from "@renderer/hooks/use-subscription";
 import { LockedProfile } from "./locked-profile";
 import { SouvenirSyncCleanupModal } from "./souvenir-sync-cleanup-modal";
 import "./profile-content.scss";
@@ -366,7 +364,6 @@ interface SouvenirsEmptyStateProps {
   isLoading: boolean;
   hiddenReason: SouvenirsHiddenReason;
   isMe: boolean;
-  hasActiveSubscription: boolean;
   isEnabled: boolean;
   onOpenSettings: () => void;
 }
@@ -375,13 +372,10 @@ function SouvenirsEmptyState({
   isLoading,
   hiddenReason,
   isMe,
-  hasActiveSubscription,
   isEnabled,
   onOpenSettings,
 }: Readonly<SouvenirsEmptyStateProps>) {
   const { t } = useTranslation("user_profile");
-  const { t: tHydraCloud } = useTranslation("hydra_cloud");
-  const { showHydraCloudModal } = useSubscription();
 
   if (isLoading) {
     return (
@@ -404,26 +398,6 @@ function SouvenirsEmptyState({
       <div className="profile-content__no-games profile-content__souvenirs-empty">
         <h2>{t("no_user_souvenirs")}</h2>
         <p>{t("no_user_souvenirs_description")}</p>
-      </div>
-    );
-  }
-
-  if (!hasActiveSubscription) {
-    return (
-      <div className="profile-content__no-games profile-content__souvenirs-empty">
-        <span className="profile-content__telescope-icon">
-          <LockIcon size={24} />
-        </span>
-        <h2>{t("souvenirs_cloud_title")}</h2>
-        <p>{t("souvenirs_cloud_description")}</p>
-        <Button
-          theme="outline"
-          className="profile-content__souvenirs-empty-action"
-          onClick={() => showHydraCloudModal("achievements")}
-        >
-          <HydraIcon className="profile-content__souvenirs-empty-hydra-icon" />
-          <span>{tHydraCloud("learn_more")}</span>
-        </Button>
       </div>
     );
   }
@@ -794,7 +768,6 @@ export function SouvenirsTab({
           isLoading={isLoading}
           hiddenReason={hiddenReason}
           isMe={isMe}
-          hasActiveSubscription={hasActiveSubscription}
           isEnabled={isEnabled}
           onOpenSettings={onOpenSettings}
         />

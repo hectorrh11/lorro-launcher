@@ -40,7 +40,6 @@ import {
   useToast,
   useUserDetails,
 } from "@renderer/hooks";
-import { useSubscription } from "@renderer/hooks/use-subscription";
 import { useGameLinuxCompatibility } from "@renderer/hooks/use-game-linux-compatibility";
 import { RemoveGameFromLibraryModal } from "./remove-from-library-modal";
 import { ResetAchievementsModal } from "./reset-achievements-modal";
@@ -68,8 +67,8 @@ import { GeneralSettingsSection } from "./game-options-modal/general-section";
 import { CompatibilitySettingsSection } from "./game-options-modal/compatibility-section";
 import { DownloadsSettingsSection } from "./game-options-modal/downloads-section";
 import { DangerZoneSection } from "./game-options-modal/danger-zone-section";
-import { HydraCloudLegacySettingsSection } from "./game-options-modal/hydra-cloud-section";
-import { HydraCloudV2SettingsSection } from "./game-options-modal/hydra-cloud-v2-section";
+import { CloudSavesSection } from "./game-options-modal/cloud-saves-section";
+import { CloudSaveV2Section } from "./game-options-modal/cloud-save-v2-section";
 import { EpicCloudSettingsSection } from "./game-options-modal/epic-cloud-section";
 import type { GameSettingsCategoryId } from "./game-options-modal/types";
 import { CreateSteamShortcutModal } from "./create-steam-shortcut-modal";
@@ -258,7 +257,6 @@ export function GameOptionsModal({
     useDownload();
   const { userDetails, hasActiveSubscription } = useUserDetails();
   const { artifacts } = useContext(cloudSyncContext);
-  const { showHydraCloudModal } = useSubscription();
   const cloudSaveAccessAction = getCloudSaveAccessAction(
     Boolean(userDetails),
     hasActiveSubscription
@@ -1041,7 +1039,10 @@ export function GameOptionsModal({
       isRequestedCloudCategoryAvailable &&
       cloudSaveAccessAction === "paywall"
     ) {
-      showHydraCloudModal("backup");
+      showErrorToast(
+        t("cloud_save_v2_subscription_required_title"),
+        t("cloud_save_v2_subscription_required_description")
+      );
     }
   }, [
     cloudSaveAccessAction,
@@ -1050,7 +1051,8 @@ export function GameOptionsModal({
     showCloudSaveV2Settings,
     showLegacyCloudSaveSettings,
     showEpicCloudSettings,
-    showHydraCloudModal,
+    showErrorToast,
+    t,
     visible,
   ]);
 
@@ -1089,7 +1091,10 @@ export function GameOptionsModal({
       cloudSaveAccessAction !== "open"
     ) {
       if (cloudSaveAccessAction === "paywall") {
-        showHydraCloudModal("backup");
+        showErrorToast(
+          t("cloud_save_v2_subscription_required_title"),
+          t("cloud_save_v2_subscription_required_description")
+        );
       }
       return;
     }
@@ -1338,7 +1343,7 @@ export function GameOptionsModal({
               />
             )}
             {selectedCategory === "hydra_cloud" && showCloudSaveV2Settings && (
-              <HydraCloudV2SettingsSection
+              <CloudSaveV2Section
                 onSelectExecutable={() =>
                   setSelectedCategory(isLaunchbox ? "general" : "locations")
                 }
@@ -1347,7 +1352,7 @@ export function GameOptionsModal({
             {selectedCategory === "hydra_cloud_legacy" &&
               showLegacyCloudSaveSettings &&
               legacyPurpose === "active" && (
-                <HydraCloudLegacySettingsSection
+                <CloudSavesSection
                   game={game}
                   automaticCloudSync={automaticCloudSync}
                   onToggleAutomaticCloudSync={handleToggleAutomaticCloudSync}

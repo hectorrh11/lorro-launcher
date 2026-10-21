@@ -57,20 +57,6 @@
     justify-content: space-between;
   }
 
-  &__link {
-    text-align: start;
-    color: globals.$body-color;
-
-    &--warning {
-      color: globals.$warning-color;
-    }
-
-    &:hover {
-      text-decoration: underline;
-      cursor: pointer;
-    }
-  }
-
   &__karma-info-text {
     color: globals.$muted-color;
     font-size: 0.75rem;

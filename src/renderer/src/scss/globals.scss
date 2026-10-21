@@ -20,13 +20,14 @@ $danger-color: #7f1d3a;
 $error-color: #f43f5e;
 $warning-color: #fbbf24;
 
-// Lorro brand palette
-$lorro-violet: #8b5cf6;
-$lorro-violet-soft: #c4b5fd;
-$lorro-indigo: #4f46e5;
-$lorro-cyan: #22d3ee;
-$lorro-cyan-soft: #a5f3fc;
-$lorro-glow: rgba(139, 92, 246, 0.45);
+// Lorro brand palette (accent CSS variables live in themes.scss so the
+// purchased accent themes can override the whole surface count)
+$lorro-violet: var(--lorro-accent, #8b5cf6);
+$lorro-violet-soft: var(--lorro-accent-soft, #c4b5fd);
+$lorro-indigo: var(--lorro-accent-2, #4f46e5);
+$lorro-cyan: var(--lorro-accent-3, #22d3ee);
+$lorro-cyan-soft: var(--lorro-accent-3-soft, #a5f3fc);
+$lorro-glow: var(--lorro-accent-glow, rgba(139, 92, 246, 0.45));
 
 // Kept for backwards compatibility with existing components.
 $brand-teal: $lorro-cyan;

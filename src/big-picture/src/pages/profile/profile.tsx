@@ -6,7 +6,6 @@ import {
   ClockIcon,
   EyeClosedIcon,
   GameControllerIcon,
-  GiftIcon,
   HeartIcon,
   ImageIcon,
   ProhibitIcon,
@@ -578,25 +577,8 @@ function getExternalProfileActions(
 ): ProfileHeroAction[] {
   if (!profile) return [];
 
-  const giftActions: ProfileHeroAction[] = profile.canReceiveCloudGift
-    ? [
-        {
-          label: "Gift Lorro Cloud",
-          variant: "secondary",
-          icon: <GiftIcon size={20} />,
-          onClick: () => {
-            void globalThis.window.electron.openCheckout({
-              path: "/gift",
-              recipientId: profile.id,
-            });
-          },
-        },
-      ]
-    : [];
-
   if (profile.relation === null) {
     return [
-      ...giftActions,
       {
         label: "Add Friend",
         variant: "secondary",
@@ -611,7 +593,6 @@ function getExternalProfileActions(
 
   if (relation.status === "ACCEPTED") {
     return [
-      ...giftActions,
       {
         label: "Remove Friend",
         variant: "secondary",
@@ -624,7 +605,6 @@ function getExternalProfileActions(
 
   if (relation.BId === profile.id) {
     return [
-      ...giftActions,
       {
         label: "Cancel Request",
         variant: "secondary",
@@ -635,7 +615,6 @@ function getExternalProfileActions(
   }
 
   return [
-    ...giftActions,
     {
       label: "Accept Request",
       variant: "secondary",
@@ -1511,8 +1490,8 @@ function LockedAchievements({
         <SparkleIcon size={24} weight="fill" />
         <p>
           {isOwnProfile
-            ? "You need Lorro Cloud in order to display achievements in your own profile."
-            : "This user is required to have Lorro Cloud in order to display achievements in his profile."}
+            ? "Achievements are hidden on your profile."
+            : "Achievements are hidden on this profile."}
         </p>
       </div>
     </div>

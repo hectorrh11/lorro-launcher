@@ -1466,6 +1466,7 @@
     "appearance_theme_golden": "Golden",
     "appearance_theme_esmeralda": "Esmeralda",
     "appearance_theme_ruby": "Ruby",
+    "appearance_theme_locked_hint": "This theme is locked. Unlock it with LorroPoints in Settings > Advanced.",
     "advanced_performance_title": "Performance mode",
     "advanced_performance_toggle": "Reduce animations, transitions, blur and background video to use less RAM and CPU.",
     "advanced_points_title": "LorroPoints",

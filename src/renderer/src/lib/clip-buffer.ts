@@ -60,10 +60,12 @@ const buildAudioMix = async (
   ]);
 };
 
+const supportsSystemAudio = window.electron.platform === "win32";
+
 const captureScreen = async (options: ClipBufferOptions) => {
   const display = await navigator.mediaDevices.getDisplayMedia({
     video: { frameRate: 30 } as MediaTrackConstraints,
-    audio: options.systemAudio,
+    audio: options.systemAudio && supportsSystemAudio,
   });
 
   return buildAudioMix(display, options);

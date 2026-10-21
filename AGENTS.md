@@ -2,7 +2,7 @@
 
 Launcher de escritorio **independiente** (Electron + React + TypeScript + Vite)
 basado en el código abierto de Hydra. Repo: `hectorrh11/lorro-launcher`.
-Versión publicada actual: **1.80.0** (incluye 1.77.0, 1.78.0 y 1.79.0).
+Versión publicada actual: **1.81.0** (Windows, Ubuntu/Debian y Arch Linux).
 
 Este documento es la fuente de verdad para retomar el proyecto en una sesión
 nueva. Léelo entero antes de tocar código.
@@ -22,6 +22,9 @@ nueva. Léelo entero antes de tocar código.
 - **NSIS no compila desde una ruta que contenga `$`**. El workspace
   (`C:\Windows\System32\$HOME\source\hydra-personal`) contiene un `$` literal.
   Compilar siempre desde el espejo `%TEMP%\opencode\lorro-src`.
+- **Linux se compila en WSL** (Ubuntu), no en Windows. Copiar el árbol a
+  `/home/<user>/lorro` y usar `yarn build:linux`. El paquete `pacman` necesita
+  `bsdtar`; los `.deb`/`.pacman`/AppImage se generan en `dist/`.
 - `gh` está en `C:\Program Files\GitHub CLI\gh.exe` y **no** está en el PATH.
 - No commitear, publicar ni hacer push sin que el usuario lo pida explícitamente.
 - No declarar terminada una función sin typecheck + build correctos.
@@ -42,9 +45,23 @@ nueva. Léelo entero antes de tocar código.
 
 ### Datos de usuario
 
-- `%APPDATA%\Lorro Launcher` (migración opcional desde Hydra al primer arranque).
-- Clips: `Videos\Lorro Launcher\Clips`.
+- Windows: `%APPDATA%\Lorro Launcher`; Linux: `~/.config/Lorro Launcher`
+  (migración opcional desde Hydra al primer arranque).
+- Clips: `Videos\Lorro Launcher\Clips` en Windows y
+  `~/Videos/Lorro Launcher/Clips` en Linux.
 - Logs: carpeta de logs de electron-log dentro de los datos de usuario.
+
+### Plataformas
+
+- **Windows**: instalador NSIS y portable; transparencia real de ventana y audio
+  loopback de clips.
+- **Ubuntu/Debian**: `.deb` y AppImage (x86_64).
+- **Arch Linux**: `.pacman` (x86_64). Requiere `bsdtar` para empaquetar.
+- Los paquetes Linux se generan solo en Linux/WSL. En Linux el tema
+  transparente usa el estilo translúcido de la ventana, no la recrea, y los
+  clips graban micrófono/vídeo pero no audio del sistema.
+- Los nombres de artefactos incluyen `windows-` o `linux-` y el auto-update
+  usa `latest.yml` (Windows) y `latest-linux.yml` (Linux).
 
 ---
 
@@ -166,31 +183,57 @@ foreach ($f in @("package.json","electron-builder.yml","update.txt","README.md",
 
 5. En el espejo: `npx electron-vite build`.
 6. `$env:GH_TOKEN = & "C:\Program Files\GitHub CLI\gh.exe" auth token`
-   y `npx electron-builder --win --publish always`.
-7. Publicar la release (electron-builder la crea en borrador):
+   y `npx electron-builder --win --publish always` (crea la release en borrador
+   con `latest.yml`, `*-windows-setup.exe`, `*-windows-portable.exe` y blockmap).
+7. Compilar Linux en WSL (Ubuntu), en una copia ext4 sin `$` en la ruta. Copiar
+   `src`, `binaries`, `resources`, `build`, `scripts`, `native`, `ludusavi` y los
+   ficheros raíz; instalar Node 22 + Yarn + Rust. Después:
+
+```bash
+cd ~/lorro
+yarn install
+yarn typecheck
+export HYDRA_SKIP_NATIVE_VERIFY=1   # solo si el host no tiene libs GUI
+yarn electron-vite build
+GH_TOKEN=<token> npx electron-builder --linux --publish always
+```
+
+   Esto añade al mismo borrador el AppImage, `.deb`, `.pacman` y
+   `latest-linux.yml`. El paquete `pacman` requiere `bsdtar`; si no hay sudo,
+   extraer `libarchive-tools` y `libarchive13t64` con `dpkg -x` y poner un
+   wrapper `bsdtar` en el PATH.
+
+8. Publicar la release (electron-builder la crea en borrador):
 
 ```powershell
 & "C:\Program Files\GitHub CLI\gh.exe" release edit vX.Y.Z `
   --repo hectorrh11/lorro-launcher --draft=false --latest `
-  --notes-file "$ws\update.txt"
+  --title "Lorro Launcher vX.Y.Z" --notes-file "$ws\update.txt"
 ```
 
-8. Verificar `https://github.com/hectorrh11/lorro-launcher/releases/latest/download/latest.yml`
-   devuelve **200** y `latest` apunta a la versión nueva.
-9. Copiar `*-setup.exe`, `*-portable.exe`, `.blockmap` y `latest.yml` a `dist/`
-   y los instaladores al Escritorio; borrar los de versiones anteriores.
-10. `git add -A; git commit -m "..."; git push lorro HEAD:main`.
+9. Verificar que `latest.yml` y `latest-linux.yml` en
+   `https://github.com/hectorrh11/lorro-launcher/releases/latest/download/`
+   devuelven **200** y apuntan a la versión nueva. Comprobar que los assets
+   están agrupados por OS: `*-windows-*`, `*-linux-*` (AppImage/deb/pacman).
+10. Copiar los instaladores de Windows, `.blockmap`, `latest*.yml` y los
+    paquetes Linux a `dist/` y los instaladores al Escritorio; borrar los de
+    versiones anteriores.
+11. `git add -A; git commit -m "..."; git push lorro HEAD:main`.
 
 Notas:
 
 - El remoto `lorro` apunta a `https://github.com/hectorrh11/lorro-launcher.git`;
   se publica `HEAD:main`. `origin` sigue siendo el repo original de Hydra.
 - Auto-update funciona desde cualquier versión ≥ 1.0.0. Clientes anteriores a
-  1.0.0 necesitan una instalación manual una vez.
+  1.0.0 necesitan una instalación manual una vez. En Linux actualiza el
+  AppImage; los paquetes `.deb`/`.pacman` se actualizan reinstalando.
 - Si se republica la **misma** versión (por ejemplo 1.69.0), hay que borrar la
   release y el tag antes:
   `gh release delete vX.Y.Z --yes --cleanup-tag`.
 - Una versión ya instalada no se autoactualiza a sí misma: reinstalar a mano.
+- Los artefactos llevan el OS en el nombre para que la release quede ordenada:
+  `lorro-launcher-X.Y.Z-windows-setup.exe`, `-windows-portable.exe`,
+  `-linux-amd64.deb`, `-linux-x86_64.AppImage`, `-linux-x64.pacman`.
 
 ---
 
@@ -270,7 +313,8 @@ Página propia en la barra lateral (`/clips`): listado, reproducción con el
 protocolo `local:`, mostrar en carpeta y borrado con confirmación. Grabación en
 segundo plano mediante `globalShortcut` registrado en el proceso principal
 (`clip-manager.ts`), atajo configurable y persistente. Audio loopback del
-sistema vía `setDisplayMediaRequestHandler` con `audio: "loopback"` (Windows) y
+sistema vía `setDisplayMediaRequestHandler` con `audio: "loopback"` (solo
+Windows; en Linux el checkbox queda deshabilitado y se avisa en la UI) y
 micrófono opcional mezclado con `AudioContext`. Duración 5–90 s en pasos de 5;
 el buffer vive en RAM y solo se escribe al guardar. Tras actualizar hay que
 volver a activar los clips.
@@ -342,7 +386,14 @@ enlaces de Hydra/Lorro Cloud.
   (Discord incluido) hace falta captura nativa (WASAPI) o `setDisplayMediaRequestHandler`
   con `audio: "loopback"` en Windows. Probar en Windows 10 y 11.
 - **Hotkey global**: `globalShortcut` puede chocar con atajos del juego; validar
-  el registro y avisar si falla. No funciona si otro proceso lo captura.
+  el registro y avisar si falla. No funciona si otro proceso lo captura. En
+  Linux/Wayland depende del compositor y puede no registrarse; la UI avisa.
+- **Linux y sandbox**: el AppImage arranca con `--no-sandbox` en su `.desktop`
+  porque la imagen FUSE no conserva el setuid de `chrome-sandbox`. Los `.deb` y
+  `.pacman` sí incluyen el sandbox normal.
+- **Audio del sistema en Linux**: no existe loopback en `getDisplayMedia`; por
+  eso el checkbox se deshabilita y solo se graba micrófono/vídeo. No prometer
+  audio de escritorio en Linux sin captura nativa (PipeWire/WASAPI).
 - **Clips en memoria**: el buffer completo vive en RAM (hasta 90 s). Subir la
   duración o la resolución dispara el consumo; mantener el bitrate limitado y
   descartar los blobs fuera de la ventana.
@@ -425,6 +476,9 @@ Comprobar además:
   para cambiarlo, ejecutable visible en la ficha y "Más versiones".
 - **1.80.0** — Play y "Más versiones" en la misma fila, temas Golden,
   Esmeralda y Rubí con migración, colecciones por defecto y textos de Extras.
+- **1.81.0** — soporte de Linux: `.deb`/AppImage para Ubuntu y `.pacman` para
+  Arch, builds en WSL, assets separados por OS, sin audio de sistema en clips
+  de Linux y tema transparente adaptado a la ventana.
 
 ---
 

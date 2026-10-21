@@ -7,12 +7,14 @@ release channel, installer and data folder. This document tracks what has been
 completed, what has been verified, what is still pending, and what is required
 to distribute the app.
 
-**Current status (estado tras 1.80.0):** **1.80.0** is the latest
-public release. It includes 1.77.0, 1.78.0 and 1.79.0: real playtime on library
+**Current status (estado tras 1.81.0):** **1.81.0** is the latest
+public release and the first one available for Windows, Ubuntu/Debian and Arch
+Linux. It includes 1.77.0, 1.78.0 and 1.79.0: real playtime on library
 cards, LorroPoints based on achievement points, the Golden/Esmeralda/Ruby theme
 store with real window transparency, a dedicated Clips page with global hotkey
 and system audio, automatic executable detection, default collections, and the
-removal of the last commercial surface and the launch-profile system.
+removal of the last commercial surface and the launch-profile system. Linux is
+distributed as AppImage, `.deb` and `.pacman`, with assets grouped by OS.
 
 ---
 
@@ -201,16 +203,21 @@ removal of the last commercial surface and the launch-profile system.
   `RENDERER_VITE_RELEASES_URL=https://github.com/hectorrh11/lorro-launcher/releases/latest`).
 - The packaged app contains `resources/app-update.yml` with the same provider, so
   installed clients check this repository for new versions.
-- Latest public version is **1.80.0**; `update.txt` at the repository root is the
+- Latest public version is **1.81.0**; `update.txt` at the repository root is the
   detailed, user-facing changelog and must be updated with every release.
 - Publishing a new version:
   1. Make the changes and bump `version` in `package.json` (e.g. `1.1.0`).
   2. Update `update.txt` with a detailed changelog entry.
-  3. Build + publish (must run from a path without `$`, see section 3 item 1):
+  3. Build + publish Windows (must run from a path without `$`, see section 3
+     item 1):
      `$env:GH_TOKEN = gh auth token; npx electron-builder --win --publish always`
-  4. Electron-builder creates the GitHub Release and uploads `setup.exe`,
-     `.blockmap` and `latest.yml`, then **publish the release** (it is created as a
-     draft): `gh release edit v1.1.0 --repo hectorrh11/lorro-launcher --draft=false --latest`.
+  4. Build + publish Linux from WSL: `npx electron-builder --linux --publish always`
+     (AppImage, `.deb`, `.pacman` and `latest-linux.yml` are attached to the same
+     draft release).
+  5. **Publish the release** (it is created as a draft):
+     `gh release edit v1.1.0 --repo hectorrh11/lorro-launcher --draft=false --latest`.
+  6. Verify `latest.yml` and `latest-linux.yml` under
+     `releases/latest/download/` return HTTP 200 and point to the new version.
 - Verified for 1.0.0: release `v1.0.0` is public (`draft:false`, `latest`), assets
   include `latest.yml`, and `https://github.com/hectorrh11/lorro-launcher/releases/latest/download/latest.yml`
   returns HTTP 200.
@@ -218,7 +225,7 @@ removal of the last commercial surface and the launch-profile system.
   than the installed one. Any installation older than `1.0.0` must install the
   current setup once; from `1.0.0` onward in-app auto-update works.
 
-### 1.12 Current feature state (1.80.0)
+### 1.12 Current feature state (1.81.0)
 - **Real playtime on library cards**: `LibraryGame.lorroPlaytimeMs` is computed
   from `src/main/services/session-stats.ts` when the library is listed, shown on
   the cards and refreshed when a game session ends.
@@ -248,7 +255,7 @@ removal of the last commercial surface and the launch-profile system.
 
 > The rows below record the initial rebrand/1.0.0 verification cycle. Version
 > strings, artifact names and sizes are historical; the current public release is
-> 1.80.0.
+> 1.81.0.
 
 | Check | Command | Result |
 | --- | --- | --- |
@@ -266,6 +273,9 @@ removal of the last commercial surface and the launch-profile system.
 | Segmented download | IPC call in the running packaged app (local HTTP server, 6 MiB file, 8 connections, Range support) | Completed; 6 parallel range requests; exact 6,291,456 bytes |
 | External manager IPC | `getExternalDownloadManager()` in the packaged app | Returns the detection object; `openDownloadInExternalManager` exposed (no manager installed on the test PC) |
 | Installers rebuilt | `npx electron-builder --win --publish never` (clean path) | PASS — `lorro-launcher-4.1.6-setup.exe` (195.9 MB), `-portable.exe` (195.3 MB) |
+| Linux packaging (1.81.0) | `yarn build:linux` in WSL Ubuntu | PASS — AppImage, `.deb` and `.pacman` x86_64 with `hydra-native.node`, legendary, umu-run, 7zzs and the Epic prerequisite runner |
+| Linux package metadata (1.81.0) | `dpkg-deb -I`, `.PKGINFO` | PASS — package `lorro-launcher`, maintainer `hectorrh11`, homepage and description point to Lorro |
+| Linux AppImage entry (1.81.0) | `--appimage-extract` | PASS — `.desktop` with `Exec=AppRun --no-sandbox %U` and `x-scheme-handler/lorro` |
 
 Artifacts after a successful build:
 - `dist/lorro-launcher-4.1.6-setup.exe` (NSIS, assisted, changeable install dir)

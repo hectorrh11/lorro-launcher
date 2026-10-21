@@ -1246,6 +1246,7 @@
     "clips_duration": "Clip length",
     "clips_duration_value": "{{count}} seconds",
     "clips_system_audio": "Record system audio (game, Discord, music)",
+    "clips_system_audio_unsupported": "System audio capture is only available on Windows. The microphone can still be recorded.",
     "clips_microphone": "Record microphone",
     "clips_open_folder": "Open clips folder",
     "rpcs3_config_title": "RPCS3 configuration folder",

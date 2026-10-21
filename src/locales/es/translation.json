@@ -1195,6 +1195,7 @@
     "clips_duration": "Duración del clip",
     "clips_duration_value": "{{count}} segundos",
     "clips_system_audio": "Grabar audio del sistema (juego, Discord, música)",
+    "clips_system_audio_unsupported": "La captura de audio del sistema solo está disponible en Windows. El micrófono se puede seguir grabando.",
     "clips_microphone": "Grabar micrófono",
     "clips_open_folder": "Abrir carpeta de clips",
     "epic_sync_partial": "Juegos y tiempo de juego sincronizados; se volverá a intentar sincronizar los logros de {{count}} juegos.",

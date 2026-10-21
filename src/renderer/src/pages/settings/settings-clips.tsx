@@ -58,6 +58,7 @@ export function SettingsClips() {
   const { showErrorToast, showSuccessToast } = useToast();
 
   const [settings, setSettings] = useState<LorroClipSettings | null>(null);
+  const isWindows = window.electron.platform === "win32";
   const [capturing, setCapturing] = useState(false);
   const [saving, setSaving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -188,9 +189,19 @@ export function SettingsClips() {
               "clips_system_audio",
               "Record system audio (game, Discord, music)"
             )}
-            checked={settings.systemAudio}
+            checked={settings.systemAudio && isWindows}
+            disabled={!isWindows || saving}
             onChange={() => void update({ systemAudio: !settings.systemAudio })}
           />
+
+          {!isWindows && (
+            <p className="settings-clips__hint">
+              {t(
+                "clips_system_audio_unsupported",
+                "System audio capture is only available on Windows. The microphone can still be recorded."
+              )}
+            </p>
+          )}
 
           <CheckboxField
             label={t("clips_microphone", "Record microphone")}

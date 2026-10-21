@@ -182,6 +182,10 @@ const build = async () => {
 
   // Verify with the actual application runtime, not a potentially incompatible
   // system Node.js. Fail installation before the user opens the download UI.
+  // Headless build hosts can skip the runtime check with
+  // HYDRA_SKIP_NATIVE_VERIFY=1 and validate the addon with Node instead.
+  if (process.env.HYDRA_SKIP_NATIVE_VERIFY === "1") return;
+
   await waitForElectron();
   await run(
     require("electron"),

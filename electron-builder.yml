@@ -60,7 +60,7 @@ win:
     - nsis
     - portable
 nsis:
-  artifactName: lorro-launcher-${version}-setup.${ext}
+  artifactName: lorro-launcher-${version}-windows-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
@@ -73,7 +73,7 @@ nsis:
   uninstallerIcon: build/icon.ico
   installerHeaderIcon: build/icon.ico
 portable:
-  artifactName: lorro-launcher-${version}-portable.${ext}
+  artifactName: lorro-launcher-${version}-windows-portable.${ext}
   unpackDirName: false
 mac:
   sign: scripts/legendary-mac-sign.cjs
@@ -96,7 +96,7 @@ mac:
     - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
   notarize: false
 dmg:
-  artifactName: lorro-launcher-${version}.${ext}
+  artifactName: lorro-launcher-${version}-macos.${ext}
 linux:
   executableName: lorro-launcher
   extraResources:
@@ -128,15 +128,22 @@ linux:
     - from: binaries/umu/umu-run
   target:
     - AppImage
-    - snap
     - deb
-    - rpm
-  maintainer: electronjs.org
+    - pacman
+  maintainer: hectorrh11 <hectorrh11@users.noreply.github.com>
   category: Game
+  synopsis: Independent game launcher
+  description: >-
+    Lorro Launcher is an independent desktop game launcher with a built-in
+    download manager, playtime tracking, achievements, save backups and clips.
   mimeTypes:
     - x-scheme-handler/lorro
 appImage:
-  artifactName: lorro-launcher-${version}.${ext}
+  artifactName: lorro-launcher-${version}-linux-${arch}.${ext}
+deb:
+  artifactName: lorro-launcher-${version}-linux-${arch}.${ext}
+pacman:
+  artifactName: lorro-launcher-${version}-linux-${arch}.${ext}
 npmRebuild: false
 # Auto-update: Lorro Launcher publishes releases to this GitHub repository.
 # The main process also needs MAIN_VITE_UPDATE_REPOSITORY=<owner>/<repo> at build

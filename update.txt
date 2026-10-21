@@ -1,4 +1,48 @@
 ========================================================
+VERSION 1.81.0
+========================================================
+SOPORTE PARA LINUX: Lorro Launcher ya se publica para
+Ubuntu/Debian y Arch Linux, con paquetes separados por sistema
+operativo en esta misma release.
+
+WINDOWS
+* Instalador: lorro-launcher-1.81.0-windows-setup.exe
+* Portatil: lorro-launcher-1.81.0-windows-portable.exe
+* Auto-actualizacion mediante latest.yml, igual que hasta ahora.
+
+UBUNTU / DEBIAN
+* Paquete: lorro-launcher-1.81.0-linux-amd64.deb
+* Instalacion: sudo apt install ./lorro-launcher-1.81.0-linux-amd64.deb
+* Tambien disponible como AppImage universal:
+  lorro-launcher-1.81.0-linux-x86_64.AppImage
+* Auto-actualizacion del AppImage mediante latest-linux.yml. El
+  paquete .deb incluye los datos de actualizacion.
+
+ARCH LINUX
+* Paquete: lorro-launcher-1.81.0-linux-x64.pacman
+* Instalacion: sudo pacman -U ./lorro-launcher-1.81.0-linux-x64.pacman
+
+NOVEDADES EN LINUX
+* Lanzamiento de juegos con Wine/Proton, descargas, biblioteca,
+  logros, copias de seguridad, estadisticas y modo Big Picture.
+* Clips: pagina propia, atajo global configurable, duracion de 5 a
+  90 segundos y microfono opcional. La captura de audio del sistema
+  sigue siendo exclusiva de Windows; en Linux el atajo y el video
+  funcionan igual y se avisa en Ajustes > Clips.
+* Tema transparente: en Linux se usa el estilo translucido propio
+  de la ventana, sin recrearla ni romper la sesion.
+* Los nombres de los archivos incluyen ahora el sistema operativo
+  (windows-, linux-) para que cada version este claramente separada.
+* Se elimino el paquete snap y el rpm de la publicacion: Ubuntu usa
+  .deb/AppImage y Arch usa .pacman, que es lo que se mantiene.
+
+CORRECCIONES
+* La deteccion de audio del sistema en Clips ya no intenta usar
+  loopback fuera de Windows.
+* Los metadatos del paquete Linux apuntan al repositorio de Lorro y
+  no al proyecto original.
+* Typecheck y compilacion verificados en Windows y en Linux.
+========================================================
 VERSION 1.80.0
 ========================================================
 * ARREGLO VISUAL EN LA FICHA: Play y "Mas versiones" vuelven a

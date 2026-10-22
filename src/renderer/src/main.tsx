@@ -24,6 +24,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import "react-tooltip/dist/react-tooltip.css";
 
 import "./scss/themes.scss";
+import "./scss/lorro-cosmetics.scss";
 import { initializeAppearance } from "./features/appearance";
 
 import { CollectionContextMenuProvider } from "@renderer/context";

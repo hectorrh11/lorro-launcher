@@ -1495,32 +1495,56 @@ contextBridge.exposeInMainWorld("electron", {
   removeBackgroundFile: (filePath: string) =>
     ipcRenderer.invoke("removeBackgroundFile", filePath),
   getSaveBackupConfig: () => ipcRenderer.invoke("getSaveBackupConfig"),
-  updateSaveBackupConfig: (patch: unknown) => ipcRenderer.invoke("updateSaveBackupConfig", patch),
-  getGameSaveConfig: (gameKey: string) => ipcRenderer.invoke("getGameSaveConfig", gameKey),
-  setGameSavePaths: (gameKey: string, paths: string[]) => ipcRenderer.invoke("setGameSavePaths", gameKey, paths),
-  detectSavePaths: (gameKey: string) => ipcRenderer.invoke("detectSavePaths", gameKey),
-  createSaveBackup: (gameKey: string) => ipcRenderer.invoke("createSaveBackup", gameKey),
-  listSaveBackups: (gameKey?: string) => ipcRenderer.invoke("listSaveBackups", gameKey),
+  updateSaveBackupConfig: (patch: unknown) =>
+    ipcRenderer.invoke("updateSaveBackupConfig", patch),
+  getGameSaveConfig: (gameKey: string) =>
+    ipcRenderer.invoke("getGameSaveConfig", gameKey),
+  setGameSavePaths: (gameKey: string, paths: string[]) =>
+    ipcRenderer.invoke("setGameSavePaths", gameKey, paths),
+  detectSavePaths: (gameKey: string) =>
+    ipcRenderer.invoke("detectSavePaths", gameKey),
+  createSaveBackup: (gameKey: string) =>
+    ipcRenderer.invoke("createSaveBackup", gameKey),
+  listSaveBackups: (gameKey?: string) =>
+    ipcRenderer.invoke("listSaveBackups", gameKey),
   deleteSaveBackup: (id: string) => ipcRenderer.invoke("deleteSaveBackup", id),
-  restoreSaveBackup: (id: string) => ipcRenderer.invoke("restoreSaveBackup", id),
-  exportSaveBackup: (id: string, destinationDir: string) => ipcRenderer.invoke("exportSaveBackup", id, destinationDir),
-  importSaveBackup: (sourceDir: string) => ipcRenderer.invoke("importSaveBackup", sourceDir),
-  getPlaytimeStats: (gameKey: string) => ipcRenderer.invoke("getPlaytimeStats", gameKey),
+  restoreSaveBackup: (id: string) =>
+    ipcRenderer.invoke("restoreSaveBackup", id),
+  exportSaveBackup: (id: string, destinationDir: string) =>
+    ipcRenderer.invoke("exportSaveBackup", id, destinationDir),
+  importSaveBackup: (sourceDir: string) =>
+    ipcRenderer.invoke("importSaveBackup", sourceDir),
+  getPlaytimeStats: (gameKey: string) =>
+    ipcRenderer.invoke("getPlaytimeStats", gameKey),
   getLorroPoints: () => ipcRenderer.invoke("getLorroPoints"),
   purchaseLorroTheme: (themeId: string) =>
     ipcRenderer.invoke("purchaseLorroTheme", themeId),
+  purchaseLorroItem: (itemId: string) =>
+    ipcRenderer.invoke("purchaseLorroItem", itemId),
   setRealWindowTransparency: (enabled: boolean) =>
     ipcRenderer.invoke("setRealWindowTransparency", enabled),
   getPlaytimeStatsSummary: () => ipcRenderer.invoke("getPlaytimeStatsSummary"),
-  correctPlaytimeSession: (gameKey: string, sessionId: string, durationMs: number) => ipcRenderer.invoke("correctPlaytimeSession", gameKey, sessionId, durationMs),
-  deletePlaytimeSession: (gameKey: string, sessionId: string) => ipcRenderer.invoke("deletePlaytimeSession", gameKey, sessionId),
-  runGameDiagnostics: (gameKey: string) => ipcRenderer.invoke("runGameDiagnostics", gameKey),
-  fixGameDiagnostic: (gameKey: string, checkId: string) => ipcRenderer.invoke("fixGameDiagnostic", gameKey, checkId),
+  correctPlaytimeSession: (
+    gameKey: string,
+    sessionId: string,
+    durationMs: number
+  ) =>
+    ipcRenderer.invoke(
+      "correctPlaytimeSession",
+      gameKey,
+      sessionId,
+      durationMs
+    ),
+  deletePlaytimeSession: (gameKey: string, sessionId: string) =>
+    ipcRenderer.invoke("deletePlaytimeSession", gameKey, sessionId),
+  runGameDiagnostics: (gameKey: string) =>
+    ipcRenderer.invoke("runGameDiagnostics", gameKey),
+  fixGameDiagnostic: (gameKey: string, checkId: string) =>
+    ipcRenderer.invoke("fixGameDiagnostic", gameKey, checkId),
   getClipSettings: () => ipcRenderer.invoke("getClipSettings"),
   updateClipSettings: (patch: Partial<LorroClipSettings>) =>
     ipcRenderer.invoke("updateClipSettings", patch),
-  listClips: () =>
-    ipcRenderer.invoke("listClips") as Promise<LorroClipInfo[]>,
+  listClips: () => ipcRenderer.invoke("listClips") as Promise<LorroClipInfo[]>,
   deleteClip: (name: string) => ipcRenderer.invoke("deleteClip", name),
   revealClip: (name: string) => ipcRenderer.invoke("revealClip", name),
   openClipsFolder: () => ipcRenderer.invoke("openClipsFolder"),
@@ -1541,8 +1565,10 @@ contextBridge.exposeInMainWorld("electron", {
       ipcRenderer.removeListener("on-clip-settings-updated", listener);
   },
   getStorageReport: () => ipcRenderer.invoke("getStorageReport"),
-  moveGameInstallation: (gameKey: string, destination: string) => ipcRenderer.invoke("moveGameInstallation", gameKey, destination),
-  cleanStorageCaches: (ids: string[]) => ipcRenderer.invoke("cleanStorageCaches", ids),
+  moveGameInstallation: (gameKey: string, destination: string) =>
+    ipcRenderer.invoke("moveGameInstallation", gameKey, destination),
+  cleanStorageCaches: (ids: string[]) =>
+    ipcRenderer.invoke("cleanStorageCaches", ids),
   setTitlebarTheme: (theme: string) =>
     ipcRenderer.invoke("setTitlebarTheme", theme),
   getDefaultDownloadsPath: () => ipcRenderer.invoke("getDefaultDownloadsPath"),
@@ -1566,9 +1592,7 @@ contextBridge.exposeInMainWorld("electron", {
     ipcRenderer.invoke("openDownloadInExternalManager", id) as Promise<
       ExternalDownloadManagerInfo & { started: boolean }
     >,
-  onCustomDownloadProgress: (
-    cb: (downloads: CustomDownload[]) => void
-  ) => {
+  onCustomDownloadProgress: (cb: (downloads: CustomDownload[]) => void) => {
     const listener = (
       _event: Electron.IpcRendererEvent,
       downloads: CustomDownload[]

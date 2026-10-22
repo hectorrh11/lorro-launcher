@@ -47,7 +47,9 @@ registerEvent("deleteSaveBackup", (_e, id: string) =>
   saveBackupManager.deleteBackup(id)
 );
 registerEvent("restoreSaveBackup", async (_e, id: string) => {
-  const entry = (await saveBackupManager.listBackups()).find((b) => b.id === id);
+  const entry = (await saveBackupManager.listBackups()).find(
+    (b) => b.id === id
+  );
   if (!entry) return { ok: false, message: "Backup not found." };
   const { shop, objectId } = parseGameKey(entry.gameKey);
   if (isGameRunning(objectId, shop)) {
@@ -67,17 +69,26 @@ registerEvent("importSaveBackup", (_e, sourceDir: string) =>
   saveBackupManager.importBackup(sourceDir)
 );
 
-registerEvent("getPlaytimeStats", (_e, gameKey: string) => sessionStats.get(gameKey));
+registerEvent("getPlaytimeStats", (_e, gameKey: string) =>
+  sessionStats.get(gameKey)
+);
 registerEvent("getPlaytimeStatsSummary", () => sessionStats.summary());
 registerEvent("getLorroPoints", () => lorroPointsManager.getSummary());
 registerEvent("purchaseLorroTheme", (_e, themeId: string) =>
   lorroPointsManager.purchaseTheme(themeId)
 );
-registerEvent("correctPlaytimeSession", (_e, gameKey: string, sessionId: string, durationMs: number) =>
-  sessionStats.correctSession(gameKey, sessionId, durationMs)
+registerEvent("purchaseLorroItem", (_e, itemId: string) =>
+  lorroPointsManager.purchaseItem(itemId)
 );
-registerEvent("deletePlaytimeSession", (_e, gameKey: string, sessionId: string) =>
-  sessionStats.deleteSession(gameKey, sessionId)
+registerEvent(
+  "correctPlaytimeSession",
+  (_e, gameKey: string, sessionId: string, durationMs: number) =>
+    sessionStats.correctSession(gameKey, sessionId, durationMs)
+);
+registerEvent(
+  "deletePlaytimeSession",
+  (_e, gameKey: string, sessionId: string) =>
+    sessionStats.deleteSession(gameKey, sessionId)
 );
 
 registerEvent("runGameDiagnostics", async (_e, gameKey: string) => {
@@ -85,15 +96,20 @@ registerEvent("runGameDiagnostics", async (_e, gameKey: string) => {
   if (!game) return null;
   return gameDiagnostics.run(game as Game);
 });
-registerEvent("fixGameDiagnostic", async (_e, gameKey: string, checkId: string) => {
-  const game = await getGame(gameKey);
-  if (!game) return { fixed: false, message: "Game not found." };
-  return gameDiagnostics.fix(game as Game, checkId);
-});
+registerEvent(
+  "fixGameDiagnostic",
+  async (_e, gameKey: string, checkId: string) => {
+    const game = await getGame(gameKey);
+    if (!game) return { fixed: false, message: "Game not found." };
+    return gameDiagnostics.fix(game as Game, checkId);
+  }
+);
 
 registerEvent("getStorageReport", () => storageManager.report());
-registerEvent("moveGameInstallation", (_e, gameKey: string, destination: string) =>
-  storageManager.moveGame(gameKey, destination)
+registerEvent(
+  "moveGameInstallation",
+  (_e, gameKey: string, destination: string) =>
+    storageManager.moveGame(gameKey, destination)
 );
 registerEvent("cleanStorageCaches", (_e, ids: string[]) =>
   storageManager.cleanCaches(ids)

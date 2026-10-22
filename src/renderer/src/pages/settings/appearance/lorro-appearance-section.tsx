@@ -206,6 +206,10 @@ export function LorroAppearanceSection() {
                     );
                   }}
                 />
+              ) : appearance.background.kind === "preset" ? (
+                <div
+                  className={`lorro-appearance__preview-preset lorro-wallpaper lorro-wallpaper--${appearance.background.path}`}
+                />
               ) : (
                 <img src={toLocalUrl(appearance.background.path)} alt="" />
               )}

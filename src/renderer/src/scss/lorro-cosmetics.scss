@@ -1,0 +1,257 @@
+.lorro-avatar-frame {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: 2px;
+  border-radius: 50%;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    z-index: 0;
+  }
+
+  .profile-avatar {
+    position: relative;
+    z-index: 1;
+    border: 2px solid #0b0812;
+  }
+
+  &--neon::before {
+    background: linear-gradient(135deg, #a78bfa 0%, #22d3ee 100%);
+    box-shadow: 0 0 12px rgba(167, 139, 250, 0.65);
+  }
+
+  &--sunset::before {
+    background: linear-gradient(135deg, #fb7185 0%, #fbbf24 100%);
+  }
+
+  &--gold::before {
+    background: linear-gradient(135deg, #fef3c7 0%, #f4b942 45%, #b45309 100%);
+    box-shadow: 0 0 10px rgba(244, 185, 66, 0.45);
+  }
+
+  &--emerald::before {
+    background: linear-gradient(135deg, #a7f3d0 0%, #34d399 45%, #047857 100%);
+    box-shadow: 0 0 10px rgba(52, 211, 153, 0.4);
+  }
+
+  &--ruby::before {
+    background: linear-gradient(135deg, #fda4af 0%, #f43f5e 45%, #9f1239 100%);
+    box-shadow: 0 0 10px rgba(244, 63, 94, 0.45);
+  }
+
+  &--aurora::before {
+    background: conic-gradient(
+      from 0deg,
+      #22d3ee,
+      #a78bfa,
+      #f472b6,
+      #facc15,
+      #22d3ee
+    );
+    animation: lorro-frame-spin 6s linear infinite;
+  }
+
+  &--pixel::before {
+    background: repeating-linear-gradient(
+      45deg,
+      #8b5cf6 0 4px,
+      #22d3ee 4px 8px,
+      #f472b6 8px 12px
+    );
+  }
+}
+
+@keyframes lorro-frame-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.lorro-title {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &--explorer {
+    color: #a5f3fc;
+    background: rgba(34, 211, 238, 0.14);
+    border-color: rgba(34, 211, 238, 0.35);
+  }
+
+  &--collector {
+    color: #ddd6fe;
+    background: rgba(139, 92, 246, 0.16);
+    border-color: rgba(139, 92, 246, 0.4);
+  }
+
+  &--marathon {
+    color: #fde68a;
+    background: rgba(244, 185, 66, 0.14);
+    border-color: rgba(244, 185, 66, 0.4);
+  }
+
+  &--hunter {
+    color: #fecdd3;
+    background: rgba(244, 63, 94, 0.14);
+    border-color: rgba(244, 63, 94, 0.4);
+  }
+
+  &--archivist {
+    color: #bbf7d0;
+    background: rgba(52, 211, 153, 0.14);
+    border-color: rgba(52, 211, 153, 0.4);
+  }
+
+  &--legend {
+    color: #1c1917;
+    background: linear-gradient(135deg, #fef3c7, #f4b942);
+    border-color: #f4b942;
+  }
+}
+
+.lorro-wallpaper {
+  background-color: #0a0712;
+  background-size: 200% 200%;
+
+  &--wallpaper-aurora {
+    background-image:
+      radial-gradient(
+        circle at 18% 22%,
+        rgba(34, 211, 238, 0.55),
+        transparent 46%
+      ),
+      radial-gradient(
+        circle at 78% 18%,
+        rgba(167, 139, 250, 0.6),
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 62% 82%,
+        rgba(244, 114, 182, 0.45),
+        transparent 52%
+      ),
+      linear-gradient(135deg, #07030f 0%, #160a2e 60%, #05030a 100%);
+    animation: lorro-wallpaper-pan 20s ease-in-out infinite alternate;
+  }
+
+  &--wallpaper-sunset {
+    background-image:
+      radial-gradient(
+        circle at 50% 110%,
+        rgba(251, 146, 60, 0.85),
+        transparent 55%
+      ),
+      radial-gradient(
+        circle at 20% 20%,
+        rgba(244, 63, 94, 0.55),
+        transparent 50%
+      ),
+      linear-gradient(160deg, #1b0820 0%, #4c1246 55%, #0a0410 100%);
+  }
+
+  &--wallpaper-ocean {
+    background-image:
+      radial-gradient(
+        circle at 70% 20%,
+        rgba(34, 211, 238, 0.42),
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 30% 80%,
+        rgba(14, 116, 144, 0.6),
+        transparent 55%
+      ),
+      linear-gradient(160deg, #020617 0%, #082f49 55%, #010409 100%);
+  }
+
+  &--wallpaper-nebula {
+    background-image:
+      radial-gradient(
+        circle at 22% 32%,
+        rgba(244, 114, 182, 0.4),
+        transparent 42%
+      ),
+      radial-gradient(
+        circle at 74% 28%,
+        rgba(129, 140, 248, 0.45),
+        transparent 46%
+      ),
+      radial-gradient(
+        circle at 56% 76%,
+        rgba(34, 211, 238, 0.3),
+        transparent 44%
+      ),
+      linear-gradient(145deg, #05020c 0%, #1b0b33 58%, #04020a 100%);
+    animation: lorro-wallpaper-pan 26s ease-in-out infinite alternate;
+  }
+
+  &--wallpaper-forest {
+    background-image:
+      radial-gradient(
+        circle at 28% 18%,
+        rgba(110, 231, 183, 0.4),
+        transparent 48%
+      ),
+      radial-gradient(
+        circle at 78% 72%,
+        rgba(5, 150, 105, 0.5),
+        transparent 52%
+      ),
+      linear-gradient(160deg, #02120c 0%, #052e1f 60%, #010806 100%);
+  }
+
+  &--wallpaper-ember {
+    background-image:
+      radial-gradient(
+        circle at 50% 90%,
+        rgba(251, 146, 60, 0.6),
+        transparent 52%
+      ),
+      radial-gradient(
+        circle at 22% 26%,
+        rgba(190, 24, 93, 0.45),
+        transparent 48%
+      ),
+      linear-gradient(160deg, #120306 0%, #3b0a0a 58%, #080102 100%);
+    animation: lorro-wallpaper-pan 18s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes lorro-wallpaper-pan {
+  from {
+    background-position:
+      0% 0%,
+      100% 0%,
+      50% 100%,
+      50% 50%;
+  }
+
+  to {
+    background-position:
+      100% 40%,
+      0% 60%,
+      40% 0%,
+      50% 50%;
+  }
+}
+
+body.lorro-performance-mode {
+  .lorro-avatar-frame--aurora::before,
+  .lorro-wallpaper {
+    animation: none !important;
+  }
+}

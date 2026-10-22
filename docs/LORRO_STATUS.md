@@ -7,10 +7,12 @@ release channel, installer and data folder. This document tracks what has been
 completed, what has been verified, what is still pending, and what is required
 to distribute the app.
 
-**Current status (estado tras 1.82.0):** **1.82.0** is the latest
-public release for Windows, Ubuntu/Debian and Arch Linux. It includes the
-LorroPoints store as its own Settings category, a separate image/video
-background picker with video validation, plus everything from 1.77.0-1.81.0:
+**Current status (estado tras 1.83.0):** **1.83.0** is the latest
+public release for Windows, Ubuntu/Debian and Arch Linux. It expands the
+LorroPoints store with avatar frames, profile titles and animated wallpapers,
+adds home customization to hide the hero and catalogue for a clean background,
+and keeps the image/video background picker with validation, plus everything
+from 1.77.0-1.82.0:
 real playtime on library cards, LorroPoints based on achievement points, the
 Golden/Esmeralda/Ruby theme store with real window transparency, a dedicated
 Clips page with global hotkey and system audio, automatic executable detection,
@@ -237,7 +239,7 @@ hectorrh11, repo: lorro-launcher`) and in `.env`
   than the installed one. Any installation older than `1.0.0` must install the
   current setup once; from `1.0.0` onward in-app auto-update works.
 
-### 1.12 Current feature state (1.82.0)
+### 1.12 Current feature state (1.83.0)
 
 - **Real playtime on library cards**: `LibraryGame.lorroPlaytimeMs` is computed
   from `src/main/services/session-stats.ts` when the library is listed, shown on
@@ -261,6 +263,16 @@ hectorrh11, repo: lorro-launcher`) and in `.env`
   `canPlayVideoSource` (`lib/media-support.ts`) and unsupported files are
   removed with a clear toast. Supported: JPG/PNG/WebP/AVIF images and MP4
   (H.264)/WebM/MOV/M4V videos; `.mkv` is no longer offered.
+- **Expanded store (1.83.0)**: `src/shared/lorro-cosmetics.ts` defines 7 avatar
+  frames, 6 profile titles and 6 animated wallpapers. Purchases go through
+  `purchaseLorroItem`, ownership persists in `ownedLorroCosmetics`, and frames
+  and titles are equipped in `lorroFrame`/`lorroTitle` and rendered in the
+  sidebar and own profile. Wallpapers are applied as an appearance `preset`
+  without copying files.
+- **Home customization (1.83.0)**: the home page exposes a "Customize home"
+  panel backed by `homeHideHero`, `homeHideCatalogue`, `homeHideCategories` and
+  `homeHideRandom`. Hiding the catalogue also stops its catalogue and random
+  game requests.
 - **Commercial surface removed**: subscription modal, paywall banners, achievement
   and profile upsells, gift modal, cloud-ring, subscription slice and
   `allow_cloud_gifts` are gone. `openCheckout()` opens the user's GitHub profile

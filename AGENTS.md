@@ -2,7 +2,7 @@
 
 Launcher de escritorio **independiente** (Electron + React + TypeScript + Vite)
 basado en el código abierto de Hydra. Repo: `hectorrh11/lorro-launcher`.
-Versión publicada actual: **1.82.0** (Windows, Ubuntu/Debian y Arch Linux).
+Versión publicada actual: **1.83.0** (Windows, Ubuntu/Debian y Arch Linux).
 
 Este documento es la fuente de verdad para retomar el proyecto en una sesión
 nueva. Léelo entero antes de tocar código.
@@ -293,6 +293,21 @@ Apariencia y el botón "Tienda de LorroPoints" navegan a esta categoría con
 `setCurrentCategoryId("store")`. En Extras solo quedan el modo rendimiento y un
 acceso a la tienda.
 
+Desde 1.83.0 la tienda vende también 7 marcos de avatar, 6 títulos de perfil y
+6 fondos animados, definidos en `src/shared/lorro-cosmetics.ts`. La compra usa
+`purchaseLorroItem` y persiste `ownedLorroCosmetics`; los marcos y títulos se
+equipan en `lorroFrame`/`lorroTitle` y se muestran en la barra lateral y en el
+perfil propio. Los fondos animados se guardan como fondo `preset` en
+`lorro.appearance.v1` y se pintan con clases `lorro-wallpaper--<id>`.
+
+### Inicio personalizable (1.83.0)
+
+La página de inicio tiene un botón "Personalizar inicio" que oculta el banner
+(`Hero`), el catálogo, los filtros de categoría y "Sorpréndeme" mediante
+`homeHideHero`, `homeHideCatalogue`, `homeHideCategories` y `homeHideRandom` en
+las preferencias. Cuando el catálogo está oculto no se descargan sus datos ni el
+juego aleatorio.
+
 ### Copias de seguridad de partidas
 
 Rutas por juego (detección + manual), copia manual/al cerrar/antes de restaurar,
@@ -395,6 +410,16 @@ enlaces de Hydra/Lorro Cloud.
 - Cuatro colecciones creadas automáticamente en el perfil: Terminado,
   En proceso, Abandonado y No instalado.
 - Textos de Extras (modo rendimiento y tienda) traducidos; sin claves visibles.
+
+---
+
+### 1.83.0 (implementado; build/release en curso)
+
+- Tienda ampliada con 7 marcos de avatar, 6 títulos y 6 fondos animados.
+- Compra genérica `purchaseLorroItem`, equipar/quitar marcos y títulos.
+- Fondos animados por gradiente sin archivos y compatibles con el modo rendimiento.
+- Personalización del inicio (banner, catálogo, filtros y sorpresa) con
+  preferencias persistentes y sin peticiones cuando el catálogo está oculto.
 
 ---
 
@@ -510,6 +535,9 @@ Comprobar además:
 - **1.82.0** — tienda de LorroPoints como categoría propia de Ajustes, accesos
   desde Apariencia, y selector de fondo con imagen/vídeo separados, validación
   del vídeo y aviso de formatos compatibles.
+- **1.83.0** — tienda ampliada (7 marcos, 6 títulos y 6 fondos animados además
+  de los 3 temas), fondos con gradientes animados, personalización de inicio
+  (ocultar banner, catálogo, filtros y sorpresa) y optimización de peticiones.
 
 ---
 

@@ -26,6 +26,17 @@ export function LorroBackground() {
 
   if (!background) return null;
 
+  if (background.kind === "preset") {
+    return (
+      <div className="lorro-background" aria-hidden="true">
+        <div
+          className={`lorro-background__media lorro-wallpaper lorro-wallpaper--${background.path}`}
+        />
+        <div className="lorro-background__overlay" />
+      </div>
+    );
+  }
+
   const url = toLocalUrl(background.path);
 
   return (

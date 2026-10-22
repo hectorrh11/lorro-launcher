@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { isLorroWallpaperId } from "@shared";
 
 export type LorroTheme =
   | "dark"
@@ -9,7 +10,7 @@ export type LorroTheme =
   | "ruby";
 
 export interface LorroBackground {
-  kind: "image" | "video";
+  kind: "image" | "video" | "preset";
   path: string;
 }
 
@@ -61,10 +62,14 @@ function loadState(): AppearanceState {
     const parsed = JSON.parse(raw) as Partial<AppearanceState>;
 
     const background =
-      parsed.background &&
-      typeof parsed.background.path === "string" &&
-      (parsed.background.kind === "image" || parsed.background.kind === "video")
-        ? { kind: parsed.background.kind, path: parsed.background.path }
+      parsed.background && typeof parsed.background.path === "string"
+        ? parsed.background.kind === "preset" &&
+          isLorroWallpaperId(parsed.background.path)
+          ? { kind: "preset" as const, path: parsed.background.path }
+          : parsed.background.kind === "image" ||
+              parsed.background.kind === "video"
+            ? { kind: parsed.background.kind, path: parsed.background.path }
+            : null
         : null;
 
     return {
@@ -89,13 +94,13 @@ function applyToDocument(next: AppearanceState) {
   const root = document.documentElement;
 
   root.dataset.lorroTheme = next.theme;
-  root.dataset.lorroBackground = next.background ? next.background.kind : "none";
+  root.dataset.lorroBackground = next.background
+    ? next.background.kind
+    : "none";
   root.style.setProperty("--lorro-bg-blur", `${next.blur}px`);
   root.style.setProperty("--lorro-bg-dim", `${next.dim}`);
 
-  window.electron
-    ?.setTitlebarTheme?.(next.theme)
-    .catch(() => undefined);
+  window.electron?.setTitlebarTheme?.(next.theme).catch(() => undefined);
 }
 
 function persist(next: AppearanceState) {
@@ -141,5 +146,9 @@ export function setBackground(background: LorroBackground | null) {
 }
 
 export function useAppearance() {
-  return useSyncExternalStore(subscribeAppearance, getAppearance, getAppearance);
+  return useSyncExternalStore(
+    subscribeAppearance,
+    getAppearance,
+    getAppearance
+  );
 }

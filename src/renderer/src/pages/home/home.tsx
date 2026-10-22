@@ -3,10 +3,13 @@ import { useTranslation } from "react-i18next";
 import { levelDBService } from "@renderer/services/leveldb.service";
 import { orderBy } from "lodash-es";
 import { useNavigate } from "react-router-dom";
+import { SlidersIcon, StarFillIcon, XIcon } from "@primer/octicons-react";
 
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 
 import { Button, GameCard, Hero } from "@renderer/components";
+import { useAppSelector } from "@renderer/hooks";
+import { SETTINGS_CATEGORY_STORAGE_KEY } from "@renderer/session-state";
 import type { DownloadSource, ShopAssets, Steam250Game } from "@types";
 
 import flameIconStatic from "@renderer/assets/icons/flame-static.png";
@@ -24,6 +27,15 @@ export default function Home() {
   const [animateFlame, setAnimateFlame] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [randomGame, setRandomGame] = useState<Steam250Game | null>(null);
+  const [showCustomize, setShowCustomize] = useState(false);
+
+  const userPreferences = useAppSelector(
+    (state) => state.userPreferences.value
+  );
+  const hideHero = userPreferences?.homeHideHero ?? false;
+  const hideCatalogue = userPreferences?.homeHideCatalogue ?? false;
+  const hideCategories = userPreferences?.homeHideCategories ?? false;
+  const hideRandom = userPreferences?.homeHideRandom ?? false;
 
   const [currentCatalogueCategory, setCurrentCatalogueCategory] = useState(
     CatalogueCategory.Hot
@@ -99,11 +111,35 @@ export default function Home() {
   };
 
   useEffect(() => {
-    setIsLoading(true);
-    getCatalogue(CatalogueCategory.Hot);
+    if (hideCatalogue) return;
+    if (catalogue[currentCatalogueCategory].length > 0) return;
 
+    setIsLoading(true);
+    void getCatalogue(currentCatalogueCategory).finally(() =>
+      setIsLoading(false)
+    );
+  }, [catalogue, currentCatalogueCategory, getCatalogue, hideCatalogue]);
+
+  useEffect(() => {
+    if (hideCatalogue || hideRandom || randomGame) return;
     getRandomGame();
-  }, [getCatalogue, getRandomGame]);
+  }, [getRandomGame, hideCatalogue, hideRandom, randomGame]);
+
+  const updateHomePreference = (
+    key:
+      | "homeHideHero"
+      | "homeHideCatalogue"
+      | "homeHideCategories"
+      | "homeHideRandom",
+    value: boolean
+  ) => {
+    void window.electron.updateUserPreferences({ [key]: value });
+  };
+
+  const openStore = () => {
+    localStorage.setItem(SETTINGS_CATEGORY_STORAGE_KEY, "store");
+    navigate("/settings");
+  };
 
   const categories = Object.values(CatalogueCategory);
 
@@ -122,88 +158,184 @@ export default function Home() {
   return (
     <SkeletonTheme baseColor="#1c1c1c" highlightColor="#444">
       <section className="home__content">
-        <Hero />
-
-        <section className="home__header">
-          <ul className="home__buttons-list">
-            {categories.map((category) => (
-              <li key={category}>
-                <Button
-                  theme={
-                    category === currentCatalogueCategory
-                      ? "primary"
-                      : "outline"
-                  }
-                  onClick={() => handleCategoryClick(category)}
-                  onMouseEnter={() => handleMouseEnterCategory(category)}
-                  onMouseLeave={() => handleMouseLeaveCategory(category)}
-                >
-                  {category === CatalogueCategory.Hot && (
-                    <div className="home__icon-wrapper">
-                      <img
-                        src={flameIconStatic}
-                        alt=""
-                        className="home__flame-icon"
-                        style={{ display: animateFlame ? "none" : "block" }}
-                      />
-                      <img
-                        src={flameIconAnimated}
-                        alt=""
-                        className="home__flame-icon"
-                        style={{ display: animateFlame ? "block" : "none" }}
-                      />
-                    </div>
-                  )}
-
-                  {t(category)}
-                </Button>
-              </li>
-            ))}
-          </ul>
-
+        <div className="home__customize">
           <Button
-            onClick={handleRandomizerClick}
             theme="outline"
-            disabled={!randomGame}
+            onClick={() => setShowCustomize((value) => !value)}
           >
-            <div className="home__icon-wrapper">
-              <img
-                src={starsIconAnimated}
-                alt=""
-                className="home__stars-icon"
-              />
-            </div>
-            {t("surprise_me")}
+            <SlidersIcon size={14} /> {t("customize_home")}
           </Button>
-        </section>
 
-        <h2 className="home__title">
-          {currentCatalogueCategory === CatalogueCategory.Hot && (
-            <div className="home__title-icon">
-              <img
-                src={flameIconAnimated}
-                alt=""
-                className="home__title-flame-icon"
-              />
-            </div>
-          )}
+          {showCustomize ? (
+            <div className="home__customize-panel">
+              <div className="home__customize-head">
+                <strong>{t("customize_home")}</strong>
+                <button
+                  type="button"
+                  className="home__customize-close"
+                  onClick={() => setShowCustomize(false)}
+                  aria-label={t("customize_close")}
+                >
+                  <XIcon size={14} />
+                </button>
+              </div>
 
-          {t(currentCatalogueCategory)}
-        </h2>
-
-        <section className="home__cards">
-          {isLoading
-            ? Array.from({ length: 12 }).map((_, index) => (
-                <Skeleton key={index} className="home__card-skeleton" />
-              ))
-            : catalogue[currentCatalogueCategory].map((result) => (
-                <GameCard
-                  key={result.objectId}
-                  game={result}
-                  onClick={() => navigate(buildGameDetailsPath(result))}
+              <label className="home__customize-option">
+                <input
+                  type="checkbox"
+                  checked={!hideHero}
+                  onChange={(event) =>
+                    updateHomePreference("homeHideHero", !event.target.checked)
+                  }
                 />
-              ))}
-        </section>
+                {t("customize_show_hero")}
+              </label>
+
+              <label className="home__customize-option">
+                <input
+                  type="checkbox"
+                  checked={!hideCatalogue}
+                  onChange={(event) =>
+                    updateHomePreference(
+                      "homeHideCatalogue",
+                      !event.target.checked
+                    )
+                  }
+                />
+                {t("customize_show_catalogue")}
+              </label>
+
+              <label className="home__customize-option">
+                <input
+                  type="checkbox"
+                  checked={!hideCategories}
+                  disabled={hideCatalogue}
+                  onChange={(event) =>
+                    updateHomePreference(
+                      "homeHideCategories",
+                      !event.target.checked
+                    )
+                  }
+                />
+                {t("customize_show_categories")}
+              </label>
+
+              <label className="home__customize-option">
+                <input
+                  type="checkbox"
+                  checked={!hideRandom}
+                  disabled={hideCatalogue}
+                  onChange={(event) =>
+                    updateHomePreference(
+                      "homeHideRandom",
+                      !event.target.checked
+                    )
+                  }
+                />
+                {t("customize_show_random")}
+              </label>
+
+              <p className="home__customize-hint">{t("customize_hint")}</p>
+
+              <Button theme="primary" onClick={openStore}>
+                <StarFillIcon size={14} /> {t("customize_open_store")}
+              </Button>
+            </div>
+          ) : null}
+        </div>
+
+        {!hideHero ? <Hero /> : null}
+
+        {!hideCatalogue && !(hideCategories && hideRandom) ? (
+          <section className="home__header">
+            {!hideCategories ? (
+              <ul className="home__buttons-list">
+                {categories.map((category) => (
+                  <li key={category}>
+                    <Button
+                      theme={
+                        category === currentCatalogueCategory
+                          ? "primary"
+                          : "outline"
+                      }
+                      onClick={() => handleCategoryClick(category)}
+                      onMouseEnter={() => handleMouseEnterCategory(category)}
+                      onMouseLeave={() => handleMouseLeaveCategory(category)}
+                    >
+                      {category === CatalogueCategory.Hot && (
+                        <div className="home__icon-wrapper">
+                          <img
+                            src={flameIconStatic}
+                            alt=""
+                            className="home__flame-icon"
+                            style={{ display: animateFlame ? "none" : "block" }}
+                          />
+                          <img
+                            src={flameIconAnimated}
+                            alt=""
+                            className="home__flame-icon"
+                            style={{ display: animateFlame ? "block" : "none" }}
+                          />
+                        </div>
+                      )}
+
+                      {t(category)}
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+
+            {!hideRandom ? (
+              <Button
+                onClick={handleRandomizerClick}
+                theme="outline"
+                disabled={!randomGame}
+              >
+                <div className="home__icon-wrapper">
+                  <img
+                    src={starsIconAnimated}
+                    alt=""
+                    className="home__stars-icon"
+                  />
+                </div>
+                {t("surprise_me")}
+              </Button>
+            ) : null}
+          </section>
+        ) : null}
+
+        {!hideCatalogue ? (
+          <>
+            <h2 className="home__title">
+              {currentCatalogueCategory === CatalogueCategory.Hot && (
+                <div className="home__title-icon">
+                  <img
+                    src={flameIconAnimated}
+                    alt=""
+                    className="home__title-flame-icon"
+                  />
+                </div>
+              )}
+
+              {t(currentCatalogueCategory)}
+            </h2>
+
+            <section className="home__cards">
+              {isLoading
+                ? Array.from({ length: 12 }).map((_, index) => (
+                    <Skeleton key={index} className="home__card-skeleton" />
+                  ))
+                : catalogue[currentCatalogueCategory].map((result) => (
+                    <GameCard
+                      key={result.objectId}
+                      game={result}
+                      onClick={() => navigate(buildGameDetailsPath(result))}
+                    />
+                  ))}
+            </section>
+          </>
+        ) : null}
       </section>
     </SkeletonTheme>
   );

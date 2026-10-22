@@ -267,23 +267,118 @@
     color: globals.$body-color;
     font-variant-numeric: tabular-nums;
   }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: calc(globals.$spacing-unit * 1.25);
+  }
+
+  &__section-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+
+    h3 {
+      margin: 0 0 4px;
+      font-size: 16px;
+      color: globals.$body-color;
+    }
+
+    p {
+      margin: 0;
+      font-size: 12px;
+      color: globals.$muted-color;
+    }
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid globals.$border-color;
+    border-radius: 16px;
+    background: globals.$surface-color;
+    transition:
+      border-color 0.18s ease,
+      transform 0.18s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      border-color: globals.$border-strong-color;
+    }
+
+    &--owned {
+      border-color: color-mix(in srgb, var(--lorro-accent) 32%, transparent);
+    }
+  }
+
+  &__item-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 108px;
+    background:
+      radial-gradient(
+        circle at 50% 30%,
+        color-mix(in srgb, var(--lorro-accent) 18%, transparent),
+        transparent 70%
+      ),
+      rgba(0, 0, 0, 0.22);
+
+    &--wallpaper {
+      padding: 10px;
+    }
+  }
+
+  &__wallpaper {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    background-size: cover;
+  }
+
+  &__item-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 10px;
+    padding: calc(globals.$spacing-unit * 1.5);
+
+    > p {
+      flex: 1;
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.5;
+      color: globals.$muted-color;
+    }
+  }
 }
 
 html[data-lorro-theme="light"] .settings-store__header,
 html[data-lorro-theme="light"] .settings-store__theme,
+html[data-lorro-theme="light"] .settings-store__item,
 html[data-lorro-theme="light"] .settings-store__balance-item {
   box-shadow: none;
 }
 
 html[data-lorro-theme="transparent"] .settings-store__header,
 html[data-lorro-theme="transparent"] .settings-store__theme,
+html[data-lorro-theme="transparent"] .settings-store__item,
 html[data-lorro-theme="transparent"] .settings-store__balance-item,
 html[data-lorro-background="image"] .settings-store__header,
 html[data-lorro-background="image"] .settings-store__theme,
+html[data-lorro-background="image"] .settings-store__item,
 html[data-lorro-background="image"] .settings-store__balance-item,
 html[data-lorro-background="video"] .settings-store__header,
 html[data-lorro-background="video"] .settings-store__theme,
-html[data-lorro-background="video"] .settings-store__balance-item {
+html[data-lorro-background="video"] .settings-store__item,
+html[data-lorro-background="video"] .settings-store__balance-item,
+html[data-lorro-background="preset"] .settings-store__header,
+html[data-lorro-background="preset"] .settings-store__theme,
+html[data-lorro-background="preset"] .settings-store__item,
+html[data-lorro-background="preset"] .settings-store__balance-item {
   background: rgba(12, 10, 20, 0.62);
   backdrop-filter: blur(16px);
 }

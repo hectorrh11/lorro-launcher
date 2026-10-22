@@ -1132,14 +1132,15 @@ declare global {
       id: string
     ) => Promise<{ ok: boolean; message?: string }>;
     exportSaveBackup: (id: string, destinationDir: string) => Promise<string>;
-    importSaveBackup: (
-      sourceDir: string
-    ) => Promise<SaveBackupEntry | null>;
+    importSaveBackup: (sourceDir: string) => Promise<SaveBackupEntry | null>;
     getPlaytimeStats: (gameKey: string) => Promise<LorroGameStats | null>;
     getPlaytimeStatsSummary: () => Promise<LorroStatsSummary>;
     getLorroPoints: () => Promise<LorroPointsSummary>;
     purchaseLorroTheme: (
       themeId: string
+    ) => Promise<{ ok: boolean; message: string }>;
+    purchaseLorroItem: (
+      itemId: string
     ) => Promise<{ ok: boolean; message: string }>;
     setRealWindowTransparency: (
       enabled: boolean
@@ -1153,17 +1154,13 @@ declare global {
       gameKey: string,
       sessionId: string
     ) => Promise<LorroGameStats | null>;
-    runGameDiagnostics: (
-      gameKey: string
-    ) => Promise<DiagnosticReport | null>;
+    runGameDiagnostics: (gameKey: string) => Promise<DiagnosticReport | null>;
     fixGameDiagnostic: (
       gameKey: string,
       checkId: string
     ) => Promise<{ fixed: boolean; message: string }>;
     getClipSettings: () => Promise<LorroClipSettings>;
-    updateClipSettings: (
-      patch: Partial<LorroClipSettings>
-    ) => Promise<{
+    updateClipSettings: (patch: Partial<LorroClipSettings>) => Promise<{
       ok: boolean;
       message: string;
       settings: LorroClipSettings;
@@ -1198,12 +1195,12 @@ declare global {
     getCustomDownloads: () => Promise<CustomDownload[]>;
     pauseCustomDownload: (id: string) => Promise<void>;
     resumeCustomDownload: (id: string) => Promise<void>;
-  cancelCustomDownload: (id: string) => Promise<void>;
-  removeCustomDownload: (id: string) => Promise<void>;
-  getExternalDownloadManager: () => Promise<ExternalDownloadManagerInfo>;
-  openDownloadInExternalManager: (
-    id: string
-  ) => Promise<ExternalDownloadManagerInfo & { started: boolean }>;
+    cancelCustomDownload: (id: string) => Promise<void>;
+    removeCustomDownload: (id: string) => Promise<void>;
+    getExternalDownloadManager: () => Promise<ExternalDownloadManagerInfo>;
+    openDownloadInExternalManager: (
+      id: string
+    ) => Promise<ExternalDownloadManagerInfo & { started: boolean }>;
     onCustomDownloadProgress: (
       cb: (downloads: CustomDownload[]) => void
     ) => () => Electron.IpcRenderer;

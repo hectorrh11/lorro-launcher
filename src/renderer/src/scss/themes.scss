@@ -99,7 +99,8 @@ html[data-lorro-theme="light"] {
    frosted glass so the wallpaper (image or video) shows through. */
 html[data-lorro-theme="transparent"],
 html[data-lorro-background="image"],
-html[data-lorro-background="video"] {
+html[data-lorro-background="video"],
+html[data-lorro-background="preset"] {
   body {
     background-color: transparent;
   }
@@ -169,6 +170,7 @@ html[data-lorro-background="video"] {
 }
 
 html[data-lorro-theme="light"][data-lorro-background="image"] body,
-html[data-lorro-theme="light"][data-lorro-background="video"] body {
+html[data-lorro-theme="light"][data-lorro-background="video"] body,
+html[data-lorro-theme="light"][data-lorro-background="preset"] body {
   background-color: transparent;
 }

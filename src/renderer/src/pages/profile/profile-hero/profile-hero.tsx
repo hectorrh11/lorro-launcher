@@ -28,7 +28,7 @@ import {
 import { addSeconds } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { AuthPage } from "@shared";
+import { AuthPage, getLorroCosmetic } from "@shared";
 import { GameVisibilityBadge } from "@renderer/components/game-visibility-badge/game-visibility-badge";
 
 import type { FriendRequestAction } from "@types";
@@ -61,6 +61,15 @@ export function ProfileHero() {
   } = useUserDetails();
 
   const { gameRunning } = useAppSelector((state) => state.gameRunning);
+  const userPreferences = useAppSelector(
+    (state) => state.userPreferences.value
+  );
+  const frame = getLorroCosmetic(userPreferences?.lorroFrame ?? "");
+  const frameSuffix =
+    frame?.kind === "frame" ? frame.id.replace("frame-", "") : null;
+  const title = getLorroCosmetic(userPreferences?.lorroTitle ?? "");
+  const titleSuffix =
+    title?.kind === "title" ? title.id.replace("title-", "") : null;
 
   const { t } = useTranslation("user_profile");
   const { formatDistance } = useDate();
@@ -349,11 +358,23 @@ export function ProfileHero() {
               className="profile-hero__avatar-button"
               onClick={handleAvatarClick}
             >
-              <Avatar
-                size={96}
-                alt={userProfile?.displayName}
-                src={userProfile?.profileImageUrl}
-              />
+              {isMe && frameSuffix ? (
+                <span
+                  className={`lorro-avatar-frame lorro-avatar-frame--${frameSuffix}`}
+                >
+                  <Avatar
+                    size={96}
+                    alt={userProfile?.displayName}
+                    src={userProfile?.profileImageUrl}
+                  />
+                </span>
+              ) : (
+                <Avatar
+                  size={96}
+                  alt={userProfile?.displayName}
+                  src={userProfile?.profileImageUrl}
+                />
+              )}
             </button>
 
             <div className="profile-hero__information">
@@ -362,6 +383,12 @@ export function ProfileHero() {
                   <h2 className="profile-hero__display-name">
                     {userProfile?.displayName}
                   </h2>
+
+                  {isMe && titleSuffix ? (
+                    <span className={`lorro-title lorro-title--${titleSuffix}`}>
+                      {t(`lorro_title_${titleSuffix}`)}
+                    </span>
+                  ) : null}
 
                   <motion.button
                     type="button"

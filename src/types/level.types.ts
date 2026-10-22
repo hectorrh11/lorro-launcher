@@ -245,7 +245,14 @@ export interface UserPreferences {
   autoplayAnimatedArtwork?: boolean;
   persistFiltersAndSorting?: boolean;
   ownedLorroThemes?: string[];
+  ownedLorroCosmetics?: string[];
+  lorroFrame?: string | null;
+  lorroTitle?: string | null;
   lorroSpentPoints?: number;
+  homeHideHero?: boolean;
+  homeHideCatalogue?: boolean;
+  homeHideCategories?: boolean;
+  homeHideRandom?: boolean;
   realTransparentWindow?: boolean;
   clipsEnabled?: boolean;
   clipsHotkey?: string;

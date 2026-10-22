@@ -1,4 +1,39 @@
 ========================================================
+VERSION 1.83.0
+========================================================
+TIENDA DE LORROPOINTS AMPLIADA: ademas de los tres temas,
+ahora se pueden comprar 7 marcos de avatar, 6 titulos de
+perfil y 6 fondos animados (22 articulos en total). Cada
+articulo muestra su precio, se puede equipar o quitar y los
+fondos se aplican al instante sin necesidad de archivo.
+
+MARCOS Y TITULOS: los marcos decoran el avatar de la barra
+lateral y de tu perfil; los titulos aparecen junto a tu
+nombre. Se guardan en las preferencias y se pueden quitar
+desde la propia tienda.
+
+FONDOS ANIMADOS: seis fondos con gradientes en movimiento
+(Aurora, Atardecer, Oceano, Nebulosa, Bosque y Brasas) que
+se adaptan a cualquier pantalla y respetan el modo
+rendimiento (sin animaciones).
+
+PERSONALIZAR INICIO: nuevo boton de ajustes en la pagina de
+inicio para ocultar el banner destacado, el catalogo de
+juegos, los filtros de categoria y el boton "Sorprendeme".
+Asi el fondo personalizado se ve completo. Las preferencias
+se recuerdan y el catalogo deja de descargarse cuando esta
+oculto para ahorrar CPU, RAM y red.
+
+ARREGLOS: validacion mas clara de fondos de video, limpieza
+correcta del fondo anterior si un video falla, textos de la
+tienda mas precisos y mejoras de estilo en la tienda y en
+los avisos de LorroPoints.
+
+RENDIMIENTO: se evitan peticiones y renders innecesarios al
+ocultar secciones de inicio; las animaciones nuevas se
+desactivan con el modo rendimiento.
+
+========================================================
 VERSION 1.82.0
 ========================================================
 TIENDA DE LORROPOINTS: la tienda ya tiene su propia seccion

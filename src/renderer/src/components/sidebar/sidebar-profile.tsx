@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 import SteamLogo from "@renderer/assets/steam-logo.svg?react";
 import { Avatar } from "../avatar/avatar";
 import { ConfirmationModal } from "../confirmation-modal/confirmation-modal";
-import { AuthPage } from "@shared";
+import { AuthPage, getLorroCosmetic } from "@shared";
 import { platformToSystem } from "@renderer/helpers";
 import { logger } from "@renderer/logger";
 import type {
@@ -117,6 +117,16 @@ export function SidebarProfile() {
 
   const { gameRunning } = useAppSelector((state) => state.gameRunning);
   const library = useAppSelector((state) => state.library.value);
+  const userPreferences = useAppSelector(
+    (state) => state.userPreferences.value
+  );
+
+  const frame = getLorroCosmetic(userPreferences?.lorroFrame ?? "");
+  const frameSuffix =
+    frame?.kind === "frame" ? frame.id.replace("frame-", "") : null;
+  const title = getLorroCosmetic(userPreferences?.lorroTitle ?? "");
+  const titleSuffix =
+    title?.kind === "title" ? title.id.replace("title-", "") : null;
 
   const isPlayStationGameRunning = useMemo(() => {
     if (gameRunning?.shop !== "launchbox") return false;
@@ -414,11 +424,23 @@ export function SidebarProfile() {
       >
         <div className="sidebar-profile__button-content">
           <span className="sidebar-profile__avatar">
-            <Avatar
-              size={35}
-              src={userDetails?.profileImageUrl}
-              alt={userDetails?.displayName}
-            />
+            {frameSuffix ? (
+              <span
+                className={`lorro-avatar-frame lorro-avatar-frame--${frameSuffix}`}
+              >
+                <Avatar
+                  size={35}
+                  src={userDetails?.profileImageUrl}
+                  alt={userDetails?.displayName}
+                />
+              </span>
+            ) : (
+              <Avatar
+                size={35}
+                src={userDetails?.profileImageUrl}
+                alt={userDetails?.displayName}
+              />
+            )}
             {userDetails && chatUnreadCount > 0 && (
               <output
                 className="sidebar-profile__unread-dot"
@@ -431,6 +453,12 @@ export function SidebarProfile() {
             <p className="sidebar-profile__button-title">
               {userDetails ? userDetails.displayName : t("sign_in")}
             </p>
+
+            {userDetails && titleSuffix ? (
+              <span className={`lorro-title lorro-title--${titleSuffix}`}>
+                {t(`user_profile:lorro_title_${titleSuffix}`)}
+              </span>
+            ) : null}
 
             {userDetails && gameRunning && (
               <div className="sidebar-profile__button-game-running-title">

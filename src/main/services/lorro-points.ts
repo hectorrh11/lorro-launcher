@@ -4,7 +4,10 @@ import type { UserPreferences } from "@types";
 import {
   LORRO_THEME_PRICES,
   type LorroPointsSummary,
+  getLorroCosmetic,
+  getLorroCosmeticPrice,
   isLorroPurchasableTheme,
+  normalizeLorroCosmeticIds,
   normalizeLorroThemeIds,
   type LorroPurchasableTheme,
 } from "@shared";
@@ -75,14 +78,18 @@ class LorroPointsManager {
     };
   }
 
-  async purchaseTheme(
-    themeId: string
+  async purchaseItem(
+    itemId: string
   ): Promise<{ ok: boolean; message: string }> {
-    if (!isLorroPurchasableTheme(themeId)) {
-      return { ok: false, message: "Unknown theme." };
-    }
+    const isTheme = isLorroPurchasableTheme(itemId);
+    const cosmetic = getLorroCosmetic(itemId);
+    const price = isTheme
+      ? LORRO_THEME_PRICES[itemId as LorroPurchasableTheme]
+      : getLorroCosmeticPrice(itemId);
 
-    const price = LORRO_THEME_PRICES[themeId as LorroPurchasableTheme];
+    if (!price) {
+      return { ok: false, message: "Unknown item." };
+    }
 
     const userPreferences = await db
       .get<string, UserPreferences | null>(levelKeys.userPreferences, {
@@ -94,8 +101,18 @@ class LorroPointsManager {
       return { ok: false, message: "User preferences are unavailable." };
     }
 
-    const owned = normalizeLorroThemeIds(userPreferences.ownedLorroThemes);
-    if (owned.includes(themeId)) {
+    const ownedThemes = normalizeLorroThemeIds(
+      userPreferences.ownedLorroThemes
+    );
+    const ownedCosmetics = normalizeLorroCosmeticIds(
+      userPreferences.ownedLorroCosmetics
+    );
+
+    if (
+      isTheme
+        ? ownedThemes.includes(itemId as LorroPurchasableTheme)
+        : ownedCosmetics.includes(itemId)
+    ) {
       return { ok: true, message: "Already owned." };
     }
 
@@ -115,17 +132,28 @@ class LorroPointsManager {
         levelKeys.userPreferences,
         {
           ...userPreferences,
-          ownedLorroThemes: [...owned, themeId],
+          ownedLorroThemes: isTheme
+            ? [...ownedThemes, itemId as LorroPurchasableTheme]
+            : ownedThemes,
+          ownedLorroCosmetics: cosmetic
+            ? [...ownedCosmetics, itemId]
+            : ownedCosmetics,
           lorroSpentPoints: spent + price,
         },
         { valueEncoding: "json" }
       );
-      logger.info(`[points] theme ${themeId} purchased for ${price}`);
-      return { ok: true, message: "Theme unlocked." };
+      logger.info(`[points] item ${itemId} purchased for ${price}`);
+      return { ok: true, message: "Item unlocked." };
     } catch (error) {
-      logger.error("[points] failed to persist theme purchase", error);
+      logger.error("[points] failed to persist item purchase", error);
       return { ok: false, message: "Could not save the purchase." };
     }
+  }
+
+  async purchaseTheme(
+    themeId: string
+  ): Promise<{ ok: boolean; message: string }> {
+    return this.purchaseItem(themeId);
   }
 }
 

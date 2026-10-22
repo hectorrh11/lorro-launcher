@@ -2,7 +2,7 @@
 
 Launcher de escritorio **independiente** (Electron + React + TypeScript + Vite)
 basado en el código abierto de Hydra. Repo: `hectorrh11/lorro-launcher`.
-Versión publicada actual: **1.81.0** (Windows, Ubuntu/Debian y Arch Linux).
+Versión publicada actual: **1.82.0** (Windows, Ubuntu/Debian y Arch Linux).
 
 Este documento es la fuente de verdad para retomar el proyecto en una sesión
 nueva. Léelo entero antes de tocar código.
@@ -198,10 +198,10 @@ yarn electron-vite build
 GH_TOKEN=<token> npx electron-builder --linux --publish always
 ```
 
-   Esto añade al mismo borrador el AppImage, `.deb`, `.pacman` y
-   `latest-linux.yml`. El paquete `pacman` requiere `bsdtar`; si no hay sudo,
-   extraer `libarchive-tools` y `libarchive13t64` con `dpkg -x` y poner un
-   wrapper `bsdtar` en el PATH.
+Esto añade al mismo borrador el AppImage, `.deb`, `.pacman` y
+`latest-linux.yml`. El paquete `pacman` requiere `bsdtar`; si no hay sudo,
+extraer `libarchive-tools` y `libarchive13t64` con `dpkg -x` y poner un
+wrapper `bsdtar` en el PATH.
 
 8. Publicar la release (electron-builder la crea en borrador):
 
@@ -240,12 +240,14 @@ Notas:
 ## 6. Funciones implementadas (estado real)
 
 ### Descargador propio
+
 Validación del enlace antes de descargar, multi-conexión segmentada,
 reintentos y watchdog de estancamiento, persistencia entre reinicios,
 entrega a gestor externo (IDM por CLI, NDM/FDM por portapapeles), gráfico de
 velocidad con tooltip y media seleccionable (total/1h/30m/15m/5m).
 
 ### Lanzamiento
+
 `useLaunchLibraryGame` abre el selector de `.exe` si falta y guarda la ruta
 (`updateExecutablePath`), luego `openGame`. Doble clic en la tarjeta y botón de
 play usan el mismo hook. Si el juego está instalado sin `.exe`, la tarjeta
@@ -257,12 +259,14 @@ probable (`findLikelyGameExecutableInFolder`). El resultado se guarda y se avisa
 al renderer con `on-executable-detected` (pop-up para cambiarlo).
 
 ### Colecciones
+
 Las colecciones viven en el perfil (API `/profile/games/collections`). Al
 cargarlas, `useGameCollections` crea una sola vez las cuatro predeterminadas
 si faltan: **Terminado**, **En proceso**, **Abandonado** y **No instalado**.
 No duplica nombres existentes ni sobrescribe las del usuario.
 
 ### Temas y fondo
+
 Claro y oscuro. La tienda de temas incluye los acentos de pago **Golden** (300
 LorroPoints), **Esmeralda** (600) y **Rubí** (900), definidos en
 `src/shared/lorro-themes.ts` y comprados con el IPC `purchaseLorroTheme`. Los
@@ -273,14 +277,30 @@ tema transparente usa transparencia **real** de ventana en Windows:
 `transparent: true` y `backgroundColor: "#00000000"` porque Electron no permite
 cambiarlo en caliente; la preferencia persistida es `realTransparentWindow`.
 Fondo personalizado con imagen o vídeo, recorte inteligente 1920×1080 con
-`sharp`, desenfoque y atenuación configurables.
+`sharp`, desenfoque y atenuación configurables. El selector tiene botones
+separados para imagen y vídeo (`importBackgroundFile(kind)`), valida que el
+vídeo se pueda reproducir con `canPlayVideoSource` (`lib/media-support.ts`) y
+admite MP4 (H.264), WebM, MOV y M4V. Un vídeo no compatible se elimina y se
+avisa; formatos como `.mkv` ya no aparecen en el diálogo.
+
+### Tienda de LorroPoints
+
+Categoría propia en Ajustes (`settings-store.tsx`, id `store`), no solo en
+Avanzado → Extras. Muestra saldo (`getLorroPoints`), temas comprables
+(`LORRO_PURCHASABLE_THEMES`), precios (`LORRO_THEME_PRICES`), compra con
+`purchaseLorroTheme` y aplica el tema al desbloquearlo. Los temas bloqueados de
+Apariencia y el botón "Tienda de LorroPoints" navegan a esta categoría con
+`setCurrentCategoryId("store")`. En Extras solo quedan el modo rendimiento y un
+acceso a la tienda.
 
 ### Copias de seguridad de partidas
+
 Rutas por juego (detección + manual), copia manual/al cerrar/antes de restaurar,
 historial, restaurar/exportar/importar/eliminar, destino y retención
 configurables, snapshot previo a restaurar, nunca borra archivos del usuario.
 
 ### Estadísticas
+
 Sesiones reales desde el monitor de procesos, recuperación tras cierre
 inesperado, totales, juegos más usados, actividad por día/semana/mes,
 corrección y borrado manual. Todo local. Las tarjetas de la biblioteca muestran
@@ -288,19 +308,23 @@ el tiempo real por juego (`LibraryGame.lorroPlaytimeMs`, calculado desde
 `session-stats` al listar la biblioteca) y se refrescan al cerrar el juego.
 
 ### Diagnóstico
+
 Ejecutable, ruta, permisos, espacio, rutas de guardado, perfiles y errores del
 log. Estados ok/warning/error/unknown, reejecutar, copiar informe, arreglos
 seguros únicamente.
 
 ### Almacenamiento
+
 Discos, tamaño/ubicación de juegos, duplicados, cachés con vista previa,
 limpieza segura, mover instalación con verificación y rollback.
 
 ### Big Picture
+
 Modo existente + navegación con mando (stick/cruceta, A, B/Start, LB/RB) con
 `gamepad-navigation.ts`.
 
 ### LorroPoints
+
 Puntos locales calculados en `src/main/services/lorro-points.ts` sumando el
 valor real (`achievement.points`) de cada logro desbloqueado, con
 `AchievementMemoryStore` como fuente. El saldo se expone con `getLorroPoints`
@@ -309,6 +333,7 @@ reinicia la app, el almacén de logros está vacío hasta que se sincronizan: el
 saldo puede mostrarse como **estimado** (`exact: false`) y recalcularse después.
 
 ### Clips (1.78.0)
+
 Página propia en la barra lateral (`/clips`): listado, reproducción con el
 protocolo `local:`, mostrar en carpeta y borrado con confirmación. Grabación en
 segundo plano mediante `globalShortcut` registrado en el proceso principal
@@ -320,10 +345,12 @@ el buffer vive en RAM y solo se escribe al guardar. Tras actualizar hay que
 volver a activar los clips.
 
 ### Extras
+
 Modo rendimiento (desactiva animaciones, transiciones, blur y vídeo de fondo) y
 tienda de temas/LorroPoints. Los clips ya no viven aquí.
 
 ### Superficie comercial
+
 Eliminada por completo: no quedan modal de suscripción, banners paywall, upsells
 de logros/perfil/vikingfile, modal de regalos, cloud-ring, slice de suscripción
 ni `allow_cloud_gifts`. `window.electron.openCheckout()` abre el GitHub del
@@ -351,6 +378,7 @@ enlaces de Hydra/Lorro Cloud.
 - Audio de sistema (loopback de Windows) y micrófono opcional mezclado.
 - Duración 5–90 s en pasos de 5 y ajustes persistentes en preferencias.
 - Los clips ya no viven en Ajustes → Extras.
+
 ### 1.79.0 (implementado; build/release hechos en local)
 
 - Detección automática del `.exe` dentro de la carpeta instalada.
@@ -479,6 +507,9 @@ Comprobar además:
 - **1.81.0** — soporte de Linux: `.deb`/AppImage para Ubuntu y `.pacman` para
   Arch, builds en WSL, assets separados por OS, sin audio de sistema en clips
   de Linux y tema transparente adaptado a la ventana.
+- **1.82.0** — tienda de LorroPoints como categoría propia de Ajustes, accesos
+  desde Apariencia, y selector de fondo con imagen/vídeo separados, validación
+  del vídeo y aviso de formatos compatibles.
 
 ---
 
@@ -587,4 +618,3 @@ Comprobar además:
 - Prueba manual del flujo afectado (y de que no rompe login/biblioteca).
 - `update.txt` actualizado si hay release; versión subida solo si se pide.
 - Commit descriptivo y push a `lorro HEAD:main` solo cuando el usuario lo pida.
-

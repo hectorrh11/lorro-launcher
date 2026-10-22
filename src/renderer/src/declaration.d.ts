@@ -1110,12 +1110,13 @@ declare global {
       updateChannelConfigured: boolean;
       userDataPath: string;
     }>;
-    importBackgroundFile: () => Promise<{
+    importBackgroundFile: (kind?: "image" | "video") => Promise<{
       kind: "image" | "video";
       path: string;
       width?: number;
       height?: number;
     } | null>;
+    removeBackgroundFile: (filePath: string) => Promise<{ ok: boolean }>;
     setTitlebarTheme: (theme: string) => Promise<void>;
     getSaveBackupConfig: () => Promise<SaveBackupConfig>;
     updateSaveBackupConfig: (

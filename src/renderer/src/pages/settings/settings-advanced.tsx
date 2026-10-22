@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   DiagnosticReport,
@@ -14,21 +14,10 @@ import {
   isPerformanceMode,
   setPerformanceMode,
 } from "@renderer/lib/performance-mode";
-import {
-  LORRO_THEME_PRICES,
-  LORRO_PURCHASABLE_THEMES,
-  normalizeLorroThemeIds,
-  type LorroPointsSummary,
-  type LorroPurchasableTheme,
-} from "@shared";
+import { settingsContext } from "@renderer/context";
 import "./settings-advanced.scss";
 
-type AdvancedTab =
-  | "backups"
-  | "stats"
-  | "storage"
-  | "diagnostics"
-  | "extras";
+type AdvancedTab = "backups" | "stats" | "storage" | "diagnostics" | "extras";
 
 const formatBytes = (bytes: number) => {
   if (!bytes) return "0 B";
@@ -41,7 +30,7 @@ const formatBytes = (bytes: number) => {
 };
 
 const formatDate = (value: string | Date | null) => {
-  if (!value) return "Ã¢â‚¬â€";
+  if (!value) return "ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â";
   return new Date(value).toLocaleString();
 };
 
@@ -159,7 +148,8 @@ function BackupsTab({ gameOptions }: TabProps) {
     setLoading(true);
     try {
       const entry = await window.electron.createSaveBackup(gameKey);
-      if (entry) showSuccessToast(t("advanced_backup_created", "Backup created"));
+      if (entry)
+        showSuccessToast(t("advanced_backup_created", "Backup created"));
       else
         showErrorToast(
           t(
@@ -186,7 +176,8 @@ function BackupsTab({ gameOptions }: TabProps) {
     )
       return;
     const result = await window.electron.restoreSaveBackup(entry.id);
-    if (result.ok) showSuccessToast(t("advanced_restore_ok", "Backup restored"));
+    if (result.ok)
+      showSuccessToast(t("advanced_restore_ok", "Backup restored"));
     else showErrorToast(result.message ?? "");
     await load();
   };
@@ -271,7 +262,10 @@ function BackupsTab({ gameOptions }: TabProps) {
                   void updateConfig({ autoOnClose: e.target.checked })
                 }
               />
-              {t("advanced_auto_on_close", "Back up automatically when a game closes")}
+              {t(
+                "advanced_auto_on_close",
+                "Back up automatically when a game closes"
+              )}
             </label>
           </div>
           <div className="settings-advanced__row">
@@ -294,7 +288,11 @@ function BackupsTab({ gameOptions }: TabProps) {
             onChange={(e) => setGameKey(e.target.value)}
             options={gameOptions}
           />
-          <Button theme="primary" onClick={createNow} disabled={loading || !gameKey}>
+          <Button
+            theme="primary"
+            onClick={createNow}
+            disabled={loading || !gameKey}
+          >
             {t("advanced_create_backup", "Back up now")}
           </Button>
           <Button theme="outline" onClick={importEntry}>
@@ -314,7 +312,8 @@ function BackupsTab({ gameOptions }: TabProps) {
             <div>
               <strong>{entry.gameTitle}</strong>
               <span className="settings-advanced__meta">
-                {formatDate(entry.createdAt)} Ãƒâ€šÃ‚Â· {formatBytes(entry.sizeBytes)} Ãƒâ€šÃ‚Â·{" "}
+                {formatDate(entry.createdAt)} ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â·{" "}
+                {formatBytes(entry.sizeBytes)} ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â·{" "}
                 {entry.reason}
               </span>
             </div>
@@ -420,13 +419,18 @@ function StatsTab({ gameOptions }: TabProps) {
           </h3>
           <div className="settings-advanced__bars">
             {summary.byDay.slice(-30).map((day) => {
-              const max = Math.max(...summary.byDay.map((d) => d.playtimeMs), 1);
+              const max = Math.max(
+                ...summary.byDay.map((d) => d.playtimeMs),
+                1
+              );
               return (
                 <div
                   key={day.date}
                   className="settings-advanced__bar"
-                  title={`${day.date} Ãƒâ€šÃ‚Â· ${formatDuration(day.playtimeMs)}`}
-                  style={{ height: `${Math.max(4, (day.playtimeMs / max) * 100)}%` }}
+                  title={`${day.date} ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· ${formatDuration(day.playtimeMs)}`}
+                  style={{
+                    height: `${Math.max(4, (day.playtimeMs / max) * 100)}%`,
+                  }}
                 />
               );
             })}
@@ -469,7 +473,10 @@ function StatsTab({ gameOptions }: TabProps) {
                 <Button
                   theme="danger"
                   onClick={async () => {
-                    await window.electron.deletePlaytimeSession(gameKey, session.id);
+                    await window.electron.deletePlaytimeSession(
+                      gameKey,
+                      session.id
+                    );
                     await reload();
                   }}
                 >
@@ -530,7 +537,10 @@ function StorageTab() {
     );
     setBusy(false);
     if (result.moved) showSuccessToast(t("advanced_move_ok", "Game moved"));
-    else showErrorToast(result.message ?? t("advanced_move_failed", "Move failed"));
+    else
+      showErrorToast(
+        result.message ?? t("advanced_move_failed", "Move failed")
+      );
     await load();
   };
 
@@ -575,7 +585,7 @@ function StorageTab() {
 
           <div className="settings-advanced__card">
             <h3 className="settings-advanced__subtitle">
-              {t("advanced_games_size", "Games")} Ãƒâ€šÃ‚Â·{" "}
+              {t("advanced_games_size", "Games")} ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â·{" "}
               {formatBytes(report.totalGamesBytes)}
             </h3>
             {report.games.map((game) => (
@@ -583,8 +593,11 @@ function StorageTab() {
                 <div>
                   <strong>{game.title}</strong>
                   <span className="settings-advanced__meta">
-                    {game.installPath ?? "ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â"}
-                    {game.possibleDuplicateOf ? " Ãƒâ€šÃ‚Â· possible duplicate" : ""}
+                    {game.installPath ??
+                      "ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â"}
+                    {game.possibleDuplicateOf
+                      ? " ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· possible duplicate"
+                      : ""}
                   </span>
                 </div>
                 <span className="settings-advanced__meta">
@@ -652,7 +665,9 @@ function DiagnosticsTab({ gameOptions }: TabProps) {
             <Button
               theme="outline"
               onClick={() =>
-                void navigator.clipboard.writeText(JSON.stringify(report, null, 2))
+                void navigator.clipboard.writeText(
+                  JSON.stringify(report, null, 2)
+                )
               }
             >
               {t("advanced_export_report", "Copy report")}
@@ -681,55 +696,15 @@ function DiagnosticsTab({ gameOptions }: TabProps) {
   );
 }
 
-
 function ExtrasTab() {
   const { t } = useTranslation("settings");
-  const { showErrorToast, showSuccessToast } = useToast();
+  const { setCurrentCategoryId } = useContext(settingsContext);
   const [performance, setPerformance] = useState(isPerformanceMode());
-  const [points, setPoints] = useState<LorroPointsSummary | null>(null);
-  const [ownedThemes, setOwnedThemes] = useState<string[]>([]);
-  const [purchasing, setPurchasing] = useState<string | null>(null);
-
-  const loadPoints = useCallback(async () => {
-    try {
-      const [summary, preferences] = await Promise.all([
-        window.electron.getLorroPoints(),
-        window.electron.getUserPreferences(),
-      ]);
-      setPoints(summary);
-      setOwnedThemes(
-        normalizeLorroThemeIds(preferences?.ownedLorroThemes)
-      );
-    } catch {
-      setPoints(null);
-    }
-  }, []);
-
-  useEffect(() => {
-    void loadPoints();
-  }, [loadPoints]);
 
   const togglePerformance = () => {
     const next = !performance;
     setPerformance(next);
     setPerformanceMode(next);
-  };
-
-  const purchase = async (themeId: LorroPurchasableTheme) => {
-    setPurchasing(themeId);
-    try {
-      const result = await window.electron.purchaseLorroTheme(themeId);
-      if (result.ok) {
-        showSuccessToast(
-          t("advanced_reward_unlocked", "Reward unlocked")
-        );
-        await loadPoints();
-      } else {
-        showErrorToast(result.message);
-      }
-    } finally {
-      setPurchasing(null);
-    }
   };
 
   return (
@@ -761,52 +736,10 @@ function ExtrasTab() {
             "You earn the achievement's own LorroPoints for every unlocked achievement."
           )}
         </p>
-        <div className="settings-advanced__grid">
-          <div className="settings-advanced__drive">
-            <strong>{points?.balance ?? 0}</strong>
-            <span>{t("advanced_points_available", "available")}</span>
-          </div>
-          <div className="settings-advanced__drive">
-            <strong>{points?.earned ?? 0}</strong>
-            <span>{t("advanced_points_earned", "earned")}</span>
-          </div>
-          <div className="settings-advanced__drive">
-            <strong>{points?.spent ?? 0}</strong>
-            <span>{t("advanced_points_spent", "spent")}</span>
-          </div>
-        </div>
-        {points && !points.exact && (
-          <p className="settings-advanced__hint">
-            {t(
-              "advanced_points_estimate",
-              "Some achievements are still being read: totals update as games sync."
-            )}
-          </p>
-        )}
         <div className="settings-advanced__actions">
-          {LORRO_PURCHASABLE_THEMES.map((themeId) => {
-            const owned = ownedThemes.includes(themeId);
-            const price = LORRO_THEME_PRICES[themeId];
-            const labelKey =
-              themeId === "golden"
-                ? "advanced_theme_golden"
-                : themeId === "esmeralda"
-                  ? "advanced_theme_esmeralda"
-                  : "advanced_theme_ruby";
-
-            return (
-              <Button
-                key={themeId}
-                theme="outline"
-                disabled={owned || purchasing === themeId}
-                onClick={() => void purchase(themeId)}
-              >
-                {owned
-                  ? t("advanced_theme_owned", "Owned")
-                  : `${t(labelKey, themeId)} (${price} pts)`}
-              </Button>
-            );
-          })}
+          <Button theme="primary" onClick={() => setCurrentCategoryId("store")}>
+            {t("store_open", "Open LorroPoints store")}
+          </Button>
         </div>
       </div>
     </div>

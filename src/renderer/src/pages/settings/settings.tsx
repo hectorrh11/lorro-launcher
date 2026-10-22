@@ -15,6 +15,7 @@ import {
   InfoIcon,
   LinkIcon,
   PlayIcon,
+  StarFillIcon,
   VideoIcon,
   ShieldCheckIcon,
 } from "@primer/octicons-react";
@@ -31,6 +32,7 @@ import { SettingsContextEmulation } from "./emulation/settings-context-emulation
 import { SettingsAbout } from "./settings-about";
 import { SettingsAdvanced } from "./settings-advanced";
 import { SettingsClips } from "./settings-clips";
+import { SettingsStore } from "./settings-store";
 
 export default function Settings() {
   const { t } = useTranslation("settings");
@@ -65,6 +67,15 @@ export default function Settings() {
           "Shortcut, length and audio for Lorro clips."
         ),
         icon: <VideoIcon size={16} />,
+      },
+      {
+        id: "store" as const,
+        label: t("store_title", "LorroPoints store"),
+        description: t(
+          "settings_description_store",
+          "Spend your LorroPoints on exclusive themes."
+        ),
+        icon: <StarFillIcon size={16} />,
       },
       {
         id: "download_sources" as const,
@@ -185,6 +196,10 @@ export default function Settings() {
 
             if (selectedCategoryId === "clips") {
               return <SettingsClips />;
+            }
+
+            if (selectedCategoryId === "store") {
+              return <SettingsStore />;
             }
 
             if (selectedCategoryId === "download_sources") {

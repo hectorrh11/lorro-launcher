@@ -1,4 +1,40 @@
 ========================================================
+VERSION 1.82.0
+========================================================
+TIENDA DE LORROPOINTS: la tienda ya tiene su propia seccion
+en Ajustes, con el saldo, los puntos ganados y gastados y los
+tres temas exclusivos. Tambien se abre al pulsar un tema
+bloqueado o el boton "Tienda de LorroPoints" de Apariencia.
+
+FONDOS DE VIDEO: ahora hay botones separados para imagen y
+video, con filtros correctos, validacion del archivo y un aviso
+claro si el video no se puede reproducir. Se admiten MP4
+(H.264), WebM, MOV y M4V; las imagenes siguen recortandose a
+1920x1080. Si un video falla, el fondo anterior ya no queda roto.
+
+TIENDA
+* Golden: 300 LorroPoints.
+* Esmeralda: 600 LorroPoints.
+* Rubi: 900 LorroPoints.
+* Al desbloquear un tema se aplica al instante y puedes
+  cambiarlo cuando quieras desde la misma tienda.
+
+CORRECCIONES
+* El selector de fondo ya no mezcla imagenes y videos con un
+  filtro unico: elegir un formato no compatible ya no deja el
+  escrito como si se hubiera aplicado.
+* El aviso de tema bloqueado lleva directamente a la tienda.
+* Se elimino la tienda duplicada de Ajustes > Avanzado; ahora
+  solo queda el modo rendimiento y un acceso a la tienda.
+
+INSTALACION
+* Windows: lorro-launcher-1.82.0-windows-setup.exe
+* Portatil: lorro-launcher-1.82.0-windows-portable.exe
+* Ubuntu/Debian: lorro-launcher-1.82.0-linux-amd64.deb
+* AppImage: lorro-launcher-1.82.0-linux-x86_64.AppImage
+* Arch Linux: lorro-launcher-1.82.0-linux-x64.pacman
+
+========================================================
 VERSION 1.81.0
 ========================================================
 SOPORTE PARA LINUX: Lorro Launcher ya se publica para

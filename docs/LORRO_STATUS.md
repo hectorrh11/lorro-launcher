@@ -7,20 +7,22 @@ release channel, installer and data folder. This document tracks what has been
 completed, what has been verified, what is still pending, and what is required
 to distribute the app.
 
-**Current status (estado tras 1.81.0):** **1.81.0** is the latest
-public release and the first one available for Windows, Ubuntu/Debian and Arch
-Linux. It includes 1.77.0, 1.78.0 and 1.79.0: real playtime on library
-cards, LorroPoints based on achievement points, the Golden/Esmeralda/Ruby theme
-store with real window transparency, a dedicated Clips page with global hotkey
-and system audio, automatic executable detection, default collections, and the
-removal of the last commercial surface and the launch-profile system. Linux is
-distributed as AppImage, `.deb` and `.pacman`, with assets grouped by OS.
+**Current status (estado tras 1.82.0):** **1.82.0** is the latest
+public release for Windows, Ubuntu/Debian and Arch Linux. It includes the
+LorroPoints store as its own Settings category, a separate image/video
+background picker with video validation, plus everything from 1.77.0-1.81.0:
+real playtime on library cards, LorroPoints based on achievement points, the
+Golden/Esmeralda/Ruby theme store with real window transparency, a dedicated
+Clips page with global hotkey and system audio, automatic executable detection,
+default collections, Linux packaging, and the removal of the last commercial
+surface and the launch-profile system.
 
 ---
 
 ## 1. Completed changes
 
 ### 1.1 Brand identity and assets
+
 - Lorro's mark is generated from the user-provided image
   `resources/lorro/lorro-logo-source.jpg`, converted to a violet duotone,
   center-cropped, and framed in a rounded square with a violet glow
@@ -42,6 +44,7 @@ distributed as AppImage, `.deb` and `.pacman`, with assets grouped by OS.
   `resources/lorro/lorro-mark-256.png`, `resources/lorro/lorro.ico`.
 
 ### 1.2 Theme and GUI
+
 - `src/renderer/src/scss/globals.scss` rewritten to a dark, premium gaming palette
   (violet `#8b5cf6`, indigo `#4f46e5`, cyan `#22d3ee`) with new surfaces, borders,
   states, shadows, gradients and mixins (`lorro-gradient`, `lorro-text-gradient`,
@@ -66,6 +69,7 @@ distributed as AppImage, `.deb` and `.pacman`, with assets grouped by OS.
   capped) — see `download-slice.ts`, `constants.ts` and `download-group.tsx`.
 
 ### 1.3 Product name and metadata
+
 - `package.json`: `name` `lorro-launcher`, `description`, `author`
   `Lorro Launcher contributors`, contributor credit to the original project,
   `license` MIT, `icons` script, `--publish never` on the build scripts.
@@ -78,6 +82,7 @@ distributed as AppImage, `.deb` and `.pacman`, with assets grouped by OS.
   never deletes personal user data.
 
 ### 1.4 Data isolation and migration
+
 - `src/main/constants.ts`: user data now lives in `%APPDATA%\Lorro Launcher`
   (dev override via `MAIN_VITE_USER_DATA_PATH`); level DB renamed to `lorro-db`.
 - `src/main/helpers/lorro-data-migration.ts`: optional, explicit migration from a
@@ -86,6 +91,7 @@ distributed as AppImage, `.deb` and `.pacman`, with assets grouped by OS.
   default. The original Hydra data is never modified.
 
 ### 1.5 Protocol, updater and distribution safety
+
 - `src/shared/brand.ts` centralizes `APP_NAME`, `APP_ID`, `APP_PROTOCOL`
   (`lorro`) and the legacy protocol (`hydralauncher`).
 - Deep links: Lorro registers and accepts `lorro://` **and** the legacy
@@ -99,16 +105,19 @@ distributed as AppImage, `.deb` and `.pacman`, with assets grouped by OS.
   and the user data path for the About screen.
 
 ### 1.6 Settings / About
+
 - New Settings → **About** category (`settings-about.tsx` + styles + i18n keys in
   en/es): Lorro logotype, version, product description, attribution to the
   original project, data folder with "open folder" action, update-channel status
   and license/third-party notices.
 
 ### 1.7 Documentation
+
 - `README.md` rewritten for Lorro Launcher (identity, features, data location,
   attribution, dev/build instructions, distribution variables).
 
 ### 1.8 Runtime fixes (from user testing)
+
 - **Backend endpoints required.** Lorro reuses the upstream API for the
   catalogue, accounts/login, download sources, reviews and cloud saves.
   Those URLs were previously supplied only by CI, so without them the app showed
@@ -127,6 +136,7 @@ distributed as AppImage, `.deb` and `.pacman`, with assets grouped by OS.
   `color: globals.$background-color`.
 
 ### 1.9 Custom-link downloads
+
 - New general-purpose download manager (`src/main/services/custom-download-manager.ts`)
   accepts any direct `http`/`https` link, independent of the repack/Hydra-Cloud
   pipeline. It never bypasses access controls: it only fetches a URL the user
@@ -172,6 +182,7 @@ distributed as AppImage, `.deb` and `.pacman`, with assets grouped by OS.
   No access control is bypassed: it only forwards a URL the user already has.
 
 ### 1.10 Resource usage
+
 - Main window uses explicit `backgroundThrottling` and disabled spellcheck.
 - Windows occlusion calculations are disabled to avoid unnecessary renderer
   wake-ups while the window is hidden.
@@ -196,14 +207,15 @@ distributed as AppImage, `.deb` and `.pacman`, with assets grouped by OS.
   help/cloud extras are unused.
 
 ### 1.11 Publication repository and auto-update activation
+
 - Publication target: **`github.com/hectorrh11/lorro-launcher`** (public).
   Configured in `electron-builder.yml` (`publish: provider: github, owner:
-  hectorrh11, repo: lorro-launcher`) and in `.env`
+hectorrh11, repo: lorro-launcher`) and in `.env`
   (`MAIN_VITE_UPDATE_REPOSITORY=hectorrh11/lorro-launcher`,
   `RENDERER_VITE_RELEASES_URL=https://github.com/hectorrh11/lorro-launcher/releases/latest`).
 - The packaged app contains `resources/app-update.yml` with the same provider, so
   installed clients check this repository for new versions.
-- Latest public version is **1.81.0**; `update.txt` at the repository root is the
+- Latest public version is **1.82.0**; `update.txt` at the repository root is the
   detailed, user-facing changelog and must be updated with every release.
 - Publishing a new version:
   1. Make the changes and bump `version` in `package.json` (e.g. `1.1.0`).
@@ -225,7 +237,8 @@ distributed as AppImage, `.deb` and `.pacman`, with assets grouped by OS.
   than the installed one. Any installation older than `1.0.0` must install the
   current setup once; from `1.0.0` onward in-app auto-update works.
 
-### 1.12 Current feature state (1.81.0)
+### 1.12 Current feature state (1.82.0)
+
 - **Real playtime on library cards**: `LibraryGame.lorroPlaytimeMs` is computed
   from `src/main/services/session-stats.ts` when the library is listed, shown on
   the cards and refreshed when a game session ends.
@@ -234,12 +247,20 @@ distributed as AppImage, `.deb` and `.pacman`, with assets grouped by OS.
   (`earned`, `spent`, `balance`, `exact`) is exposed via
   `getLorroPoints`. Because `AchievementMemoryStore` lives in memory, the balance
   can show as estimated (`exact: false`) after a restart until achievements sync.
-- **Theme store**: purchasable **gold** (300), **emerald** (600) and **ruby**
-  (900) accents defined in `src/shared/lorro-themes.ts`, bought through
-  `purchaseLorroTheme`. Real window transparency on Windows is implemented by
-  `WindowManager.setRealWindowTransparency`, which recreates the `BrowserWindow`
-  with `transparent: true` and `backgroundColor: "#00000000"` and persists
-  `realTransparentWindow`.
+- **Theme store**: **1.82.0** adds a dedicated `store` category in Settings
+  (`settings-store.tsx`) with the balance, earned/spent totals and the
+  purchasable **Golden** (300), **Esmeralda** (600) and **Rubí** (900) accents
+  defined in `src/shared/lorro-themes.ts`, bought through `purchaseLorroTheme`
+  and applied immediately. Locked themes in Appearance and the "LorroPoints
+  store" button navigate to this category. Real window transparency on Windows
+  is implemented by `WindowManager.setRealWindowTransparency`, which recreates
+  the `BrowserWindow` with `transparent: true` and
+  `backgroundColor: "#00000000"` and persists `realTransparentWindow`.
+- **Background picker**: separate image and video buttons call
+  `importBackgroundFile("image" | "video")`, videos are validated with
+  `canPlayVideoSource` (`lib/media-support.ts`) and unsupported files are
+  removed with a clear toast. Supported: JPG/PNG/WebP/AVIF images and MP4
+  (H.264)/WebM/MOV/M4V videos; `.mkv` is no longer offered.
 - **Commercial surface removed**: subscription modal, paywall banners, achievement
   and profile upsells, gift modal, cloud-ring, subscription slice and
   `allow_cloud_gifts` are gone. `openCheckout()` opens the user's GitHub profile
@@ -255,29 +276,30 @@ distributed as AppImage, `.deb` and `.pacman`, with assets grouped by OS.
 
 > The rows below record the initial rebrand/1.0.0 verification cycle. Version
 > strings, artifact names and sizes are historical; the current public release is
-> 1.81.0.
+> 1.82.0.
 
-| Check | Command | Result |
-| --- | --- | --- |
-| Node typecheck | `yarn typecheck:node` | PASS |
-| Web typecheck | `yarn typecheck:web` | PASS |
-| Unit tests | `yarn test` | 2215/2244 pass — 29 pre-existing Windows/path failures, none related to the rebrand (path separators, EPERM temp cleanup, etc.) |
-| Production build | `yarn build` | PASS (`out/` generated) |
-| Icon generation | `yarn icons` | PASS (ico/icns/bmp/png generated from the SVG source) |
-| Windows packaging | `npx electron-builder --win --publish never` | PASS — `lorro-launcher-4.1.6-setup.exe`, `lorro-launcher-4.1.6-portable.exe` |
-| Installer metadata | version info inspection | `ProductName` = `Lorro Launcher`, `CompanyName` = `Lorro Launcher contributors`, `ProductVersion` = 4.1.6, copyright present, custom icon + sidebar |
-| Launch smoke test | start `win-unpacked\Lorro Launcher.exe` | Process started and stayed alive (no crash) |
-| Custom-link download | IPC call in the running packaged app (local HTTP server, 3 MB file) | Completed, file size matched exactly (3,145,728 bytes) |
-| Link validation | Probe of empty/HTML/JSON/unreachable links | Rejected with clear messages (no false "started") |
-| Memory footprint | Working Set of all `Lorro Launcher` processes (idle) | ~1263 MB / 7 procs before → ~924 MB / 5 procs after |
-| Segmented download | IPC call in the running packaged app (local HTTP server, 6 MiB file, 8 connections, Range support) | Completed; 6 parallel range requests; exact 6,291,456 bytes |
-| External manager IPC | `getExternalDownloadManager()` in the packaged app | Returns the detection object; `openDownloadInExternalManager` exposed (no manager installed on the test PC) |
-| Installers rebuilt | `npx electron-builder --win --publish never` (clean path) | PASS — `lorro-launcher-4.1.6-setup.exe` (195.9 MB), `-portable.exe` (195.3 MB) |
-| Linux packaging (1.81.0) | `yarn build:linux` in WSL Ubuntu | PASS — AppImage, `.deb` and `.pacman` x86_64 with `hydra-native.node`, legendary, umu-run, 7zzs and the Epic prerequisite runner |
-| Linux package metadata (1.81.0) | `dpkg-deb -I`, `.PKGINFO` | PASS — package `lorro-launcher`, maintainer `hectorrh11`, homepage and description point to Lorro |
-| Linux AppImage entry (1.81.0) | `--appimage-extract` | PASS — `.desktop` with `Exec=AppRun --no-sandbox %U` and `x-scheme-handler/lorro` |
+| Check                           | Command                                                                                            | Result                                                                                                                                              |
+| ------------------------------- | -------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Node typecheck                  | `yarn typecheck:node`                                                                              | PASS                                                                                                                                                |
+| Web typecheck                   | `yarn typecheck:web`                                                                               | PASS                                                                                                                                                |
+| Unit tests                      | `yarn test`                                                                                        | 2215/2244 pass — 29 pre-existing Windows/path failures, none related to the rebrand (path separators, EPERM temp cleanup, etc.)                     |
+| Production build                | `yarn build`                                                                                       | PASS (`out/` generated)                                                                                                                             |
+| Icon generation                 | `yarn icons`                                                                                       | PASS (ico/icns/bmp/png generated from the SVG source)                                                                                               |
+| Windows packaging               | `npx electron-builder --win --publish never`                                                       | PASS — `lorro-launcher-4.1.6-setup.exe`, `lorro-launcher-4.1.6-portable.exe`                                                                        |
+| Installer metadata              | version info inspection                                                                            | `ProductName` = `Lorro Launcher`, `CompanyName` = `Lorro Launcher contributors`, `ProductVersion` = 4.1.6, copyright present, custom icon + sidebar |
+| Launch smoke test               | start `win-unpacked\Lorro Launcher.exe`                                                            | Process started and stayed alive (no crash)                                                                                                         |
+| Custom-link download            | IPC call in the running packaged app (local HTTP server, 3 MB file)                                | Completed, file size matched exactly (3,145,728 bytes)                                                                                              |
+| Link validation                 | Probe of empty/HTML/JSON/unreachable links                                                         | Rejected with clear messages (no false "started")                                                                                                   |
+| Memory footprint                | Working Set of all `Lorro Launcher` processes (idle)                                               | ~1263 MB / 7 procs before → ~924 MB / 5 procs after                                                                                                 |
+| Segmented download              | IPC call in the running packaged app (local HTTP server, 6 MiB file, 8 connections, Range support) | Completed; 6 parallel range requests; exact 6,291,456 bytes                                                                                         |
+| External manager IPC            | `getExternalDownloadManager()` in the packaged app                                                 | Returns the detection object; `openDownloadInExternalManager` exposed (no manager installed on the test PC)                                         |
+| Installers rebuilt              | `npx electron-builder --win --publish never` (clean path)                                          | PASS — `lorro-launcher-4.1.6-setup.exe` (195.9 MB), `-portable.exe` (195.3 MB)                                                                      |
+| Linux packaging (1.81.0)        | `yarn build:linux` in WSL Ubuntu                                                                   | PASS — AppImage, `.deb` and `.pacman` x86_64 with `hydra-native.node`, legendary, umu-run, 7zzs and the Epic prerequisite runner                    |
+| Linux package metadata (1.81.0) | `dpkg-deb -I`, `.PKGINFO`                                                                          | PASS — package `lorro-launcher`, maintainer `hectorrh11`, homepage and description point to Lorro                                                   |
+| Linux AppImage entry (1.81.0)   | `--appimage-extract`                                                                               | PASS — `.desktop` with `Exec=AppRun --no-sandbox %U` and `x-scheme-handler/lorro`                                                                   |
 
 Artifacts after a successful build:
+
 - `dist/lorro-launcher-4.1.6-setup.exe` (NSIS, assisted, changeable install dir)
 - `dist/lorro-launcher-4.1.6-portable.exe`
 - `dist/lorro-launcher-4.1.6-setup.exe.blockmap`
@@ -312,12 +334,12 @@ Installer defines verified: `APP_ID=com.lorro.launcher`, `PRODUCT_NAME=Lorro Lau
    (Desktop, Downloads, `C:\dev\...`). Verification: copied to
    `%TEMP%\opencode\lorro-test`, `setup.exe /S` exited with code `0`, installed to
    `%LOCALAPPDATA%\Programs\Lorro Launcher`, created a Desktop and Start Menu
-    shortcut named `Lorro Launcher`, registered the uninstall entry
-    (`Lorro Launcher | 4.1.6`), and the installed app launched successfully.
-    Final verification after the runtime fixes: the rebuilt `setup.exe` installed
-    to `C:\Program Files\Lorro Launcher`, the installed `app.asar` contains the
-    configured API endpoint, and `Lorro Launcher.exe` starts with window title
-    `Lorro Launcher` (no `Error` dialog, no `Invalid URL`, no uncaught exception).
+   shortcut named `Lorro Launcher`, registered the uninstall entry
+   (`Lorro Launcher | 4.1.6`), and the installed app launched successfully.
+   Final verification after the runtime fixes: the rebuilt `setup.exe` installed
+   to `C:\Program Files\Lorro Launcher`, the installed `app.asar` contains the
+   configured API endpoint, and `Lorro Launcher.exe` starts with window title
+   `Lorro Launcher` (no `Error` dialog, no `Invalid URL`, no uncaught exception).
 6. **No preconfigured download sources.** Lorro deliberately ships **no** default
    source catalogues. Requests to bundle catalogues of unauthorized/pirated copies
    are out of scope: it would mean redistributing other people's copyrighted games

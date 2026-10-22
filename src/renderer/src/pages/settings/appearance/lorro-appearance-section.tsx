@@ -1,8 +1,15 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LockIcon } from "@primer/octicons-react";
+import {
+  FileMediaIcon,
+  LockIcon,
+  StarFillIcon,
+  VideoIcon,
+} from "@primer/octicons-react";
 import { Button } from "@renderer/components";
+import { settingsContext } from "@renderer/context";
 import { useToast } from "@renderer/hooks";
+import { canPlayVideoSource } from "@renderer/lib/media-support";
 import { normalizeLorroThemeIds } from "@shared";
 import {
   type LorroTheme,
@@ -13,7 +20,11 @@ import {
   useAppearance,
 } from "@renderer/features/appearance";
 
-const THEME_OPTIONS: { id: LorroTheme; labelKey: string; purchasable?: boolean }[] = [
+const THEME_OPTIONS: {
+  id: LorroTheme;
+  labelKey: string;
+  purchasable?: boolean;
+}[] = [
   { id: "dark", labelKey: "appearance_theme_dark" },
   { id: "light", labelKey: "appearance_theme_light" },
   { id: "transparent", labelKey: "appearance_theme_transparent" },
@@ -28,9 +39,12 @@ const THEME_OPTIONS: { id: LorroTheme; labelKey: string; purchasable?: boolean }
 
 export function LorroAppearanceSection() {
   const { t } = useTranslation("settings");
-  const { showErrorToast } = useToast();
+  const { showErrorToast, showSuccessToast } = useToast();
+  const { setCurrentCategoryId } = useContext(settingsContext);
   const appearance = useAppearance();
-  const [isImporting, setIsImporting] = useState(false);
+  const [importingKind, setImportingKind] = useState<"image" | "video" | null>(
+    null
+  );
   const [ownedThemes, setOwnedThemes] = useState<string[]>(() => []);
 
   useEffect(() => {
@@ -40,9 +54,7 @@ export function LorroAppearanceSection() {
       .getUserPreferences()
       .then((preferences) => {
         if (!cancelled) {
-          setOwnedThemes(
-            normalizeLorroThemeIds(preferences?.ownedLorroThemes)
-          );
+          setOwnedThemes(normalizeLorroThemeIds(preferences?.ownedLorroThemes));
         }
       })
       .catch(() => undefined);
@@ -58,9 +70,10 @@ export function LorroAppearanceSection() {
         showErrorToast(
           t(
             "appearance_theme_locked_hint",
-            "This theme is locked. Unlock it with LorroPoints in Settings > Advanced."
+            "This theme is locked. Unlock it with LorroPoints in the theme store."
           )
         );
+        setCurrentCategoryId("store");
         return;
       }
 
@@ -78,30 +91,63 @@ export function LorroAppearanceSection() {
         })
         .catch(() => undefined);
     },
-    [appearance.theme, ownedThemes, t, showErrorToast]
+    [appearance.theme, ownedThemes, setCurrentCategoryId, t, showErrorToast]
   );
 
-  const handlePickBackground = useCallback(async () => {
-    setIsImporting(true);
+  const handlePickBackground = useCallback(
+    async (kind: "image" | "video") => {
+      setImportingKind(kind);
 
-    try {
-      const result = await window.electron.importBackgroundFile();
+      try {
+        const result = await window.electron.importBackgroundFile(kind);
 
-      if (result) {
+        if (!result) return;
+
+        if (result.kind === "video") {
+          const playable = await canPlayVideoSource(toLocalUrl(result.path));
+
+          if (!playable) {
+            await window.electron.removeBackgroundFile(result.path);
+            setBackground(null);
+            showErrorToast(
+              t(
+                "appearance_background_unsupported",
+                "That video cannot be played. Use an MP4 (H.264) or WebM file."
+              )
+            );
+            return;
+          }
+        }
+
         setBackground({ kind: result.kind, path: result.path });
+        showSuccessToast(
+          result.kind === "video"
+            ? t(
+                "appearance_background_video_applied",
+                "Video background applied."
+              )
+            : t("appearance_background_applied", "Background applied.")
+        );
+      } catch (error) {
+        console.error("Failed to import background", error);
+        showErrorToast(t("appearance_background_error"));
+      } finally {
+        setImportingKind(null);
       }
-    } catch (error) {
-      console.error("Failed to import background", error);
-      showErrorToast(t("appearance_background_error"));
-    } finally {
-      setIsImporting(false);
-    }
-  }, [showErrorToast, t]);
+    },
+    [showErrorToast, showSuccessToast, t]
+  );
 
   return (
     <div className="lorro-appearance">
       <div className="lorro-appearance__group">
-        <h3 className="lorro-appearance__title">{t("appearance_theme")}</h3>
+        <div className="lorro-appearance__group-header">
+          <h3 className="lorro-appearance__title">{t("appearance_theme")}</h3>
+          <Button theme="outline" onClick={() => setCurrentCategoryId("store")}>
+            <StarFillIcon size={12} />{" "}
+            {t("appearance_open_store", "LorroPoints store")}
+          </Button>
+        </div>
 
         <div className="lorro-appearance__themes">
           {THEME_OPTIONS.map((theme) => {
@@ -143,11 +189,22 @@ export function LorroAppearanceSection() {
             <div className="lorro-appearance__preview">
               {appearance.background.kind === "video" ? (
                 <video
+                  key={appearance.background.path}
                   src={toLocalUrl(appearance.background.path)}
                   muted
                   loop
                   autoPlay
                   playsInline
+                  preload="auto"
+                  onError={() => {
+                    setBackground(null);
+                    showErrorToast(
+                      t(
+                        "appearance_background_unsupported",
+                        "That video cannot be played. Use an MP4 (H.264) or WebM file."
+                      )
+                    );
+                  }}
                 />
               ) : (
                 <img src={toLocalUrl(appearance.background.path)} alt="" />
@@ -158,12 +215,24 @@ export function LorroAppearanceSection() {
           <div className="lorro-appearance__background-actions">
             <Button
               theme="primary"
-              onClick={handlePickBackground}
-              disabled={isImporting}
+              onClick={() => void handlePickBackground("image")}
+              disabled={importingKind !== null}
             >
-              {isImporting
+              <FileMediaIcon size={14} />{" "}
+              {importingKind === "image"
                 ? t("appearance_background_loading")
-                : t("appearance_background_pick")}
+                : t("appearance_background_pick_image", "Choose image")}
+            </Button>
+
+            <Button
+              theme="outline"
+              onClick={() => void handlePickBackground("video")}
+              disabled={importingKind !== null}
+            >
+              <VideoIcon size={14} />{" "}
+              {importingKind === "video"
+                ? t("appearance_background_loading")
+                : t("appearance_background_pick_video", "Choose video")}
             </Button>
 
             {appearance.background ? (
@@ -172,6 +241,13 @@ export function LorroAppearanceSection() {
               </Button>
             ) : null}
           </div>
+
+          <p className="lorro-appearance__hint">
+            {t(
+              "appearance_background_formats",
+              "Images: JPG, PNG, WebP or AVIF. Videos: MP4 (H.264) or WebM."
+            )}
+          </p>
         </div>
 
         <label className="lorro-appearance__slider">

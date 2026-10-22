@@ -1,6 +1,6 @@
 {
   "name": "lorro-launcher",
-  "version": "1.81.0",
+  "version": "1.82.0",
   "description": "Lorro Launcher - a premium game launcher for your library, downloads and achievements.",
   "main": "./out/main/index.js",
   "author": "Lorro Launcher contributors",

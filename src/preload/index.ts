@@ -1490,7 +1490,10 @@ contextBridge.exposeInMainWorld("electron", {
   ping: () => ipcRenderer.invoke("ping"),
   getVersion: () => ipcRenderer.invoke("getVersion"),
   getAppInfo: () => ipcRenderer.invoke("getAppInfo"),
-  importBackgroundFile: () => ipcRenderer.invoke("importBackgroundFile"),
+  importBackgroundFile: (kind?: "image" | "video") =>
+    ipcRenderer.invoke("importBackgroundFile", kind),
+  removeBackgroundFile: (filePath: string) =>
+    ipcRenderer.invoke("removeBackgroundFile", filePath),
   getSaveBackupConfig: () => ipcRenderer.invoke("getSaveBackupConfig"),
   updateSaveBackupConfig: (patch: unknown) => ipcRenderer.invoke("updateSaveBackupConfig", patch),
   getGameSaveConfig: (gameKey: string) => ipcRenderer.invoke("getGameSaveConfig", gameKey),

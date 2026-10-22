@@ -1,0 +1,289 @@
+@use "../../scss/globals.scss";
+
+.settings-store {
+  display: flex;
+  flex-direction: column;
+  gap: calc(globals.$spacing-unit * 1.5);
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    gap: calc(globals.$spacing-unit * 1.5);
+    padding: calc(globals.$spacing-unit * 2);
+    border: 1px solid globals.$border-color;
+    border-radius: 16px;
+    background: linear-gradient(
+      140deg,
+      color-mix(in srgb, var(--lorro-accent) 14%, transparent) 0%,
+      globals.$surface-color 68%
+    );
+
+    svg {
+      color: var(--lorro-accent);
+      flex-shrink: 0;
+      margin-top: 3px;
+    }
+
+    h2 {
+      margin: 0 0 6px;
+      font-size: 20px;
+      font-family: globals.$font-display;
+      color: globals.$body-color;
+    }
+
+    p {
+      margin: 0;
+      max-width: 640px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: globals.$muted-color;
+    }
+  }
+
+  &__balance {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: calc(globals.$spacing-unit * 1.25);
+  }
+
+  &__balance-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: calc(globals.$spacing-unit * 1.5);
+    border: 1px solid globals.$border-color;
+    border-radius: 14px;
+    background: globals.$surface-color;
+
+    span {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: globals.$muted-color;
+    }
+
+    strong {
+      font-size: 24px;
+      font-weight: 700;
+      color: globals.$body-color;
+      font-variant-numeric: tabular-nums;
+    }
+
+    &--primary {
+      border-color: color-mix(in srgb, var(--lorro-accent) 45%, transparent);
+      background: linear-gradient(
+        140deg,
+        color-mix(in srgb, var(--lorro-accent) 18%, transparent) 0%,
+        globals.$surface-color 80%
+      );
+
+      strong {
+        color: var(--lorro-accent);
+      }
+    }
+  }
+
+  &__hint {
+    margin: 0;
+    font-size: 12px;
+    color: globals.$muted-color;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: calc(globals.$spacing-unit * 1.5);
+  }
+
+  &__theme {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid globals.$border-color;
+    border-radius: 16px;
+    background: globals.$surface-color;
+    transition:
+      border-color 0.18s ease,
+      transform 0.18s ease,
+      box-shadow 0.18s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      border-color: globals.$border-strong-color;
+      box-shadow: 0 18px 40px -30px rgba(0, 0, 0, 0.9);
+    }
+
+    &--owned {
+      border-color: color-mix(in srgb, var(--lorro-accent) 35%, transparent);
+    }
+  }
+
+  &__preview {
+    position: relative;
+    height: 108px;
+    overflow: hidden;
+
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      opacity: 0.85;
+    }
+
+    &::before {
+      width: 140px;
+      height: 140px;
+      top: -50px;
+      right: -30px;
+      filter: blur(6px);
+    }
+
+    &::after {
+      width: 90px;
+      height: 90px;
+      bottom: -40px;
+      left: 12%;
+      opacity: 0.5;
+    }
+
+    span {
+      position: absolute;
+      left: 16px;
+      bottom: 14px;
+      width: 52%;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.7);
+      box-shadow: 0 14px 0 -2px rgba(255, 255, 255, 0.28);
+    }
+
+    &--golden {
+      background: linear-gradient(
+        135deg,
+        #fde68a 0%,
+        #f4b942 45%,
+        #b45309 100%
+      );
+
+      &::before {
+        background: rgba(255, 243, 196, 0.9);
+      }
+
+      &::after {
+        background: rgba(120, 53, 15, 0.55);
+      }
+    }
+
+    &--esmeralda {
+      background: linear-gradient(
+        135deg,
+        #d1fae5 0%,
+        #34d399 45%,
+        #047857 100%
+      );
+
+      &::before {
+        background: rgba(209, 250, 229, 0.9);
+      }
+
+      &::after {
+        background: rgba(4, 120, 87, 0.5);
+      }
+    }
+
+    &--ruby {
+      background: linear-gradient(
+        135deg,
+        #ffe4e6 0%,
+        #f43f5e 45%,
+        #9f1239 100%
+      );
+
+      &::before {
+        background: rgba(255, 228, 230, 0.9);
+      }
+
+      &::after {
+        background: rgba(159, 18, 57, 0.5);
+      }
+    }
+  }
+
+  &__theme-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 10px;
+    padding: calc(globals.$spacing-unit * 1.5);
+
+    > p {
+      flex: 1;
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.5;
+      color: globals.$muted-color;
+    }
+  }
+
+  &__theme-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+
+    h3 {
+      margin: 0;
+      font-size: 15px;
+      color: globals.$body-color;
+    }
+  }
+
+  &__owned {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--lorro-accent);
+    background: color-mix(in srgb, var(--lorro-accent) 16%, transparent);
+  }
+
+  &__theme-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+  }
+
+  &__price {
+    font-size: 13px;
+    font-weight: 700;
+    color: globals.$body-color;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+html[data-lorro-theme="light"] .settings-store__header,
+html[data-lorro-theme="light"] .settings-store__theme,
+html[data-lorro-theme="light"] .settings-store__balance-item {
+  box-shadow: none;
+}
+
+html[data-lorro-theme="transparent"] .settings-store__header,
+html[data-lorro-theme="transparent"] .settings-store__theme,
+html[data-lorro-theme="transparent"] .settings-store__balance-item,
+html[data-lorro-background="image"] .settings-store__header,
+html[data-lorro-background="image"] .settings-store__theme,
+html[data-lorro-background="image"] .settings-store__balance-item,
+html[data-lorro-background="video"] .settings-store__header,
+html[data-lorro-background="video"] .settings-store__theme,
+html[data-lorro-background="video"] .settings-store__balance-item {
+  background: rgba(12, 10, 20, 0.62);
+  backdrop-filter: blur(16px);
+}

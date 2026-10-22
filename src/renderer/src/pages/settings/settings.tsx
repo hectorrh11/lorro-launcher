@@ -12,6 +12,7 @@ import {
   CloudIcon,
   DownloadIcon,
   GearIcon,
+  HomeIcon,
   InfoIcon,
   LinkIcon,
   PlayIcon,
@@ -33,6 +34,7 @@ import { SettingsAbout } from "./settings-about";
 import { SettingsAdvanced } from "./settings-advanced";
 import { SettingsClips } from "./settings-clips";
 import { SettingsStore } from "./settings-store";
+import { SettingsHome } from "./settings-home";
 
 export default function Settings() {
   const { t } = useTranslation("settings");
@@ -49,6 +51,15 @@ export default function Settings() {
           "Language, startup behavior and app basics."
         ),
         icon: <GearIcon size={16} />,
+      },
+      {
+        id: "home" as const,
+        label: t("home", "Home"),
+        description: t(
+          "settings_description_home",
+          "Choose what appears on your home page."
+        ),
+        icon: <HomeIcon size={16} />,
       },
       {
         id: "downloads" as const,
@@ -188,6 +199,10 @@ export default function Settings() {
           const renderCategory = () => {
             if (selectedCategoryId === "general") {
               return <SettingsContextGeneral appearance={appearance} />;
+            }
+
+            if (selectedCategoryId === "home") {
+              return <SettingsHome />;
             }
 
             if (selectedCategoryId === "downloads") {

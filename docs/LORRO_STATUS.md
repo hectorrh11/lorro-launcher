@@ -7,17 +7,19 @@ release channel, installer and data folder. This document tracks what has been
 completed, what has been verified, what is still pending, and what is required
 to distribute the app.
 
-**Current status (estado tras 1.84.0):** **1.84.0** is the latest
-public release for Windows, Ubuntu/Debian and Arch Linux. It adds a native
-Proton manager for Linux (GE-Proton downloads with SHA-512 verification,
-per-game selection and official Steam channels) and fixes clip recording so
-clips keep the WebM header, flush pending data and are re-timed to the chosen
-duration. It also includes everything from 1.77.0-1.83.0: the expanded
-LorroPoints store, home customization, real playtime on library cards, the
-Golden/Esmeralda/Ruby theme store with real window transparency, the dedicated
-Clips page with global hotkey and system audio, automatic executable detection,
-default collections, Linux packaging, and the removal of the last commercial
-surface and the launch-profile system.
+**Current status (estado tras 1.85.0):** **1.85.0** is the latest
+public release for Windows, Ubuntu/Debian and Arch Linux. It adds a dedicated
+Settings → Home category for the four home-customization toggles, shows launch
+options inside the Linux Proton compatibility section (`%command%` supported)
+and refreshes the UMU runtime after installing a managed Proton version. It
+also includes everything from 1.77.0-1.84.0: the native Linux Proton manager
+(GE-Proton with SHA-512 verification, per-game selection and official Steam
+channels), clip recording fixes (WebM header, flush, keyframe/duration
+re-timing), the expanded LorroPoints store, home customization, real playtime
+on library cards, the Golden/Esmeralda/Ruby theme store with real window
+transparency, the dedicated Clips page with global hotkey and system audio,
+automatic executable detection, default collections, Linux packaging, and the
+removal of the last commercial surface and the launch-profile system.
 
 ---
 
@@ -239,7 +241,7 @@ hectorrh11, repo: lorro-launcher`) and in `.env`
   than the installed one. Any installation older than `1.0.0` must install the
   current setup once; from `1.0.0` onward in-app auto-update works.
 
-### 1.12 Current feature state (1.84.0)
+### 1.12 Current feature state (1.85.0)
 
 - **Real playtime on library cards**: `LibraryGame.lorroPlaytimeMs` is computed
   from `src/main/services/session-stats.ts` when the library is listed, shown on
@@ -269,10 +271,15 @@ hectorrh11, repo: lorro-launcher`) and in `.env`
   and titles are equipped in `lorroFrame`/`lorroTitle` and rendered in the
   sidebar and own profile. Wallpapers are applied as an appearance `preset`
   without copying files.
-- **Home customization (1.83.0)**: the home page exposes a "Customize home"
-  panel backed by `homeHideHero`, `homeHideCatalogue`, `homeHideCategories` and
-  `homeHideRandom`. Hiding the catalogue also stops its catalogue and random
-  game requests.
+- **Home customization (1.83.0, Settings category in 1.85.0)**: the home page
+  exposes a "Customize home" panel backed by `homeHideHero`,
+  `homeHideCatalogue`, `homeHideCategories` and `homeHideRandom`; 1.85.0 adds
+  the same controls under Settings → Home (`settings-home.tsx`). Hiding the
+  catalogue also stops its catalogue and random game requests.
+- **Compatibility launch options (1.85.0)**: the Linux Proton section of the
+  game options shows the launch-options field with `%command%` support, in
+  addition to General → Launch Options. Installing a managed GE-Proton version
+  triggers `UmuUpdater.checkForUpdates()` so the UMU runtime is ready.
 - **Proton manager (1.84.0)**: `src/main/services/proton-manager.ts` lists
   GE-Proton releases, downloads the x86_64 archive, verifies its SHA-512,
   extracts it to `<userData>/proton/<tag>` and exposes install/uninstall IPC.

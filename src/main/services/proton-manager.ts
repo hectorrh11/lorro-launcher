@@ -16,6 +16,7 @@ import type {
 } from "@types";
 import { SystemPath } from "./system-path";
 import { logger } from "./logger";
+import { UmuUpdater } from "./umu-updater";
 
 const PROTON_RELEASES_URL =
   "https://api.github.com/repos/GloriousEggroll/proton-ge-custom/releases?per_page=8";
@@ -350,6 +351,8 @@ export class ProtonManager {
         targetPath,
         size: release.size,
       });
+
+      void UmuUpdater.checkForUpdates();
 
       return {
         ok: true,

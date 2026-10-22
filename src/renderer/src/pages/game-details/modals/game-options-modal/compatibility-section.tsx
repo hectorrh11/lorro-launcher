@@ -1,4 +1,4 @@
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 
 import {
   Button,
@@ -19,6 +19,8 @@ interface CompatibilitySettingsSectionProps {
   effectiveProtonName?: string | null;
   protonVersions: ProtonVersion[];
   selectedProtonPath: string;
+  launchOptions: string;
+  onChangeLaunchOptions: (event: React.ChangeEvent<HTMLInputElement>) => void;
   autoRunGamemode: boolean;
   autoRunMangohud: boolean;
   globalAutoRunGamemode: boolean;
@@ -44,6 +46,8 @@ export function CompatibilitySettingsSection({
   effectiveProtonName,
   protonVersions,
   selectedProtonPath,
+  launchOptions,
+  onChangeLaunchOptions,
   autoRunGamemode,
   autoRunMangohud,
   globalAutoRunGamemode,
@@ -291,6 +295,28 @@ export function CompatibilitySettingsSection({
 
       <div className="game-options-modal__section">
         <ProtonDownloads onInstalled={onProtonInstalled} />
+      </div>
+
+      <div className="game-options-modal__section">
+        <div className="game-options-modal__header">
+          <h2>{t("launch_options")}</h2>
+          <h4 className="game-options-modal__header-description">
+            <Trans
+              i18nKey="launch_options_description_linux"
+              ns="game_details"
+              defaults="Add game launch arguments, or use <code>%command%</code> to wrap the launch command."
+              components={{
+                code: <code className="game-options-modal__inline-code" />,
+              }}
+            />
+          </h4>
+        </div>
+        <TextField
+          value={launchOptions}
+          theme="dark"
+          placeholder={t("launch_options_placeholder")}
+          onChange={onChangeLaunchOptions}
+        />
       </div>
     </>
   );

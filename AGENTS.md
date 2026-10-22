@@ -2,7 +2,7 @@
 
 Launcher de escritorio **independiente** (Electron + React + TypeScript + Vite)
 basado en el código abierto de Hydra. Repo: `hectorrh11/lorro-launcher`.
-Versión publicada actual: **1.84.0** (Windows, Ubuntu/Debian y Arch Linux).
+Versión publicada actual: **1.85.0** (Windows, Ubuntu/Debian y Arch Linux).
 
 Este documento es la fuente de verdad para retomar el proyecto en una sesión
 nueva. Léelo entero antes de tocar código.
@@ -302,11 +302,11 @@ perfil propio. Los fondos animados se guardan como fondo `preset` en
 
 ### Inicio personalizable (1.83.0)
 
-La página de inicio tiene un botón "Personalizar inicio" que oculta el banner
-(`Hero`), el catálogo, los filtros de categoría y "Sorpréndeme" mediante
-`homeHideHero`, `homeHideCatalogue`, `homeHideCategories` y `homeHideRandom` en
-las preferencias. Cuando el catálogo está oculto no se descargan sus datos ni el
-juego aleatorio.
+La página de inicio tiene un botón "Personalizar inicio" y, desde 1.85.0, una
+categoría propia en Ajustes → Inicio (`settings-home.tsx`). Ambos editan los
+mismos cuatro campos: `homeHideHero`, `homeHideCatalogue`, `homeHideCategories`
+y `homeHideRandom`. Cuando el catálogo está oculto no se descargan sus datos ni
+el juego aleatorio, y los controles de filtros/sorpresa quedan deshabilitados.
 
 ### Copias de seguridad de partidas
 
@@ -358,7 +358,10 @@ Steam los instale; después basta refrescar la lista. Las versiones gestionadas
 se añaden a `getInstalledProtonVersions` con `source: "managed"` y se pueden
 elegir por juego con `selectGameProtonPath`. El lanzamiento sigue usando
 UMU/Wine (`launch-game.ts`), con prefijo por juego, GameMode y MangoHud.
-La UI vive en `proton-downloads.tsx` y `proton-path-picker.tsx`.
+Desde 1.85.0 la categoría Compatibilidad también muestra los parámetros de
+inicio (con `%command%`) y, al instalar una versión gestionada, se actualiza el
+runtime de UMU. La UI vive en `proton-downloads.tsx` y
+`proton-path-picker.tsx`.
 
 ### Clips (1.78.0, revisado en 1.84.0)
 
@@ -429,7 +432,16 @@ enlaces de Hydra/Lorro Cloud.
 
 ---
 
-### 1.84.0 (implementado; build/release en curso)
+### 1.85.0 (implementado; build/release en curso)
+
+- Ajustes → Inicio con los cuatro controles de personalización (banner,
+  catálogo, filtros y sorpresa), persistidos en las preferencias.
+- Parámetros de inicio visibles también en Compatibilidad (Linux/Proton),
+  además de la sección General, con soporte de `%command%`.
+- Tras instalar GE-Proton se actualiza el runtime de UMU para que el juego
+  pueda arrancar con esa versión sin pasos manuales.
+
+### 1.84.0 (publicada)
 
 - Gestor de Proton en la ficha del juego: descarga GE-Proton con SHA-512,
   progreso, extracción, borrado y selección por juego.
@@ -565,6 +577,9 @@ Comprobar además:
 - **1.84.0** — gestor de Proton para Linux (GE-Proton con SHA-512, selección
   por juego, canales oficiales vía Steam) y corrección de clips: encabezado
   WebM, volcado previo, duración estable y reajuste de tiempos.
+- **1.85.0** — Ajustes → Inicio con los cuatro controles de personalización,
+  parámetros de inicio en Compatibilidad de Linux y actualización del runtime
+  de UMU al instalar una versión gestionada de Proton.
 
 ---
 

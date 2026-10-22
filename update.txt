@@ -1,4 +1,30 @@
 ========================================================
+VERSION 1.85.0
+========================================================
+AJUSTES > INICIO: la personalizacion del inicio ya tiene su
+propio apartado en Ajustes, como faltaba desde la 1.83.0.
+Desde ahi puedes ocultar el banner, el catalogo, los filtros
+de categoria y el boton "Sorprendeme" sin buscar el boton
+flotante de la pagina de inicio. Los cambios se guardan al
+instante y se mantienen al reiniciar.
+
+PARAMETROS DE INICIO EN PROTON: en la ficha del juego,
+dentro de Compatibilidad en Linux, ahora aparece el campo
+de parametros de inicio junto al selector de Proton. Sirve
+para los mismos usos que en Steam (%command%, opciones del
+juego, variables de entorno) y se combina con UMU/Wine, el
+prefijo por juego, GameMode y MangoHud.
+
+PROTON MAS COMPLETO: al terminar de descargar una version
+de GE-Proton se comprueba y actualiza tambien el runtime de
+UMU, para que el juego pueda arrancar con esa version sin
+pasos manuales. Se mantienen la verificacion SHA-512, el
+progreso de descarga, el borrado y los accesos oficiales a
+Proton Experimental y Proton 11.0 mediante Steam. Proton
+sigue siendo una funcion de Linux; en Windows no se muestra
+porque los juegos se ejecutan de forma nativa.
+
+========================================================
 VERSION 1.84.0
 ========================================================
 PROTON NATIVO EN LINUX: la ficha de cada juego incluye

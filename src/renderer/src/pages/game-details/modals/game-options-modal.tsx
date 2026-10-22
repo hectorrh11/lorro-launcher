@@ -1401,6 +1401,8 @@ export function GameOptionsModal({
                   effectiveProtonName={linuxCompatibility?.protonName}
                   protonVersions={protonVersions}
                   selectedProtonPath={selectedProtonPath}
+                  launchOptions={launchOptions}
+                  onChangeLaunchOptions={handleChangeLaunchOptions}
                   autoRunGamemode={autoRunGamemode}
                   autoRunMangohud={autoRunMangohud}
                   globalAutoRunGamemode={globalAutoRunGamemode}

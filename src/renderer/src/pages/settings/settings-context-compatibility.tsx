@@ -180,6 +180,10 @@ export function SettingsContextCompatibility() {
     }
   );
 
+  const protonSourceManaged = t("proton_source_managed", {
+    ns: ["settings", "game_details"],
+  });
+
   const handleInstallCommonRedist = async () => {
     setInstallingCommonRedist(true);
     try {
@@ -277,6 +281,7 @@ export function SettingsContextCompatibility() {
                 compatibilityToolsSourceDescription={
                   protonSourceCompatibilityTools
                 }
+                managedSourceDescription={protonSourceManaged}
               />
             </div>
 

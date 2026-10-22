@@ -10,6 +10,7 @@ import {
 import type { LibraryGame, ProtonVersion } from "@types";
 import { FileDirectoryIcon, LinkExternalIcon } from "@primer/octicons-react";
 import { Tooltip } from "react-tooltip";
+import { ProtonDownloads } from "./proton-downloads";
 
 interface CompatibilitySettingsSectionProps {
   game: LibraryGame;
@@ -33,6 +34,7 @@ interface CompatibilitySettingsSectionProps {
   onChangeGamemodeState: (value: boolean) => Promise<void>;
   onChangeMangohudState: (value: boolean) => Promise<void>;
   onChangeProtonVersion: (value: string) => void;
+  onProtonInstalled?: (path?: string) => void | Promise<void>;
 }
 
 export function CompatibilitySettingsSection({
@@ -57,6 +59,7 @@ export function CompatibilitySettingsSection({
   onChangeGamemodeState,
   onChangeMangohudState,
   onChangeProtonVersion,
+  onProtonInstalled,
 }: Readonly<CompatibilitySettingsSectionProps>) {
   const { t } = useTranslation("game_details");
 
@@ -98,6 +101,11 @@ export function CompatibilitySettingsSection({
       defaultValue: "Installed in Steam compatibilitytools.d",
     }
   );
+
+  const protonSourceManaged = t("proton_source_managed", {
+    ns: ["game_details", "settings"],
+    defaultValue: "Installed and managed by Lorro",
+  });
 
   return (
     <>
@@ -277,7 +285,12 @@ export function CompatibilitySettingsSection({
           autoSourceDescription={effectiveProtonName ?? protonSourceUmuDefault}
           steamSourceDescription={protonSourceSteam}
           compatibilityToolsSourceDescription={protonSourceCompatibilityTools}
+          managedSourceDescription={protonSourceManaged}
         />
+      </div>
+
+      <div className="game-options-modal__section">
+        <ProtonDownloads onInstalled={onProtonInstalled} />
       </div>
     </>
   );

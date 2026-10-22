@@ -1,4 +1,37 @@
 ========================================================
+VERSION 1.84.0
+========================================================
+PROTON NATIVO EN LINUX: la ficha de cada juego incluye
+ahora un gestor de Proton. Puedes descargar GE-Proton
+(ultimas versiones), ver el progreso, cancelar la descarga
+y elegir la version concreta con la que abrir ese juego.
+Las versiones instaladas por Lorro se detectan y aparecen
+en el selector junto a las de Steam y compatibilitytools.d.
+
+INSTALACION SENCILLA: cada version muestra su tamano y su
+estado. La descarga se verifica con SHA-512, se extrae en la
+carpeta de datos de Lorro y se puede borrar desde la misma
+ficha. Tambien hay botones para Proton Experimental y
+Proton 11.0: si tienes Steam, abren su instalacion oficial y
+al terminar solo hay que actualizar la lista.
+
+COMPATIBILIDAD: se mantiene el flujo de UMU/Wine, el prefijo
+por juego, GameMode y MangoHud. El nuevo selector permite
+usar una version distinta en cada juego sin cambiar la
+configuracion global.
+
+CLIPS MAS FIABLES: se conserva el encabezado del video y se
+fuerzan los datos pendientes antes de guardar, asi que los
+clips ya no salen de 3 segundos ni se cortan al cambiar la
+duracion. El archivo se reajusta para que empiece en un
+fotograma clave y tenga la duracion configurada, sin el salto
+de tiempo que dejaba el buffer circular.
+
+AJUSTES: cambiar la duracion de los clips ya no reinicia la
+grabacion ni borra lo que habia en memoria. Se mantienen el
+atajo global, el audio del sistema y el microfono.
+
+========================================================
 VERSION 1.83.0
 ========================================================
 TIENDA DE LORROPOINTS AMPLIADA: ademas de los tres temas,

@@ -25,6 +25,11 @@ import type {
   AchievementNotificationInfo,
   AchievementNotificationRequest,
   ProtonVersion,
+  ProtonRelease,
+  ProtonInstallProgress,
+  ProtonInstallResult,
+  ProtonOfficialChannel,
+  ProtonOfficialInstallResult,
   TorrentFilesResponse,
   DownloadLayoutState,
   EmulatorSystem,
@@ -1157,6 +1162,34 @@ contextBridge.exposeInMainWorld("electron", {
     ipcRenderer.invoke("getInstalledProtonVersions") as Promise<
       ProtonVersion[]
     >,
+  getAvailableProtonReleases: () =>
+    ipcRenderer.invoke("getAvailableProtonReleases") as Promise<
+      ProtonRelease[]
+    >,
+  installProtonRelease: (tag: string) =>
+    ipcRenderer.invoke(
+      "installProtonRelease",
+      tag
+    ) as Promise<ProtonInstallResult>,
+  uninstallProtonRelease: (tag: string) =>
+    ipcRenderer.invoke(
+      "uninstallProtonRelease",
+      tag
+    ) as Promise<ProtonInstallResult>,
+  installOfficialProton: (channel: ProtonOfficialChannel) =>
+    ipcRenderer.invoke(
+      "installOfficialProton",
+      channel
+    ) as Promise<ProtonOfficialInstallResult>,
+  onProtonInstallProgress: (cb: (progress: ProtonInstallProgress) => void) => {
+    const listener = (
+      _event: Electron.IpcRendererEvent,
+      progress: ProtonInstallProgress
+    ) => cb(progress);
+    ipcRenderer.on("on-proton-install-progress", listener);
+    return () =>
+      ipcRenderer.removeListener("on-proton-install-progress", listener);
+  },
   getGameLaunchProtonVersion: (shop: GameShop, objectId: string) =>
     ipcRenderer.invoke("getGameLaunchProtonVersion", shop, objectId),
   verifyExecutablePathInUse: (executablePath: string) =>

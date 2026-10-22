@@ -13,6 +13,7 @@ import { evaluateUmuPrefixPreparation } from "./umu-prefix-preparation";
 import { Wine } from "./wine";
 import { getSteamLibraryFolders } from "./steam";
 import { UmuUpdater } from "./umu-updater";
+import { ProtonManager } from "./proton-manager";
 import {
   UmuEarlyExitError,
   observeUmuLaunch,
@@ -269,6 +270,8 @@ export class Umu {
         });
       }
     }
+
+    versions.push(...ProtonManager.getInstalledVersions());
 
     const uniqueVersions = new Map<string, ProtonVersion>();
 

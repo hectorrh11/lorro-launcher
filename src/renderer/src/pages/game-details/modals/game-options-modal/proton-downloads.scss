@@ -1,0 +1,168 @@
+@use "../../../../scss/globals.scss";
+
+.proton-downloads {
+  display: flex;
+  flex-direction: column;
+  gap: calc(globals.$spacing-unit * 1.5);
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: globals.$spacing-unit;
+
+    h2 {
+      margin: 0 0 globals.$spacing-unit;
+    }
+  }
+
+  &__description {
+    margin: 0;
+    font-weight: 400;
+    color: globals.$muted-color;
+    opacity: 0.8;
+    font-size: globals.$small-font-size;
+    line-height: 1.4;
+  }
+
+  &__status {
+    display: flex;
+    align-items: center;
+    gap: globals.$spacing-unit;
+    margin: 0;
+    padding: calc(globals.$spacing-unit * 1.5);
+    border: 1px solid globals.$border-color;
+    border-radius: 6px;
+    font-size: globals.$small-font-size;
+    color: globals.$muted-color;
+
+    &--error {
+      color: #f5a623;
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: calc(globals.$spacing-unit / 2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    max-height: 280px;
+    overflow-y: auto;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: globals.$spacing-unit;
+    padding: calc(globals.$spacing-unit * 1.25)
+      calc(globals.$spacing-unit * 1.5);
+    border: 1px solid globals.$border-color;
+    border-radius: 6px;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: calc(globals.$spacing-unit / 3);
+    min-width: 0;
+  }
+
+  &__name {
+    font-weight: 600;
+  }
+
+  &__meta {
+    font-size: globals.$small-font-size;
+    color: globals.$muted-color;
+    opacity: 0.8;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: globals.$spacing-unit;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+
+  &__installed {
+    font-size: globals.$small-font-size;
+    color: #6fcf97;
+  }
+
+  &__confirm {
+    font-size: globals.$small-font-size;
+    color: globals.$muted-color;
+  }
+
+  &__progress {
+    display: flex;
+    flex-direction: column;
+    gap: calc(globals.$spacing-unit / 3);
+    min-width: 180px;
+    margin-top: calc(globals.$spacing-unit / 3);
+  }
+
+  &__progress-bar {
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.12);
+    overflow: hidden;
+  }
+
+  &__progress-fill {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--lorro-accent, #8b5cf6);
+    transition: width 0.2s ease;
+  }
+
+  &__progress-label {
+    font-size: globals.$small-font-size;
+    color: globals.$muted-color;
+  }
+
+  &__official {
+    display: flex;
+    flex-direction: column;
+    gap: globals.$spacing-unit;
+    padding-top: calc(globals.$spacing-unit * 1.5);
+    border-top: 1px solid globals.$border-color;
+
+    h3 {
+      margin: 0;
+    }
+  }
+
+  &__official-description,
+  &__official-note {
+    margin: 0;
+    font-size: globals.$small-font-size;
+    color: globals.$muted-color;
+    opacity: 0.8;
+    line-height: 1.4;
+  }
+
+  &__official-actions {
+    display: flex;
+    gap: globals.$spacing-unit;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 640px) {
+    &__item {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    &__actions {
+      width: 100%;
+      justify-content: flex-start;
+    }
+  }
+}

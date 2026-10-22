@@ -13,14 +13,18 @@ export interface ProtonPathPickerProps {
   autoSourceDescription: string;
   steamSourceDescription: string;
   compatibilityToolsSourceDescription: string;
+  managedSourceDescription: string;
 }
 
 const getProtonSourceDescription = (
   source: ProtonVersion["source"],
   versionPath: string,
   steamSourceDescription: string,
-  compatibilityToolsSourceDescription: string
+  compatibilityToolsSourceDescription: string,
+  managedSourceDescription: string
 ) => {
+  if (source === "managed") return managedSourceDescription;
+
   if (
     source === "compatibility_tools" ||
     versionPath.includes("compatibilitytools.d")
@@ -40,6 +44,7 @@ export function ProtonPathPicker({
   autoSourceDescription,
   steamSourceDescription,
   compatibilityToolsSourceDescription,
+  managedSourceDescription,
 }: Readonly<ProtonPathPickerProps>) {
   const protonTooltipId = useId();
 
@@ -79,7 +84,8 @@ export function ProtonPathPicker({
                 version.source,
                 version.path,
                 steamSourceDescription,
-                compatibilityToolsSourceDescription
+                compatibilityToolsSourceDescription,
+                managedSourceDescription
               )}
             >
               {version.name}

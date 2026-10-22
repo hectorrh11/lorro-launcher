@@ -63,6 +63,10 @@ export function SettingsBehavior() {
     }
   );
 
+  const protonSourceManaged = t("proton_source_managed", {
+    ns: ["settings", "game_details"],
+  });
+
   useEffect(() => {
     if (userPreferences) {
       setForm({
@@ -217,6 +221,7 @@ export function SettingsBehavior() {
               compatibilityToolsSourceDescription={
                 protonSourceCompatibilityTools
               }
+              managedSourceDescription={protonSourceManaged}
             />
           </div>
         </>

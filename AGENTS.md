@@ -2,7 +2,7 @@
 
 Launcher de escritorio **independiente** (Electron + React + TypeScript + Vite)
 basado en el código abierto de Hydra. Repo: `hectorrh11/lorro-launcher`.
-Versión publicada actual: **1.83.0** (Windows, Ubuntu/Debian y Arch Linux).
+Versión publicada actual: **1.84.0** (Windows, Ubuntu/Debian y Arch Linux).
 
 Este documento es la fuente de verdad para retomar el proyecto en una sesión
 nueva. Léelo entero antes de tocar código.
@@ -347,7 +347,20 @@ valor real (`achievement.points`) de cada logro desbloqueado, con
 reinicia la app, el almacén de logros está vacío hasta que se sincronizan: el
 saldo puede mostrarse como **estimado** (`exact: false`) y recalcularse después.
 
-### Clips (1.78.0)
+### Proton nativo en Linux (1.84.0)
+
+Cada ficha de juego incluye un gestor de Proton en la categoría Compatibilidad.
+`src/main/services/proton-manager.ts` lista las releases de GE-Proton desde
+GitHub, descarga el `.tar.gz` x86_64, verifica su SHA-512, lo extrae en
+`<userData>/proton/<tag>` y permite borrarlo. Los canales oficiales
+(Proton Experimental y Proton 11.0) abren `steam://install/<appId>` para que
+Steam los instale; después basta refrescar la lista. Las versiones gestionadas
+se añaden a `getInstalledProtonVersions` con `source: "managed"` y se pueden
+elegir por juego con `selectGameProtonPath`. El lanzamiento sigue usando
+UMU/Wine (`launch-game.ts`), con prefijo por juego, GameMode y MangoHud.
+La UI vive en `proton-downloads.tsx` y `proton-path-picker.tsx`.
+
+### Clips (1.78.0, revisado en 1.84.0)
 
 Página propia en la barra lateral (`/clips`): listado, reproducción con el
 protocolo `local:`, mostrar en carpeta y borrado con confirmación. Grabación en
@@ -356,8 +369,11 @@ segundo plano mediante `globalShortcut` registrado en el proceso principal
 sistema vía `setDisplayMediaRequestHandler` con `audio: "loopback"` (solo
 Windows; en Linux el checkbox queda deshabilitado y se avisa en la UI) y
 micrófono opcional mezclado con `AudioContext`. Duración 5–90 s en pasos de 5;
-el buffer vive en RAM y solo se escribe al guardar. Tras actualizar hay que
-volver a activar los clips.
+el buffer vive en RAM y solo se escribe al guardar. Desde 1.84.0 se conserva el
+encabezado WebM, se vuelca el `MediaRecorder` antes de guardar y se reajustan
+las marcas de tiempo de los clusters para que el clip empiece en un fotograma
+clave y tenga la duración elegida. Cambiar la duración ya no reinicia la
+grabación. Tras actualizar hay que volver a activar los clips.
 
 ### Extras
 
@@ -413,7 +429,15 @@ enlaces de Hydra/Lorro Cloud.
 
 ---
 
-### 1.83.0 (implementado; build/release en curso)
+### 1.84.0 (implementado; build/release en curso)
+
+- Gestor de Proton en la ficha del juego: descarga GE-Proton con SHA-512,
+  progreso, extracción, borrado y selección por juego.
+- Accesos a Proton Experimental y Proton 11.0 mediante Steam.
+- Corrección de clips: encabezado WebM, volcado previo, duración sin reinicio
+  y reajuste de marcas de tiempo para evitar clips de 3 segundos.
+
+### 1.83.0 (publicada)
 
 - Tienda ampliada con 7 marcos de avatar, 6 títulos y 6 fondos animados.
 - Compra genérica `purchaseLorroItem`, equipar/quitar marcos y títulos.
@@ -538,6 +562,9 @@ Comprobar además:
 - **1.83.0** — tienda ampliada (7 marcos, 6 títulos y 6 fondos animados además
   de los 3 temas), fondos con gradientes animados, personalización de inicio
   (ocultar banner, catálogo, filtros y sorpresa) y optimización de peticiones.
+- **1.84.0** — gestor de Proton para Linux (GE-Proton con SHA-512, selección
+  por juego, canales oficiales vía Steam) y corrección de clips: encabezado
+  WebM, volcado previo, duración estable y reajuste de tiempos.
 
 ---
 

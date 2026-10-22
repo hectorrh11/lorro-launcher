@@ -324,13 +324,25 @@ export function GameOptionsModal({
     setAutoRunGamemode(game.autoRunGamemode === true);
   }, [game.autoRunGamemode]);
 
+  const loadProtonVersions = useCallback(async () => {
+    if (globalThis.window.electron.platform !== "linux") {
+      setProtonVersions([]);
+      return;
+    }
+
+    try {
+      setProtonVersions(
+        await globalThis.window.electron.getInstalledProtonVersions()
+      );
+    } catch {
+      setProtonVersions([]);
+    }
+  }, []);
+
   useEffect(() => {
-    if (!visible || globalThis.window.electron.platform !== "linux") return;
-    globalThis.window.electron
-      .getInstalledProtonVersions()
-      .then(setProtonVersions)
-      .catch(() => setProtonVersions([]));
-  }, [visible]);
+    if (!visible) return;
+    void loadProtonVersions();
+  }, [visible, loadProtonVersions]);
 
   useEffect(() => {
     if (!visible || globalThis.window.electron.platform !== "linux") {
@@ -1404,6 +1416,10 @@ export function GameOptionsModal({
                   onChangeGamemodeState={handleChangeGamemodeState}
                   onChangeMangohudState={handleChangeMangohudState}
                   onChangeProtonVersion={handleChangeProtonVersion}
+                  onProtonInstalled={(path) => {
+                    void loadProtonVersions();
+                    if (path) handleChangeProtonVersion(path);
+                  }}
                 />
               )}
             {selectedCategory === "downloads" && showDownloadSettings && (

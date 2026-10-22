@@ -59,6 +59,11 @@ import type {
   DownloadSource,
   LocalNotification,
   ProtonVersion,
+  ProtonRelease,
+  ProtonInstallProgress,
+  ProtonInstallResult,
+  ProtonOfficialChannel,
+  ProtonOfficialInstallResult,
   CreateSteamShortcutOptions,
   TorrentFilesResponse,
   DownloadLayoutState,
@@ -530,6 +535,15 @@ declare global {
       protonPath: string | null
     ) => Promise<void>;
     getInstalledProtonVersions: () => Promise<ProtonVersion[]>;
+    getAvailableProtonReleases: () => Promise<ProtonRelease[]>;
+    installProtonRelease: (tag: string) => Promise<ProtonInstallResult>;
+    uninstallProtonRelease: (tag: string) => Promise<ProtonInstallResult>;
+    installOfficialProton: (
+      channel: ProtonOfficialChannel
+    ) => Promise<ProtonOfficialInstallResult>;
+    onProtonInstallProgress: (
+      cb: (progress: ProtonInstallProgress) => void
+    ) => () => void;
     getGameLaunchProtonVersion: (
       shop: GameShop,
       objectId: string

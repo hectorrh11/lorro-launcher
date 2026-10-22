@@ -47,7 +47,45 @@ export interface DownloadSource {
 export interface ProtonVersion {
   name: string;
   path: string;
-  source?: "steam" | "compatibility_tools" | "unknown";
+  source?: "steam" | "compatibility_tools" | "managed" | "unknown";
+}
+
+export interface ProtonRelease {
+  tag: string;
+  name: string;
+  version: string;
+  size: number;
+  publishedAt: string;
+  downloadUrl: string;
+  checksumUrl: string | null;
+  installed: boolean;
+  managed: boolean;
+}
+
+export type ProtonInstallPhase =
+  | "downloading"
+  | "verifying"
+  | "extracting"
+  | "installing";
+
+export interface ProtonInstallProgress {
+  tag: string;
+  phase: ProtonInstallPhase;
+  receivedBytes: number;
+  totalBytes: number;
+}
+
+export interface ProtonInstallResult {
+  ok: boolean;
+  message: string;
+  path?: string;
+}
+
+export type ProtonOfficialChannel = "experimental" | "latest";
+
+export interface ProtonOfficialInstallResult {
+  ok: boolean;
+  message: string;
 }
 
 export interface ShopAssets {

@@ -135,7 +135,7 @@ export function CustomDownloadLauncher({
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState(defaultTitle ?? "");
   const [destinationDir, setDestinationDir] = useState("");
-  const [connections, setConnections] = useState(8);
+  const [connections, setConnections] = useState(32);
   const [addToLibrary, setAddToLibrary] = useState(true);
   const [isStarting, setIsStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);

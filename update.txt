@@ -1,4 +1,29 @@
 ========================================================
+VERSION 1.87.0
+========================================================
+DESCARGAS MAS RAPIDAS: el modo por defecto pasa a usar 32
+conexiones paralelas en lugar de 8, para aprovechar mejor
+conexiones rapidas de 1 Gbps. El campo sigue permitiendo
+elegir entre 1 y 32 conexiones por descarga.
+
+MEJOR REPARTO DEL TRABAJO: cada descarga se divide ahora en
+bloques de 8 MB en lugar de un bloque gigante por conexion.
+Las conexiones rapidas recogen mas bloques y no tienen que
+esperar a que termine la conexion mas lenta, asi que la
+velocidad se mantiene estable hasta el final.
+
+ESCRITURA MAS EFICIENTE: los datos se agrupan en memoria y
+se escriben en bloques de 1 MB, reduciendo miles de pequeñas
+escrituras por segundo. Las descargas de una sola conexion
+usan un buffer de 4 MB. Tambien se pide al servidor que no
+comprima el archivo, para que los bytes y la velocidad sean
+reales.
+
+Se mantienen los reintentos automaticos de la version
+anterior: si hay un corte, Lorro conserva lo descargado y
+reanuda solo hasta cuatro veces antes de mostrar el error.
+
+========================================================
 VERSION 1.86.0
 ========================================================
 FONDOS DE VIDEO: se ha corregido la comprobacion que

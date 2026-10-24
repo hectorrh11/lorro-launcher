@@ -2,7 +2,7 @@
 
 Launcher de escritorio **independiente** (Electron + React + TypeScript + Vite)
 basado en el código abierto de Hydra. Repo: `hectorrh11/lorro-launcher`.
-Versión publicada actual: **1.86.0** (Windows, Ubuntu/Debian y Arch Linux).
+Versión publicada actual: **1.87.0** (Windows, Ubuntu/Debian y Arch Linux).
 
 Este documento es la fuente de verdad para retomar el proyecto en una sesión
 nueva. Léelo entero antes de tocar código.
@@ -101,8 +101,8 @@ Puntos calientes:
 - `src/main/services/process-watcher.ts`: detecta juegos en ejecución
   (`onOpenGame` / `onCloseGame`), alimenta estadísticas y backups automáticos.
 - `src/main/services/custom-download-manager.ts`: descargador propio
-  (validación de enlace, multi-conexión 8 por defecto / máx. 32, watchdog,
-  persistencia, handoff a IDM/NDM/FDM).
+  (validación de enlace, multi-conexión 32 por defecto / máx. 32, bloques de
+  8 MB, escritura bufferizada, watchdog, persistencia, handoff a IDM/NDM/FDM).
 - `src/main/services/advanced-store.ts`: almacén JSON de las funciones avanzadas.
 - `src/main/services/session-stats.ts`: sesiones de juego (inicio/fin,
   recuperación tras cierre inesperado, corrección manual).
@@ -241,12 +241,15 @@ Notas:
 
 ### Descargador propio
 
-Validación del enlace antes de descargar, multi-conexión segmentada (hasta 32
-conexiones), reintentos automáticos ante cortes o estancamientos, watchdog,
-persistencia entre reinicios, entrega a gestor externo (IDM por CLI,
-NDM/FDM por portapapeles), gráfico de velocidad con tooltip y media
-seleccionable (total/1h/30m/15m/5m). Las descargas de enlace personalizado
-muestran además una gráfica de las últimas 60 muestras y la velocidad media.
+Validación del enlace antes de descargar, multi-conexión segmentada (32
+conexiones por defecto, hasta 32), reparto en bloques de 8 MB para que las
+conexiones rápidas no esperen a las lentas, escritura bufferizada de 1 MB
+(4 MB en descargas de una sola conexión), reintentos automáticos ante cortes o
+estancamientos, watchdog, persistencia entre reinicios, entrega a gestor
+externo (IDM por CLI, NDM/FDM por portapapeles), gráfico de velocidad con
+tooltip y media seleccionable (total/1h/30m/15m/5m). Las descargas de enlace
+personalizado muestran además una gráfica de las últimas 60 muestras y la
+velocidad media.
 
 ### Lanzamiento
 
@@ -434,7 +437,15 @@ enlaces de Hydra/Lorro Cloud.
 
 ---
 
-### 1.86.0 (implementado; build/release en curso)
+### 1.87.0 (implementado; build/release en curso)
+
+- Descargas personalizadas más rápidas: 32 conexiones por defecto (antes 8),
+  bloques de 8 MB y escritura bufferizada de 1 MB (4 MB en una conexión).
+- Se solicita `Accept-Encoding: identity` para no comprimir el archivo y medir
+  bytes/velocidad reales; se mantienen los reintentos automáticos.
+- Ajustes → Inicio y parámetros de inicio en Compatibilidad se mantienen.
+
+### 1.86.0 (publicada)
 
 - Fondos de vídeo: validación corregida para MP4/WebM (elemento temporal con
   dimensiones reales y reproducción de prueba).
@@ -594,6 +605,9 @@ Comprobar además:
 - **1.86.0** — arreglo de fondos de vídeo (MP4/WebM), 32 conexiones en el
   enlace personalizado, reintentos automáticos con caída a una conexión y
   gráfica con velocidad media en las descargas.
+- **1.87.0** — rendimiento de descargas: 32 conexiones por defecto, bloques de
+  8 MB, escritura bufferizada de 1 MB (4 MB en una conexión) y
+  `Accept-Encoding: identity` para saturar mejor conexiones de 1 Gbps.
 
 ---
 

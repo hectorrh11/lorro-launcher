@@ -22,11 +22,15 @@ const PROBE_TIMEOUT_MS = 15_000;
 const STALL_TIMEOUT_MS = 20_000;
 const STALL_CHECK_INTERVAL_MS = 5_000;
 const USER_AGENT = "Lorro-Launcher";
-const DEFAULT_CONNECTIONS = 8;
+const DEFAULT_CONNECTIONS = 32;
 const MAX_CONNECTIONS = 32;
 const MAX_TRANSFER_ATTEMPTS = 4;
 const RETRY_DELAY_MS = 1500;
 const MIN_SEGMENT_BYTES = 1024 * 1024;
+const TARGET_SEGMENT_BYTES = 8 * 1024 * 1024;
+const MAX_SEGMENTS = 4096;
+const WRITE_BUFFER_BYTES = 1024 * 1024;
+const SINGLE_WRITE_BUFFER_BYTES = 4 * 1024 * 1024;
 
 const clampConnections = (value?: number) =>
   Math.max(
@@ -177,7 +181,10 @@ export class CustomDownloadManager {
         headResponse = await fetch(url, {
           method: "HEAD",
           redirect: "follow",
-          headers: { "User-Agent": USER_AGENT },
+          headers: {
+            "User-Agent": USER_AGENT,
+            "Accept-Encoding": "identity",
+          },
           signal: controller.signal,
         });
       } catch {
@@ -201,6 +208,7 @@ export class CustomDownloadManager {
         redirect: "follow",
         headers: {
           "User-Agent": USER_AGENT,
+          "Accept-Encoding": "identity",
           Range: "bytes=0-0",
         },
         signal: controller.signal,
@@ -679,7 +687,11 @@ export class CustomDownloadManager {
       const response = await fetch(url, {
         method: "GET",
         redirect: "follow",
-        headers: { "User-Agent": USER_AGENT, Range: "bytes=0-0" },
+        headers: {
+          "User-Agent": USER_AGENT,
+          "Accept-Encoding": "identity",
+          Range: "bytes=0-0",
+        },
         signal,
       });
 
@@ -723,7 +735,10 @@ export class CustomDownloadManager {
       const connectionCount = clampConnections(download.connections);
       const segmentCount = Math.max(
         1,
-        Math.min(connectionCount, Math.ceil(totalBytes / MIN_SEGMENT_BYTES))
+        Math.min(
+          MAX_SEGMENTS,
+          Math.max(connectionCount, Math.ceil(totalBytes / TARGET_SEGMENT_BYTES))
+        )
       );
       const segmentSize = Math.ceil(totalBytes / segmentCount);
 
@@ -796,6 +811,7 @@ export class CustomDownloadManager {
         const response = await fetch(download.url, {
           headers: {
             "User-Agent": USER_AGENT,
+            "Accept-Encoding": "identity",
             Range: `bytes=${position}-${segment.end}`,
           },
           redirect: "follow",
@@ -817,18 +833,31 @@ export class CustomDownloadManager {
         ]();
 
         let offset = position;
+        let pending: Uint8Array[] = [];
+        let pendingBytes = 0;
+        let lastFlushAt = Date.now();
 
-        while (true) {
-          const { done, value } = await reader.next();
-          if (done) break;
-          if (!value) continue;
+        const flush = async () => {
+          if (pendingBytes === 0) return;
 
-          await this.writeAt(fileHandle, value, offset);
+          const buffer = new Uint8Array(pendingBytes);
+          let bufferOffset = 0;
 
-          offset += value.byteLength;
-          segment.downloaded += value.byteLength;
-          download.bytesDownloaded += value.byteLength;
+          for (const chunk of pending) {
+            buffer.set(chunk, bufferOffset);
+            bufferOffset += chunk.byteLength;
+          }
+
+          pending = [];
+          pendingBytes = 0;
+
+          await this.writeAt(fileHandle, buffer, offset);
+
+          offset += buffer.byteLength;
+          segment.downloaded += buffer.byteLength;
+          download.bytesDownloaded += buffer.byteLength;
           lastDataAt = Date.now();
+          lastFlushAt = Date.now();
 
           const now = Date.now();
           const elapsed = now - lastSpeedSampleAt;
@@ -842,7 +871,26 @@ export class CustomDownloadManager {
             lastSpeedSampleBytes = download.bytesDownloaded;
             this.emitProgress();
           }
+        };
+
+        while (true) {
+          const { done, value } = await reader.next();
+          if (done) break;
+          if (!value) continue;
+
+          pending.push(value);
+          pendingBytes += value.byteLength;
+          lastDataAt = Date.now();
+
+          if (
+            pendingBytes >= WRITE_BUFFER_BYTES ||
+            Date.now() - lastFlushAt >= PROGRESS_INTERVAL_MS
+          ) {
+            await flush();
+          }
         }
+
+        await flush();
       }
     };
 
@@ -875,6 +923,7 @@ export class CustomDownloadManager {
     const resumeFrom = download.bytesDownloaded;
     const headers: Record<string, string> = {
       "User-Agent": USER_AGENT,
+      "Accept-Encoding": "identity",
     };
 
     if (resumeFrom > 0) {
@@ -937,6 +986,7 @@ export class CustomDownloadManager {
 
     const writer = createWriteStream(download.filePath, {
       flags: download.bytesDownloaded > 0 ? "a" : "w",
+      highWaterMark: SINGLE_WRITE_BUFFER_BYTES,
     });
 
     const reader = (response.body as unknown as AsyncIterable<Uint8Array>)[

@@ -7,11 +7,11 @@ release channel, installer and data folder. This document tracks what has been
 completed, what has been verified, what is still pending, and what is required
 to distribute the app.
 
-**Current status (estado tras 1.86.0):** **1.86.0** is the latest
-public release for Windows, Ubuntu/Debian and Arch Linux. It fixes MP4/WebM
-background validation, raises custom-link downloads to 32 parallel connections,
-adds automatic retries that preserve downloaded bytes and shows a 60-sample
-speed graph with the average speed. It also includes 1.85.0 (Settings → Home
+**Current status (estado tras 1.87.0):** **1.87.0** is the latest
+public release for Windows, Ubuntu/Debian and Arch Linux. It speeds up
+custom-link downloads with 32 connections by default, 8 MB work units and
+buffered writes, while keeping the 1.86.0 video-background fix, automatic
+retries and the 60-sample speed graph with average speed. It also includes 1.85.0 (Settings → Home
 category, launch options in the Linux Proton section and UMU runtime refresh)
 and everything from 1.77.0-1.84.0: the native Linux Proton manager
 (GE-Proton with SHA-512 verification, per-game selection and official Steam
@@ -242,7 +242,7 @@ hectorrh11, repo: lorro-launcher`) and in `.env`
   than the installed one. Any installation older than `1.0.0` must install the
   current setup once; from `1.0.0` onward in-app auto-update works.
 
-### 1.12 Current feature state (1.86.0)
+### 1.12 Current feature state (1.87.0)
 
 - **Real playtime on library cards**: `LibraryGame.lorroPlaytimeMs` is computed
   from `src/main/services/session-stats.ts` when the library is listed, shown on
@@ -288,12 +288,15 @@ hectorrh11, repo: lorro-launcher`) and in `.env`
   `source: "managed"` and can be selected per game. Proton Experimental and
   Proton 11.0 open their official Steam install handlers. Launching continues
   through UMU/Wine with per-game prefix, GameMode and MangoHud.
-- **Custom downloads (1.86.0)**: `custom-download-manager.ts` accepts up to 32
-  connections, retries interrupted transfers up to four times while preserving
-  progress, and falls back to a single connection when the server stops
-  supporting ranges. The launcher UI tracks the last 60 speed samples and shows
-  the average speed next to the progress bar. Background videos are validated
-  with a temporary attached video element before being accepted.
+- **Custom downloads (1.87.0)**: `custom-download-manager.ts` uses 32
+  connections by default, splits files into 8 MB work units so fast workers do
+  not wait for slow ones, buffers segmented writes at 1 MB and single-stream
+  writes at 4 MB, and requests `Accept-Encoding: identity`. It retries
+  interrupted transfers up to four times while preserving progress and falls
+  back to a single connection when the server stops supporting ranges. The
+  launcher UI tracks the last 60 speed samples and shows the average speed next
+  to the progress bar. Background videos from 1.86.0 are validated with a
+  temporary attached video element before being accepted.
 - **Clip reliability (1.84.0)**: the circular buffer keeps the WebM header,
   requests pending recorder data before saving and rebases cluster timestamps
   to the selected keyframe and duration. Changing the clip duration updates the

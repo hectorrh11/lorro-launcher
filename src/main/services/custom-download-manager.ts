@@ -23,14 +23,37 @@ const STALL_TIMEOUT_MS = 20_000;
 const STALL_CHECK_INTERVAL_MS = 5_000;
 const USER_AGENT = "Lorro-Launcher";
 const DEFAULT_CONNECTIONS = 8;
-const MAX_CONNECTIONS = 16;
+const MAX_CONNECTIONS = 32;
+const MAX_TRANSFER_ATTEMPTS = 4;
+const RETRY_DELAY_MS = 1500;
 const MIN_SEGMENT_BYTES = 1024 * 1024;
 
 const clampConnections = (value?: number) =>
-  Math.max(1, Math.min(Math.round(value ?? DEFAULT_CONNECTIONS), MAX_CONNECTIONS));
+  Math.max(
+    1,
+    Math.min(Math.round(value ?? DEFAULT_CONNECTIONS), MAX_CONNECTIONS)
+  );
 
 const toErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : String(error);
+
+const delay = (milliseconds: number) =>
+  new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+const isRetryableTransferError = (error: unknown) => {
+  const message = toErrorMessage(error);
+
+  if (message.includes("returned a web page")) return false;
+
+  const httpStatus = /HTTP (\d{3})/.exec(message);
+
+  if (httpStatus) {
+    const status = Number(httpStatus[1]);
+    return status === 408 || status === 429 || status >= 500;
+  }
+
+  return true;
+};
 
 const sanitizeFileName = (value: string) =>
   value
@@ -92,9 +115,11 @@ export class CustomDownloadManager {
         .split(";")[0]
         .trim();
 
-      const contentDisposition = response.headers.get("content-disposition") ?? "";
-      const dispositionMatch =
-        /filename\*?=(?:UTF-8''|")?([^";]+)/i.exec(contentDisposition);
+      const contentDisposition =
+        response.headers.get("content-disposition") ?? "";
+      const dispositionMatch = /filename\*?=(?:UTF-8''|")?([^";]+)/i.exec(
+        contentDisposition
+      );
       let fileName: string | null = null;
 
       if (dispositionMatch?.[1]) {
@@ -126,9 +151,7 @@ export class CustomDownloadManager {
 
       const contentRange = response.headers.get("content-range") ?? "";
       const totalMatch = /\/(\d+)$/.exec(contentRange);
-      const contentLength = Number(
-        response.headers.get("content-length") ?? 0
-      );
+      const contentLength = Number(response.headers.get("content-length") ?? 0);
 
       let totalBytes = 0;
 
@@ -519,10 +542,8 @@ export class CustomDownloadManager {
   }
 
   private async download(download: CustomDownload) {
-    const abortController = new AbortController();
-
     this.activeId = download.id;
-    this.activeAbort = abortController;
+    this.activeAbort = null;
 
     download.status = "active";
     download.error = null;
@@ -530,6 +551,8 @@ export class CustomDownloadManager {
 
     this.emitProgress(true);
     await this.persistState();
+
+    let forceSingle = false;
 
     try {
       await fs.mkdir(download.destinationDir, { recursive: true });
@@ -542,34 +565,83 @@ export class CustomDownloadManager {
         );
       }
 
-      if (download.segments && download.segments.length > 1) {
-        await this.downloadSegmented(download, abortController);
-      } else if (
-        download.bytesDownloaded === 0 &&
-        download.totalBytes >= MIN_SEGMENT_BYTES &&
-        clampConnections(download.connections) > 1 &&
-        (await this.supportsRanges(download.url, abortController.signal))
-      ) {
-        await this.downloadSegmented(download, abortController);
-      } else {
-        await this.downloadSingle(download, abortController);
-      }
+      for (let attempt = 1; ; attempt += 1) {
+        const abortController = new AbortController();
+        this.activeAbort = abortController;
 
-      if (download.status !== "active") return;
+        try {
+          if (
+            !forceSingle &&
+            download.segments &&
+            download.segments.length > 1
+          ) {
+            await this.downloadSegmented(download, abortController);
+          } else if (
+            !forceSingle &&
+            download.bytesDownloaded === 0 &&
+            download.totalBytes >= MIN_SEGMENT_BYTES &&
+            clampConnections(download.connections) > 1 &&
+            (await this.supportsRanges(download.url, abortController.signal))
+          ) {
+            await this.downloadSegmented(download, abortController);
+          } else {
+            await this.downloadSingle(download, abortController);
+          }
 
-      if (download.bytesDownloaded === 0) {
-        throw new Error(
-          "The link did not return any data. Check the link and try again."
-        );
-      }
+          if (download.status !== "active") return;
 
-      if (
-        download.totalBytes > 0 &&
-        download.bytesDownloaded < download.totalBytes
-      ) {
-        throw new Error(
-          "The connection closed before the download finished. Resume it to continue."
-        );
+          if (download.bytesDownloaded === 0) {
+            throw new Error(
+              "The link did not return any data. Check the link and try again."
+            );
+          }
+
+          if (
+            download.totalBytes > 0 &&
+            download.bytesDownloaded < download.totalBytes
+          ) {
+            throw new Error(
+              "The connection closed before the download finished. Resume it to continue."
+            );
+          }
+
+          break;
+        } catch (error) {
+          if (download.status !== "active") return;
+
+          const reason = abortController.signal.reason;
+          const normalizedError =
+            error instanceof Error &&
+            error.name === "AbortError" &&
+            reason instanceof Error
+              ? reason
+              : error;
+          const message = toErrorMessage(normalizedError);
+
+          if (message.includes("stopped supporting parallel downloads")) {
+            forceSingle = true;
+            download.segments = null;
+            download.bytesDownloaded = 0;
+          }
+
+          if (
+            attempt >= MAX_TRANSFER_ATTEMPTS ||
+            !isRetryableTransferError(normalizedError)
+          ) {
+            throw normalizedError;
+          }
+
+          download.speed = 0;
+          logger.warn(
+            `Custom download interrupted, retrying (${attempt}/${MAX_TRANSFER_ATTEMPTS})`,
+            normalizedError
+          );
+          this.emitProgress();
+          await this.persistState();
+          await delay(RETRY_DELAY_MS * attempt);
+
+          if (download.status !== "active") return;
+        }
       }
 
       if (download.totalBytes === 0) {
@@ -588,14 +660,9 @@ export class CustomDownloadManager {
       }
 
       download.speed = 0;
-
-      if (error instanceof Error && error.name === "AbortError") {
-        download.status = "paused";
-      } else {
-        download.status = "error";
-        download.error = toErrorMessage(error);
-        logger.warn("Custom download failed", error);
-      }
+      download.status = "error";
+      download.error = toErrorMessage(error);
+      logger.warn("Custom download failed", error);
 
       this.emitProgress(true);
       await this.persistState();
@@ -656,10 +723,7 @@ export class CustomDownloadManager {
       const connectionCount = clampConnections(download.connections);
       const segmentCount = Math.max(
         1,
-        Math.min(
-          connectionCount,
-          Math.ceil(totalBytes / MIN_SEGMENT_BYTES)
-        )
+        Math.min(connectionCount, Math.ceil(totalBytes / MIN_SEGMENT_BYTES))
       );
       const segmentSize = Math.ceil(totalBytes / segmentCount);
 
@@ -706,10 +770,11 @@ export class CustomDownloadManager {
       if (download.status !== "active") return;
       if (Date.now() - lastDataAt < STALL_TIMEOUT_MS) return;
 
-      download.status = "error";
-      download.error =
-        "The server stopped sending data. Check the link and try again.";
-      abortController.abort();
+      abortController.abort(
+        new Error(
+          "The server stopped sending data. Check the link and try again."
+        )
+      );
     }, STALL_CHECK_INTERVAL_MS);
 
     stallTimer.unref?.();
@@ -747,9 +812,9 @@ export class CustomDownloadManager {
           throw new Error("The server returned an empty response.");
         }
 
-        const reader = (
-          response.body as unknown as AsyncIterable<Uint8Array>
-        )[Symbol.asyncIterator]();
+        const reader = (response.body as unknown as AsyncIterable<Uint8Array>)[
+          Symbol.asyncIterator
+        ]();
 
         let offset = position;
 
@@ -790,7 +855,7 @@ export class CustomDownloadManager {
       await Promise.all(
         Array.from({ length: workerCount }, () =>
           worker().catch((error) => {
-            abortController.abort();
+            abortController.abort(error);
             throw error;
           })
         )
@@ -854,9 +919,7 @@ export class CustomDownloadManager {
       download.bytesDownloaded = 0;
     }
 
-    const contentLength = Number(
-      response.headers.get("content-length") ?? 0
-    );
+    const contentLength = Number(response.headers.get("content-length") ?? 0);
     const contentRange = response.headers.get("content-range") ?? "";
     const totalMatch = /\/(\d+)$/.exec(contentRange);
 
@@ -876,9 +939,9 @@ export class CustomDownloadManager {
       flags: download.bytesDownloaded > 0 ? "a" : "w",
     });
 
-    const reader = (
-      response.body as unknown as AsyncIterable<Uint8Array>
-    )[Symbol.asyncIterator]();
+    const reader = (response.body as unknown as AsyncIterable<Uint8Array>)[
+      Symbol.asyncIterator
+    ]();
 
     let lastSpeedSampleAt = Date.now();
     let lastSpeedSampleBytes = download.bytesDownloaded;
@@ -888,10 +951,11 @@ export class CustomDownloadManager {
       if (download.status !== "active") return;
       if (Date.now() - lastDataAt < STALL_TIMEOUT_MS) return;
 
-      download.status = "error";
-      download.error =
-        "The server stopped sending data. Check the link and try again.";
-      abortController.abort();
+      abortController.abort(
+        new Error(
+          "The server stopped sending data. Check the link and try again."
+        )
+      );
     }, STALL_CHECK_INTERVAL_MS);
 
     stallTimer.unref?.();
@@ -915,8 +979,7 @@ export class CustomDownloadManager {
 
         if (elapsed >= PROGRESS_INTERVAL_MS) {
           download.speed = Math.round(
-            ((download.bytesDownloaded - lastSpeedSampleBytes) * 1000) /
-              elapsed
+            ((download.bytesDownloaded - lastSpeedSampleBytes) * 1000) / elapsed
           );
           lastSpeedSampleAt = now;
           lastSpeedSampleBytes = download.bytesDownloaded;

@@ -235,6 +235,26 @@
     color: globals.$subtle-color;
   }
 
+  &__stats {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    color: globals.$subtle-color;
+  }
+
+  &__chart {
+    width: 240px;
+    height: 44px;
+    flex: 0 1 240px;
+    overflow: visible;
+  }
+
+  &__average {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
   &__error {
     margin: 0;
     font-size: 12px;

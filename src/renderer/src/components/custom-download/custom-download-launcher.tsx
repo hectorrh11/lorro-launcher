@@ -61,9 +61,39 @@ const formatDuration = (seconds: number) => {
   const hours = Math.floor(minutes / 60);
   const remainingMinutes = minutes % 60;
 
-  return remainingMinutes > 0
-    ? `${hours}h ${remainingMinutes}m`
-    : `${hours}h`;
+  return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
+};
+
+const SpeedChart = ({ values }: { values: number[] }) => {
+  if (values.length < 2) return null;
+
+  const width = 240;
+  const height = 44;
+  const max = Math.max(...values, 1);
+  const points = values
+    .map((value, index) => {
+      const x = (index / (values.length - 1)) * width;
+      const y = height - (value / max) * (height - 4) - 2;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .join(" ");
+
+  return (
+    <svg
+      className="custom-download__chart"
+      viewBox={`0 0 ${width} ${height}`}
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <polyline
+        points={points}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        vectorEffect="non-scaling-stroke"
+      />
+    </svg>
+  );
 };
 
 const statusLabel = (
@@ -110,6 +140,9 @@ export function CustomDownloadLauncher({
   const [isStarting, setIsStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [downloads, setDownloads] = useState<CustomDownload[]>([]);
+  const [speedHistory, setSpeedHistory] = useState<Record<string, number[]>>(
+    {}
+  );
   const [busyId, setBusyId] = useState<string | null>(null);
   const [externalManager, setExternalManager] =
     useState<ExternalDownloadManagerInfo | null>(null);
@@ -137,7 +170,23 @@ export function CustomDownloadLauncher({
       .catch(() => undefined);
 
     const unsubscribe = window.electron.onCustomDownloadProgress((items) => {
-      if (!disposed) setDownloads(items);
+      if (disposed) return;
+
+      setDownloads(items);
+      setSpeedHistory((current) => {
+        const next = { ...current };
+        let changed = false;
+
+        for (const item of items) {
+          if (item.status !== "active") continue;
+
+          const samples = next[item.id] ?? [];
+          next[item.id] = [...samples, Math.max(0, item.speed)].slice(-60);
+          changed = true;
+        }
+
+        return changed ? next : current;
+      });
     });
 
     return () => {
@@ -211,8 +260,7 @@ export function CustomDownloadLauncher({
             name: result.name ?? "download manager",
           }),
           t("custom_download_external_opened_message", {
-            defaultValue:
-              "The link was sent to the external download manager.",
+            defaultValue: "The link was sent to the external download manager.",
           })
         );
       } catch (externalError) {
@@ -460,12 +508,22 @@ export function CustomDownloadLauncher({
             Math.round((download.bytesDownloaded / download.totalBytes) * 100)
           )
         : null;
+    const history = speedHistory[download.id] ?? [];
+    const averageSpeed =
+      history.length > 0
+        ? Math.round(
+            history.reduce((total, sample) => total + sample, 0) /
+              history.length
+          )
+        : 0;
 
     return (
       <div className="custom-download__item" key={download.id}>
         <div className="custom-download__item-header">
           <div className="custom-download__item-info">
-            <span className="custom-download__item-title">{download.title}</span>
+            <span className="custom-download__item-title">
+              {download.title}
+            </span>
             <span className="custom-download__item-file">
               {download.fileName}
             </span>
@@ -473,7 +531,9 @@ export function CustomDownloadLauncher({
           <span
             className={`custom-download__status custom-download__status--${download.status}`}
           >
-            {download.status === "complete" && <CheckCircleFillIcon size={12} />}
+            {download.status === "complete" && (
+              <CheckCircleFillIcon size={12} />
+            )}
             {download.status === "active" && <SyncIcon size={12} />}
             {statusLabel(
               download.status,
@@ -492,7 +552,9 @@ export function CustomDownloadLauncher({
             <div className="custom-download__progress-bar">
               <div
                 className={`custom-download__progress-fill${
-                  percent === null ? " custom-download__progress-fill--indeterminate" : ""
+                  percent === null
+                    ? " custom-download__progress-fill--indeterminate"
+                    : ""
                 }`}
                 style={percent === null ? undefined : { width: `${percent}%` }}
               />
@@ -530,6 +592,19 @@ export function CustomDownloadLauncher({
                 })()}
               </span>
             </div>
+            {history.length > 1 && (
+              <div className="custom-download__stats">
+                <SpeedChart values={history} />
+                {averageSpeed > 0 && (
+                  <span className="custom-download__average">
+                    {t("custom_download_average_speed", {
+                      defaultValue: "Average {{speed}}",
+                      speed: formatSpeed(averageSpeed),
+                    })}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         )}
 
@@ -543,7 +618,10 @@ export function CustomDownloadLauncher({
   };
 
   const trigger = (
-    <Button theme={variant === "page" ? "primary" : "outline"} onClick={openModal}>
+    <Button
+      theme={variant === "page" ? "primary" : "outline"}
+      onClick={openModal}
+    >
       <LinkIcon size={16} />
       {t("custom_download_button", { defaultValue: "Custom link" })}
     </Button>
@@ -631,16 +709,16 @@ export function CustomDownloadLauncher({
           })}
           hint={t("custom_download_connections_hint", {
             defaultValue:
-              "More connections can speed up throttled servers (1–16).",
+              "More connections can speed up throttled servers (1–32).",
           })}
           type="number"
           min={1}
-          max={16}
+          max={32}
           value={connections}
           onChange={(event) => {
             const parsed = Number.parseInt(event.target.value, 10);
             setConnections(
-              Number.isNaN(parsed) ? 1 : Math.max(1, Math.min(parsed, 16))
+              Number.isNaN(parsed) ? 1 : Math.max(1, Math.min(parsed, 32))
             );
           }}
         />
@@ -687,7 +765,11 @@ export function CustomDownloadLauncher({
     <section className="custom-download">
       <div className="custom-download__bar">
         <div className="custom-download__bar-text">
-          <h2>{t("custom_download_section_title", { defaultValue: "Custom downloads" })}</h2>
+          <h2>
+            {t("custom_download_section_title", {
+              defaultValue: "Custom downloads",
+            })}
+          </h2>
           <p>
             {t("custom_download_section_description", {
               defaultValue:

@@ -7,12 +7,13 @@ release channel, installer and data folder. This document tracks what has been
 completed, what has been verified, what is still pending, and what is required
 to distribute the app.
 
-**Current status (estado tras 1.85.0):** **1.85.0** is the latest
-public release for Windows, Ubuntu/Debian and Arch Linux. It adds a dedicated
-Settings → Home category for the four home-customization toggles, shows launch
-options inside the Linux Proton compatibility section (`%command%` supported)
-and refreshes the UMU runtime after installing a managed Proton version. It
-also includes everything from 1.77.0-1.84.0: the native Linux Proton manager
+**Current status (estado tras 1.86.0):** **1.86.0** is the latest
+public release for Windows, Ubuntu/Debian and Arch Linux. It fixes MP4/WebM
+background validation, raises custom-link downloads to 32 parallel connections,
+adds automatic retries that preserve downloaded bytes and shows a 60-sample
+speed graph with the average speed. It also includes 1.85.0 (Settings → Home
+category, launch options in the Linux Proton section and UMU runtime refresh)
+and everything from 1.77.0-1.84.0: the native Linux Proton manager
 (GE-Proton with SHA-512 verification, per-game selection and official Steam
 channels), clip recording fixes (WebM header, flush, keyframe/duration
 re-timing), the expanded LorroPoints store, home customization, real playtime
@@ -241,7 +242,7 @@ hectorrh11, repo: lorro-launcher`) and in `.env`
   than the installed one. Any installation older than `1.0.0` must install the
   current setup once; from `1.0.0` onward in-app auto-update works.
 
-### 1.12 Current feature state (1.85.0)
+### 1.12 Current feature state (1.86.0)
 
 - **Real playtime on library cards**: `LibraryGame.lorroPlaytimeMs` is computed
   from `src/main/services/session-stats.ts` when the library is listed, shown on
@@ -287,6 +288,12 @@ hectorrh11, repo: lorro-launcher`) and in `.env`
   `source: "managed"` and can be selected per game. Proton Experimental and
   Proton 11.0 open their official Steam install handlers. Launching continues
   through UMU/Wine with per-game prefix, GameMode and MangoHud.
+- **Custom downloads (1.86.0)**: `custom-download-manager.ts` accepts up to 32
+  connections, retries interrupted transfers up to four times while preserving
+  progress, and falls back to a single connection when the server stops
+  supporting ranges. The launcher UI tracks the last 60 speed samples and shows
+  the average speed next to the progress bar. Background videos are validated
+  with a temporary attached video element before being accepted.
 - **Clip reliability (1.84.0)**: the circular buffer keeps the WebM header,
   requests pending recorder data before saving and rebases cluster timestamps
   to the selected keyframe and duration. Changing the clip duration updates the

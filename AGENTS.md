@@ -2,7 +2,7 @@
 
 Launcher de escritorio **independiente** (Electron + React + TypeScript + Vite)
 basado en el código abierto de Hydra. Repo: `hectorrh11/lorro-launcher`.
-Versión publicada actual: **1.85.0** (Windows, Ubuntu/Debian y Arch Linux).
+Versión publicada actual: **1.86.0** (Windows, Ubuntu/Debian y Arch Linux).
 
 Este documento es la fuente de verdad para retomar el proyecto en una sesión
 nueva. Léelo entero antes de tocar código.
@@ -101,7 +101,7 @@ Puntos calientes:
 - `src/main/services/process-watcher.ts`: detecta juegos en ejecución
   (`onOpenGame` / `onCloseGame`), alimenta estadísticas y backups automáticos.
 - `src/main/services/custom-download-manager.ts`: descargador propio
-  (validación de enlace, multi-conexión 8 por defecto / máx. 16, watchdog,
+  (validación de enlace, multi-conexión 8 por defecto / máx. 32, watchdog,
   persistencia, handoff a IDM/NDM/FDM).
 - `src/main/services/advanced-store.ts`: almacén JSON de las funciones avanzadas.
 - `src/main/services/session-stats.ts`: sesiones de juego (inicio/fin,
@@ -241,10 +241,12 @@ Notas:
 
 ### Descargador propio
 
-Validación del enlace antes de descargar, multi-conexión segmentada,
-reintentos y watchdog de estancamiento, persistencia entre reinicios,
-entrega a gestor externo (IDM por CLI, NDM/FDM por portapapeles), gráfico de
-velocidad con tooltip y media seleccionable (total/1h/30m/15m/5m).
+Validación del enlace antes de descargar, multi-conexión segmentada (hasta 32
+conexiones), reintentos automáticos ante cortes o estancamientos, watchdog,
+persistencia entre reinicios, entrega a gestor externo (IDM por CLI,
+NDM/FDM por portapapeles), gráfico de velocidad con tooltip y media
+seleccionable (total/1h/30m/15m/5m). Las descargas de enlace personalizado
+muestran además una gráfica de las últimas 60 muestras y la velocidad media.
 
 ### Lanzamiento
 
@@ -432,7 +434,16 @@ enlaces de Hydra/Lorro Cloud.
 
 ---
 
-### 1.85.0 (implementado; build/release en curso)
+### 1.86.0 (implementado; build/release en curso)
+
+- Fondos de vídeo: validación corregida para MP4/WebM (elemento temporal con
+  dimensiones reales y reproducción de prueba).
+- Enlace personalizado: máximo de 32 conexiones paralelas.
+- Reintentos automáticos conservando bytes y segmentos; caída a una conexión
+  si el servidor no admite rangos.
+- Gráfica de las últimas 60 muestras y velocidad media en cada descarga.
+
+### 1.85.0 (publicada)
 
 - Ajustes → Inicio con los cuatro controles de personalización (banner,
   catálogo, filtros y sorpresa), persistidos en las preferencias.
@@ -580,6 +591,9 @@ Comprobar además:
 - **1.85.0** — Ajustes → Inicio con los cuatro controles de personalización,
   parámetros de inicio en Compatibilidad de Linux y actualización del runtime
   de UMU al instalar una versión gestionada de Proton.
+- **1.86.0** — arreglo de fondos de vídeo (MP4/WebM), 32 conexiones en el
+  enlace personalizado, reintentos automáticos con caída a una conexión y
+  gráfica con velocidad media en las descargas.
 
 ---
 

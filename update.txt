@@ -1,4 +1,32 @@
 ========================================================
+VERSION 1.86.0
+========================================================
+FONDOS DE VIDEO: se ha corregido la comprobacion que
+rechazaba MP4 y WebM validos al elegirlos como fondo. El
+video se carga ahora en un elemento temporal, se comprueba
+su tamano real y se reproduce antes de aceptarlo, asi que
+el aviso de "archivo no compatible" solo aparece con
+archivos que de verdad no se pueden reproducir.
+
+DESCARGAS CON HASTA 32 CONEXIONES: el limite de conexiones
+paralelas del enlace personalizado sube de 16 a 32, igual
+que en gestores como Neat Download Manager. El campo acepta
+de 1 a 32 y el valor se guarda por descarga.
+
+DESCARGAS MAS RESISTENTES: si el servidor corta la conexion,
+deja de enviar datos o una descarga paralela falla, Lorro
+reintenta automaticamente hasta cuatro veces conservando lo
+descargado. Si el servidor no admite rangos, cambia solo a
+una conexion para terminar el archivo. Ya no hay que pulsar
+Reanudar tras un corte pasajero; el boton sigue disponible
+si los reintentos se agotan.
+
+GRAFICA DE VELOCIDAD: cada descarga personalizada muestra un
+resumen con la velocidad media y una grafica de los ultimos
+60 muestras, ademas del porcentaje, los bytes, la velocidad
+actual y el tiempo restante.
+
+========================================================
 VERSION 1.85.0
 ========================================================
 AJUSTES > INICIO: la personalizacion del inicio ya tiene su

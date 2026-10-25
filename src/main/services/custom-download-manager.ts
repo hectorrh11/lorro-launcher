@@ -85,6 +85,7 @@ export class CustomDownloadManager {
   private activeId: string | null = null;
   private isPumping = false;
   private progressTimer: NodeJS.Timeout | null = null;
+  private receivedBytes = 0;
   private persistChain: Promise<void> = Promise.resolve();
   private readonly ready: Promise<void>;
 
@@ -562,6 +563,40 @@ export class CustomDownloadManager {
 
     let forceSingle = false;
 
+    this.receivedBytes = download.bytesDownloaded;
+
+    const speedState = {
+      lastAt: Date.now(),
+      lastBytes: this.receivedBytes,
+      smoothed: 0,
+    };
+
+    const speedTimer = setInterval(() => {
+      if (download.status !== "active") return;
+
+      const now = Date.now();
+      const elapsed = now - speedState.lastAt;
+
+      if (elapsed <= 0) return;
+
+      const instant = Math.max(
+        0,
+        ((this.receivedBytes - speedState.lastBytes) * 1000) / elapsed
+      );
+
+      speedState.lastAt = now;
+      speedState.lastBytes = this.receivedBytes;
+      speedState.smoothed =
+        speedState.smoothed > 0
+          ? speedState.smoothed * 0.7 + instant * 0.3
+          : instant;
+
+      download.speed = Math.round(speedState.smoothed);
+      this.emitProgress();
+    }, PROGRESS_INTERVAL_MS);
+
+    speedTimer.unref?.();
+
     try {
       await fs.mkdir(download.destinationDir, { recursive: true });
 
@@ -576,6 +611,10 @@ export class CustomDownloadManager {
       for (let attempt = 1; ; attempt += 1) {
         const abortController = new AbortController();
         this.activeAbort = abortController;
+        this.receivedBytes = download.bytesDownloaded;
+        speedState.lastAt = Date.now();
+        speedState.lastBytes = this.receivedBytes;
+        speedState.smoothed = 0;
 
         try {
           if (
@@ -675,6 +714,8 @@ export class CustomDownloadManager {
       this.emitProgress(true);
       await this.persistState();
     } finally {
+      clearInterval(speedTimer);
+
       if (this.activeId === download.id) {
         this.activeId = null;
         this.activeAbort = null;
@@ -737,7 +778,10 @@ export class CustomDownloadManager {
         1,
         Math.min(
           MAX_SEGMENTS,
-          Math.max(connectionCount, Math.ceil(totalBytes / TARGET_SEGMENT_BYTES))
+          Math.max(
+            connectionCount,
+            Math.ceil(totalBytes / TARGET_SEGMENT_BYTES)
+          )
         )
       );
       const segmentSize = Math.ceil(totalBytes / segmentCount);
@@ -777,8 +821,6 @@ export class CustomDownloadManager {
     );
 
     let lastDataAt = Date.now();
-    let lastSpeedSampleAt = Date.now();
-    let lastSpeedSampleBytes = download.bytesDownloaded;
     let cursor = 0;
 
     const stallTimer = setInterval(() => {
@@ -858,19 +900,6 @@ export class CustomDownloadManager {
           download.bytesDownloaded += buffer.byteLength;
           lastDataAt = Date.now();
           lastFlushAt = Date.now();
-
-          const now = Date.now();
-          const elapsed = now - lastSpeedSampleAt;
-
-          if (elapsed >= PROGRESS_INTERVAL_MS) {
-            download.speed = Math.round(
-              ((download.bytesDownloaded - lastSpeedSampleBytes) * 1000) /
-                elapsed
-            );
-            lastSpeedSampleAt = now;
-            lastSpeedSampleBytes = download.bytesDownloaded;
-            this.emitProgress();
-          }
         };
 
         while (true) {
@@ -880,6 +909,7 @@ export class CustomDownloadManager {
 
           pending.push(value);
           pendingBytes += value.byteLength;
+          this.receivedBytes += value.byteLength;
           lastDataAt = Date.now();
 
           if (
@@ -966,6 +996,7 @@ export class CustomDownloadManager {
 
     if (!acceptsResume) {
       download.bytesDownloaded = 0;
+      this.receivedBytes = 0;
     }
 
     const contentLength = Number(response.headers.get("content-length") ?? 0);
@@ -993,8 +1024,6 @@ export class CustomDownloadManager {
       Symbol.asyncIterator
     ]();
 
-    let lastSpeedSampleAt = Date.now();
-    let lastSpeedSampleBytes = download.bytesDownloaded;
     let lastDataAt = Date.now();
 
     const stallTimer = setInterval(() => {
@@ -1023,18 +1052,7 @@ export class CustomDownloadManager {
 
         lastDataAt = Date.now();
         download.bytesDownloaded += value.byteLength;
-
-        const now = Date.now();
-        const elapsed = now - lastSpeedSampleAt;
-
-        if (elapsed >= PROGRESS_INTERVAL_MS) {
-          download.speed = Math.round(
-            ((download.bytesDownloaded - lastSpeedSampleBytes) * 1000) / elapsed
-          );
-          lastSpeedSampleAt = now;
-          lastSpeedSampleBytes = download.bytesDownloaded;
-          this.emitProgress();
-        }
+        this.receivedBytes += value.byteLength;
       }
     } finally {
       clearInterval(stallTimer);

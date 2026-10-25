@@ -2,7 +2,7 @@
 
 Launcher de escritorio **independiente** (Electron + React + TypeScript + Vite)
 basado en el código abierto de Hydra. Repo: `hectorrh11/lorro-launcher`.
-Versión publicada actual: **1.87.0** (Windows, Ubuntu/Debian y Arch Linux).
+Versión publicada actual: **1.88.0** (Windows, Ubuntu/Debian y Arch Linux).
 
 Este documento es la fuente de verdad para retomar el proyecto en una sesión
 nueva. Léelo entero antes de tocar código.
@@ -437,7 +437,15 @@ enlaces de Hydra/Lorro Cloud.
 
 ---
 
-### 1.87.0 (implementado; build/release en curso)
+### 1.88.0 (implementado; build/release en curso)
+
+- Fondos de vídeo: el protocolo `local` sirve los archivos con rangos, tipo
+  MIME y respuesta 206, y la validación usa un elemento de vídeo real.
+- Descargas más estables: velocidad muestreada cada 500 ms y suavizada, sin
+  depender de las escrituras ni del número de conexiones; se mantienen las
+  32 conexiones, los bloques de 8 MB y los reintentos.
+
+### 1.87.0 (publicada)
 
 - Descargas personalizadas más rápidas: 32 conexiones por defecto (antes 8),
   bloques de 8 MB y escritura bufferizada de 1 MB (4 MB en una conexión).
@@ -608,6 +616,8 @@ Comprobar además:
 - **1.87.0** — rendimiento de descargas: 32 conexiones por defecto, bloques de
   8 MB, escritura bufferizada de 1 MB (4 MB en una conexión) y
   `Accept-Encoding: identity` para saturar mejor conexiones de 1 Gbps.
+- **1.88.0** — fondos de vídeo con protocolo local por rangos/MIME y velocidad
+  de descarga muestreada cada 500 ms con suavizado para eliminar picos falsos.
 
 ---
 

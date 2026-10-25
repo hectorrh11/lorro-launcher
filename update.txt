@@ -1,4 +1,22 @@
 ========================================================
+VERSION 1.88.0
+========================================================
+FONDOS DE VIDEO: el protocolo local ahora sirve los archivos
+con soporte de rangos, tipo MIME correcto y respuesta 206,
+para que MP4, WebM, MOV y M4V se reproduzcan como fondo. La
+validacion usa un elemento de video real y ya no rechaza
+videos validos por error.
+
+DESCARGAS MAS ESTABLES: la velocidad se calcula ahora con
+un muestreo fijo cada 500 ms y suavizado, independiente de
+las escrituras a disco y del numero de conexiones. Se
+eliminan los picos falsos que aparecian cuando varias
+conexiones terminaban a la vez.
+
+Se mantienen las 32 conexiones, los bloques de 8 MB, los
+reintentos automaticos y la grafica de velocidad.
+
+========================================================
 VERSION 1.87.0
 ========================================================
 DESCARGAS MAS RAPIDAS: el modo por defecto pasa a usar 32

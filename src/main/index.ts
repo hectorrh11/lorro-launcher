@@ -4,15 +4,15 @@ import {
   crashReporter,
   dialog,
   desktopCapturer,
-  net,
   powerMonitor,
   protocol,
   session,
 } from "electron";
 import updater from "electron-updater";
 import i18n from "i18next";
+import { createReadStream, promises as fs } from "node:fs";
 import path from "node:path";
-import url from "node:url";
+import { Readable } from "node:stream";
 import { electronApp, optimizer } from "@electron-toolkit/utils";
 import {
   APP_ID,
@@ -161,11 +161,98 @@ const initializeApp = async () => {
     logger.warn("Legacy data migration prompt failed", error);
   });
 
-  protocol.handle("local", (request) => {
-    const filePath = request.url.slice("local:".length);
-    return net.fetch(url.pathToFileURL(decodeURI(filePath)).toString(), {
-      headers: request.headers,
-    });
+  const localMimeTypes: Record<string, string> = {
+    ".mp4": "video/mp4",
+    ".webm": "video/webm",
+    ".mov": "video/quicktime",
+    ".m4v": "video/x-m4v",
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".webp": "image/webp",
+    ".gif": "image/gif",
+    ".bmp": "image/bmp",
+    ".avif": "image/avif",
+  };
+
+  protocol.handle("local", async (request) => {
+    try {
+      const filePath = decodeURI(request.url.slice("local:".length));
+      const stats = await fs.stat(filePath);
+
+      if (!stats.isFile()) {
+        return new Response("Not found", { status: 404 });
+      }
+
+      const mimeType =
+        localMimeTypes[path.extname(filePath).toLowerCase()] ??
+        "application/octet-stream";
+      const range = request.headers.get("range");
+      const headers = new Headers({
+        "Content-Type": mimeType,
+        "Accept-Ranges": "bytes",
+        "Cache-Control": "no-cache",
+      });
+
+      if (!range) {
+        headers.set("Content-Length", String(stats.size));
+
+        if (request.method === "HEAD") {
+          return new Response(null, { status: 200, headers });
+        }
+
+        return new Response(
+          Readable.toWeb(createReadStream(filePath)) as ReadableStream,
+          { status: 200, headers }
+        );
+      }
+
+      const match = /^bytes=(\d*)-(\d*)$/.exec(range.trim());
+
+      if (!match || (!match[1] && !match[2])) {
+        return new Response("Range not satisfiable", {
+          status: 416,
+          headers: { "Content-Range": `bytes */${stats.size}` },
+        });
+      }
+
+      const hasStart = Boolean(match[1]);
+      const start = hasStart
+        ? Number(match[1])
+        : Math.max(stats.size - Number(match[2]), 0);
+      const end =
+        hasStart && match[2]
+          ? Math.min(Number(match[2]), stats.size - 1)
+          : stats.size - 1;
+
+      if (
+        !Number.isFinite(start) ||
+        !Number.isFinite(end) ||
+        start > end ||
+        start >= stats.size
+      ) {
+        return new Response("Range not satisfiable", {
+          status: 416,
+          headers: { "Content-Range": `bytes */${stats.size}` },
+        });
+      }
+
+      headers.set("Content-Length", String(end - start + 1));
+      headers.set("Content-Range", `bytes ${start}-${end}/${stats.size}`);
+
+      if (request.method === "HEAD") {
+        return new Response(null, { status: 206, headers });
+      }
+
+      return new Response(
+        Readable.toWeb(
+          createReadStream(filePath, { start, end })
+        ) as ReadableStream,
+        { status: 206, headers }
+      );
+    } catch {
+      return new Response("Not found", { status: 404 });
+    }
   });
 
   protocol.handle("gradient", (request) => {

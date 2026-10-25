@@ -437,7 +437,7 @@ enlaces de Hydra/Lorro Cloud.
 
 ---
 
-### 1.88.0 (implementado; build/release en curso)
+### 1.88.0 (publicada)
 
 - Fondos de vídeo: el protocolo `local` sirve los archivos con rangos, tipo
   MIME y respuesta 206, y la validación usa un elemento de vídeo real.

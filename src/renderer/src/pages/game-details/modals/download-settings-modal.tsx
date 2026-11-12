@@ -346,6 +346,8 @@ export function DownloadSettingsModal({
   const selectedUri = useMemo(() => {
     if (!repack || selectedDownloader === null) return null;
 
+    if (repack.isCustom) return repack.uris[0] ?? null;
+
     return (
       repack.uris.find((uri) =>
         getDownloadersForUri(uri).includes(selectedDownloader)
@@ -390,6 +392,16 @@ export function DownloadSettingsModal({
   }, [visible, checkFolderWritePermission, selectedPath]);
 
   const downloadOptions = useMemo(() => {
+    if (repack?.isCustom) {
+      return [
+        {
+          downloader: Downloader.Custom,
+          isAvailable: true,
+          isAvailableButNotConfigured: false,
+        },
+      ];
+    }
+
     const unavailableUrisSet = new Set(repack?.unavailableUris ?? []);
 
     const downloaderMap = new Map<
@@ -1488,7 +1500,12 @@ export function DownloadSettingsModal({
                       }}
                     >
                       <span className="download-settings-modal__downloader-name">
-                        {DOWNLOADER_NAME[option.downloader]}
+                        {option.downloader === Downloader.Custom
+                          ? t("custom_download_direct", {
+                              ns: "downloads",
+                              defaultValue: "Direct link",
+                            })
+                          : DOWNLOADER_NAME[option.downloader]}
                       </span>
                       <div className="download-settings-modal__availability-indicator-wrapper">
                         {getAvailabilityIndicator()}

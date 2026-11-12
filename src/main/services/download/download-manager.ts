@@ -1683,6 +1683,17 @@ export class DownloadManager {
         return this.getRootzDownloadOptions(download, resumingFilename);
       case Downloader.ArchiveOrg:
         return this.getArchiveOrgDownloadOptions(download, resumingFilename);
+      case Downloader.Custom:
+        return {
+          ...this.buildDownloadOptions(
+            download.uri,
+            download.downloadPath,
+            this.resolveFilename(resumingFilename, download.uri, download.uri)
+          ),
+          allowParallelRanges: true,
+          parallelRangeConnections: 32,
+          probeUnboundedRange: true,
+        };
       default:
         return null;
     }
@@ -2497,6 +2508,14 @@ export class DownloadManager {
           action: "start",
           game_id: downloadId,
           url: downloadUrl,
+          save_path: download.downloadPath,
+        };
+      }
+      case Downloader.Custom: {
+        return {
+          action: "start",
+          game_id: downloadId,
+          url: download.uri,
           save_path: download.downloadPath,
         };
       }

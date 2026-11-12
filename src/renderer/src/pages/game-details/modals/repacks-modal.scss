@@ -136,7 +136,9 @@
   &__no-results-button {
     display: flex;
     justify-content: center;
+    gap: calc(globals.$spacing-unit * 1);
     width: 100%;
+    flex-wrap: wrap;
   }
 
   &__download-sources {
@@ -214,4 +216,41 @@
   display: flex;
   justify-content: flex-start;
   padding: 0 0 12px;
+}
+
+.repacks-modal__custom-form {
+  display: flex;
+  flex-direction: column;
+  gap: calc(globals.$spacing-unit * 2);
+}
+
+.repacks-modal__custom-error {
+  color: globals.$error-color;
+  font-size: globals.$small-font-size;
+  margin: 0;
+}
+
+.repacks-modal__custom-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.repacks-modal__custom-source-row {
+  display: flex;
+  align-items: stretch;
+  gap: calc(globals.$spacing-unit * 1);
+
+  .repacks-modal__repack-button {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.repacks-modal__custom-source-actions {
+  display: flex;
+  gap: calc(globals.$spacing-unit * 1);
+
+  button {
+    height: 100%;
+  }
 }

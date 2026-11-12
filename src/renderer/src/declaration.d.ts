@@ -22,6 +22,8 @@ import type {
   CustomDownload,
   StartCustomDownloadPayload,
   ExternalDownloadManagerInfo,
+  CustomGameSource,
+  CustomGameSourceMutationResult,
   RealDebridUser,
   PremiumizeUser,
   AllDebridUser,
@@ -1211,6 +1213,28 @@ declare global {
     resumeCustomDownload: (id: string) => Promise<void>;
     cancelCustomDownload: (id: string) => Promise<void>;
     removeCustomDownload: (id: string) => Promise<void>;
+    getCustomGameSources: (
+      shop: GameShop,
+      objectId: string
+    ) => Promise<CustomGameSource[]>;
+    addCustomGameSource: (
+      shop: GameShop,
+      objectId: string,
+      url: string,
+      label?: string | null
+    ) => Promise<CustomGameSourceMutationResult>;
+    updateCustomGameSource: (
+      shop: GameShop,
+      objectId: string,
+      id: string,
+      url: string,
+      label?: string | null
+    ) => Promise<CustomGameSourceMutationResult>;
+    deleteCustomGameSource: (
+      shop: GameShop,
+      objectId: string,
+      id: string
+    ) => Promise<boolean>;
     getExternalDownloadManager: () => Promise<ExternalDownloadManagerInfo>;
     openDownloadInExternalManager: (
       id: string

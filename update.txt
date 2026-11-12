@@ -1,4 +1,55 @@
 ========================================================
+VERSION 1.95.0
+========================================================
+ENLACES PERSONALIZADOS COMO FUENTE DEL JUEGO: el boton
+"Añadir enlace personalizado" de la ficha ya no crea un
+juego aparte. Guarda la URL (y una etiqueta opcional) como
+una fuente mas de ese juego del catalogo, con su mismo ID.
+
+VARIAS FUENTES: cada juego muestra sus repacks normales y,
+debajo, sus enlaces personalizados. Puedes elegir cual usar
+para instalar; si el juego no tiene repacks, los enlaces
+personalizados son sus opciones de descarga.
+
+EDITAR Y ELIMINAR: cada enlace personalizado tiene botones
+para editar la URL o la etiqueta y para borrarlo con
+confirmacion. Se guardan en la base de datos de Lorro y
+siguen ahi despues de reiniciar.
+
+MISMA INSTALACION: al descargar desde un enlace personalizado
+se usa el flujo normal: carpeta, extraccion, deteccion del
+.exe y aviso para elegirlo si hace falta.
+
+MIGRACION: los enlaces antiguos que se habian guardado como
+juegos sueltos se mueven al juego del catalogo solo cuando el
+titulo coincide de forma inequivoca. Si hay dudas se quedan
+como estan y nunca se borran datos.
+
+========================================================
+VERSION 1.90.0
+========================================================
+ENLACE PERSONALIZADO COMO FUENTE: en la ficha de
+cualquier juego, el boton "Enlace personalizado" abre el
+mismo formulario de descarga que una fuente normal: URL,
+carpeta, extraccion automatica, borrar archivo y cola.
+La descarga aparece en Descargas dentro del juego, con su
+progreso, velocidad y acciones de pausar, reanudar o
+cancelar.
+
+AL TERMINAR: los archivos se guardan en la carpeta del
+juego, se extraen si hace falta y Lorro busca el .exe
+automaticamente. Si no lo encuentra, aparece el aviso para
+seleccionarlo. Despues basta con pulsar Jugar.
+
+SIN FUENTES: cuando un juego no tiene repacks, el aviso
+incluye el boton de enlace personalizado y el de añadir una
+fuente, para que no tengas que salir de la ficha.
+
+ACTUALIZACIONES: se elimina el aviso emergente de
+actualizacion que podia aparecer con el texto de Hydra. El
+enlace de actualizacion de la cabecera de Lorro se mantiene.
+
+========================================================
 VERSION 1.88.0
 ========================================================
 FONDOS DE VIDEO: el protocolo local ahora sirve los archivos

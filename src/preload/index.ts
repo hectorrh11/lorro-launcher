@@ -112,6 +112,8 @@ import type {
   CustomDownload,
   StartCustomDownloadPayload,
   ExternalDownloadManagerInfo,
+  CustomGameSource,
+  CustomGameSourceMutationResult,
 } from "@types";
 import type { AuthPage, Downloader } from "@shared";
 import type { AxiosProgressEvent } from "axios";
@@ -1617,6 +1619,45 @@ contextBridge.exposeInMainWorld("electron", {
     ipcRenderer.invoke("cancelCustomDownload", id),
   removeCustomDownload: (id: string) =>
     ipcRenderer.invoke("removeCustomDownload", id),
+  getCustomGameSources: (shop: string, objectId: string) =>
+    ipcRenderer.invoke("getCustomGameSources", shop, objectId) as Promise<
+      CustomGameSource[]
+    >,
+  addCustomGameSource: (
+    shop: string,
+    objectId: string,
+    url: string,
+    label?: string | null
+  ) =>
+    ipcRenderer.invoke(
+      "addCustomGameSource",
+      shop,
+      objectId,
+      url,
+      label
+    ) as Promise<CustomGameSourceMutationResult>,
+  updateCustomGameSource: (
+    shop: string,
+    objectId: string,
+    id: string,
+    url: string,
+    label?: string | null
+  ) =>
+    ipcRenderer.invoke(
+      "updateCustomGameSource",
+      shop,
+      objectId,
+      id,
+      url,
+      label
+    ) as Promise<CustomGameSourceMutationResult>,
+  deleteCustomGameSource: (shop: string, objectId: string, id: string) =>
+    ipcRenderer.invoke(
+      "deleteCustomGameSource",
+      shop,
+      objectId,
+      id
+    ) as Promise<boolean>,
   getExternalDownloadManager: () =>
     ipcRenderer.invoke(
       "getExternalDownloadManager"

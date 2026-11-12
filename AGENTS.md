@@ -2,7 +2,7 @@
 
 Launcher de escritorio **independiente** (Electron + React + TypeScript + Vite)
 basado en el código abierto de Hydra. Repo: `hectorrh11/lorro-launcher`.
-Versión publicada actual: **1.88.0** (Windows, Ubuntu/Debian y Arch Linux).
+Versión publicada actual: **1.95.0** (Windows, Ubuntu/Debian y Arch Linux).
 
 Este documento es la fuente de verdad para retomar el proyecto en una sesión
 nueva. Léelo entero antes de tocar código.
@@ -251,6 +251,21 @@ tooltip y media seleccionable (total/1h/30m/15m/5m). Las descargas de enlace
 personalizado muestran además una gráfica de las últimas 60 muestras y la
 velocidad media.
 
+Desde 1.90.0, el enlace personalizado lanzado desde la ficha de un juego usa el
+pipeline estándar (`Downloader.Custom`): aparece en Descargas dentro del juego,
+se extrae y se le asigna el ejecutable. El lanzador independiente de la página
+Descargas se mantiene para descargas sueltas.
+
+Desde 1.95.0, ese enlace ya no es efímero: `custom-game-sources.ts` guarda cada
+fuente en el subnivel `customGameSources` con la clave `levelKeys.game(shop,
+objectId)`, de modo que pertenece al juego del catálogo y sobrevive a reinicios.
+La ficha mezcla los repacks normales con las fuentes personalizadas (marcadas
+`isCustom` y `customSourceId`), permite editarlas o borrarlas y usa la misma
+GUI y el mismo pipeline de descarga. La migración (`migrateLegacyCustomGames`)
+solo mueve un juego suelto `shop: "custom"` cuando su título normalizado
+coincide con exactamente un juego del catálogo y existe la URL en
+`custom-downloads.json`; después lo marca `isDeleted: true` sin borrar datos.
+
 ### Lanzamiento
 
 `useLaunchLibraryGame` abre el selector de `.exe` si falta y guarda la ruta
@@ -437,6 +452,28 @@ enlaces de Hydra/Lorro Cloud.
 
 ---
 
+### 1.95.0 (publicada)
+
+- Los enlaces personalizados de la ficha dejan de crear un juego aparte y se
+  guardan como fuentes persistidas del juego del catálogo (mismo `shop` y
+  `objectId`) en el subnivel `customGameSources`.
+- La lista de fuentes mezcla repacks normales y enlaces personalizados; cada
+  enlace se puede editar o borrar con confirmación y se mantiene tras reiniciar.
+- Si el juego no tiene repacks, sus enlaces personalizados son las opciones de
+  descarga; la instalación usa el pipeline normal con extracción y detección
+  del ejecutable.
+- Migración conservadora de los juegos sueltos `shop: "custom"`: solo se mueven
+  con coincidencia inequívoca de título y URL; nunca se borran datos.
+
+### 1.90.0 (publicada)
+
+- Enlace personalizado desde la ficha del juego como fuente normal: formulario
+  de descarga estándar, `Downloader.Custom`, registro en Descargas del juego,
+  extracción y búsqueda automática del ejecutable.
+- Botón de enlace personalizado también en el aviso de "sin fuentes".
+- Eliminado el aviso emergente de actualización que podía mostrar el texto de
+  Hydra; se mantiene el enlace de actualización de la cabecera.
+
 ### 1.88.0 (publicada)
 
 - Fondos de vídeo: el protocolo `local` sirve los archivos con rangos, tipo
@@ -618,6 +655,12 @@ Comprobar además:
   `Accept-Encoding: identity` para saturar mejor conexiones de 1 Gbps.
 - **1.88.0** — fondos de vídeo con protocolo local por rangos/MIME y velocidad
   de descarga muestreada cada 500 ms con suavizado para eliminar picos falsos.
+- **1.90.0** — enlace personalizado como fuente de descarga del juego
+  (`Downloader.Custom`), con la misma GUI, registro en Descargas, extracción y
+  detección del ejecutable; aviso de actualización emergente eliminado.
+- **1.95.0** — los enlaces personalizados se guardan como fuentes del juego del
+  catálogo (`customGameSources`), se mezclan con sus repacks, se pueden editar y
+  borrar, y migran los juegos sueltos solo con coincidencia inequívoca.
 
 ---
 

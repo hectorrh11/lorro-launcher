@@ -1,4 +1,5 @@
 export * from "./downloads";
+export * from "./custom-game-sources";
 export * from "./download-layout-state";
 export * from "./games";
 export * from "./game-shop-assets";

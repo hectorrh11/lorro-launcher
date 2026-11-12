@@ -34,6 +34,7 @@ import resources from "@locales";
 import { TorrentService } from "./services/torrent-service";
 import { DownloadManager } from "./services/download/download-manager";
 import { customDownloadManager } from "./services/custom-download-manager";
+import { customGameSourceManager } from "./services/custom-game-sources";
 import { clipManager } from "./services/clip-manager";
 import { db, gamesSublevel, levelKeys } from "./level";
 import { GameShop, UserPreferences } from "@types";
@@ -353,6 +354,10 @@ const initializeApp = async () => {
   } catch (error) {
     logger.error("Failed to load app state during startup", error);
   }
+
+  await customGameSourceManager.migrateLegacyCustomGames().catch((error) => {
+    logger.error("Failed to migrate legacy custom game links", error);
+  });
 
   await clipManager.initialize().catch((error) => {
     logger.error("[clips] failed to initialize clip manager", error);

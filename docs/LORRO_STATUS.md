@@ -7,12 +7,20 @@ release channel, installer and data folder. This document tracks what has been
 completed, what has been verified, what is still pending, and what is required
 to distribute the app.
 
-**Current status (estado tras 1.88.0):** **1.88.0** is the latest
-public release for Windows, Ubuntu/Debian and Arch Linux. It speeds up
-custom-link downloads with 32 connections by default, 8 MB work units and
-buffered writes. It stabilizes speed with a fixed 500 ms smoothed sampler and
-fixes background videos with a range-aware local protocol, while keeping automatic
-retries and the 60-sample speed graph with average speed. It also includes 1.85.0 (Settings → Home
+**Current status (estado tras 1.95.0):** **1.95.0** is the latest
+public release for Windows, Ubuntu/Debian and Arch Linux. It turns custom links
+into persisted download sources of the existing catalogue game instead of
+separate library entries: each link keeps the game's original `shop`/`objectId`,
+appears alongside its built-in repacks, can be edited or deleted, survives
+restarts and installs through the standard download, extraction and executable
+detection pipeline. Legacy standalone `shop: "custom"` games are migrated only
+when the normalized title match is unambiguous and their URL is known; otherwise
+they are left untouched and no data is deleted. It also includes 1.90.0 (custom
+link as a normal source with the standard download settings, record, extraction
+and executable detection, and removal of the Hydra-text update popup), 1.88.0's
+32-connection custom downloads, 8 MB work units, buffered writes, smoothed speed
+sampling and range-aware video background protocol, plus automatic retries and
+the 60-sample speed graph with average speed. It retains 1.85.0 (Settings → Home
 category, launch options in the Linux Proton section and UMU runtime refresh)
 and everything from 1.77.0-1.84.0: the native Linux Proton manager
 (GE-Proton with SHA-512 verification, per-game selection and official Steam
@@ -158,19 +166,19 @@ removal of the last commercial surface and the launch-profile system.
   messages for timeouts, unreachable hosts and servers that stop sending data.
 - Optional "add to my library" on completion creates a `custom` library entry
   (and prefills the executable for `.exe`/`.bat`/`.cmd` files).
-- UI: `CustomDownloadLauncher` (button + modal + progress list) is shown on the
-  Downloads page and inside the game's download-options modal. Starting from the
-  game page now shows the live progress card (percent, bytes/total, speed, ETA)
-  right in the modal plus a "View in Downloads" shortcut, instead of only a
-  toast; the Downloads page groups transfers into "In progress" and "Completed".
-  i18n keys added in English and Spanish.
+- UI: `CustomDownloadLauncher` (button + modal + progress list) remains on the
+  Downloads page for standalone transfers. On a game's download-options modal,
+  the custom-link button now opens a small URL/name form and then the standard
+  `DownloadSettingsModal`, so the transfer is attached to that game and appears
+  in its normal Downloads section with progress, pause/resume/cancel/delete and
+  open-folder actions. i18n keys added in English and Spanish.
 - IPC: `startCustomDownload`, `getCustomDownloads`, `pauseCustomDownload`,
   `resumeCustomDownload`, `cancelCustomDownload`, `removeCustomDownload`,
   `on-custom-download-progress`, `getExternalDownloadManager`,
   `openDownloadInExternalManager`.
 - Multi-connection (segmented) downloads: when the server supports HTTP Range
-  requests and the file is large, the transfer is split across up to 16 parallel
-  connections (default 8, configurable per download), each writing to its own
+  requests and the file is large, the transfer is split across up to 32 parallel
+  connections (default 32 for custom links, configurable per download), each writing to its own
   offset of a pre-allocated file. This mirrors the "dynamic segmentation" that
   makes dedicated download managers faster on throttled hosts. Servers that do
   not support ranges transparently fall back to a single connection, and
@@ -243,7 +251,7 @@ hectorrh11, repo: lorro-launcher`) and in `.env`
   than the installed one. Any installation older than `1.0.0` must install the
   current setup once; from `1.0.0` onward in-app auto-update works.
 
-### 1.12 Current feature state (1.88.0)
+### 1.12 Current feature state (1.95.0)
 
 - **Real playtime on library cards**: `LibraryGame.lorroPlaytimeMs` is computed
   from `src/main/services/session-stats.ts` when the library is listed, shown on
@@ -299,7 +307,21 @@ hectorrh11, repo: lorro-launcher`) and in `.env`
   to the progress bar. Since 1.88.0 the speed is sampled every 500 ms and
   smoothed independently of disk writes, removing false spikes. Background
   videos are served by the local protocol with range/MIME support and
-  validated with a temporary attached video element.
+  validated with a temporary attached video element. Since 1.90.0 a custom
+  link started from a game without sources goes through the standard download
+  pipeline (`Downloader.Custom`, 32 range connections), so it gets the normal
+  download record, settings, progress, pause/resume/cancel, extraction and
+  executable auto-detection.
+- **Persistent custom sources (1.95.0)**: custom links are stored per catalogue
+  game in the `customGameSources` sublevel, keyed by `levelKeys.game(shop,
+  objectId)` (`src/main/services/custom-game-sources.ts`). The game page merges
+  them with its built-in repacks as `GameRepack` entries with `isCustom: true`
+  and `customSourceId`, offers edit/delete actions and reuses
+  `DownloadSettingsModal`. Adding a link no longer creates a library entry.
+  Legacy standalone `shop: "custom"` games are matched by normalized title
+  against non-custom games; only a unique match with a known URL in
+  `custom-downloads.json` is migrated, and the legacy record is hidden with
+  `isDeleted: true` without deleting its data.
 - **Clip reliability (1.84.0)**: the circular buffer keeps the WebM header,
   requests pending recorder data before saving and rebases cluster timestamps
   to the selected keyframe and duration. Changing the clip duration updates the

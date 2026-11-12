@@ -40,6 +40,26 @@ export interface StartCustomDownloadPayload {
   connections?: number;
 }
 
+export interface CustomGameSource {
+  id: string;
+  url: string;
+  label: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type CustomGameSourceError =
+  | "invalid-url"
+  | "duplicate"
+  | "not-found"
+  | "unknown";
+
+export interface CustomGameSourceMutationResult {
+  ok: boolean;
+  error?: CustomGameSourceError;
+  source?: CustomGameSource;
+}
+
 export interface ExternalDownloadManagerInfo {
   available: boolean;
   name: string | null;

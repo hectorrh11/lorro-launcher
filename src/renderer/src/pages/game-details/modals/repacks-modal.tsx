@@ -1,22 +1,38 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   PlusCircleIcon,
   ChevronDownIcon,
   ChevronUpIcon,
+  LinkIcon,
+  PencilIcon,
+  TrashIcon,
 } from "@primer/octicons-react";
 import { Tooltip } from "react-tooltip";
 
 import {
   Badge,
   Button,
+  ConfirmationModal,
   Modal,
   TextField,
   CheckboxField,
   SteamIcon,
 } from "@renderer/components";
-import type { DownloadSource, Game, GameRepack } from "@types";
+import type {
+  CustomGameSource,
+  DownloadSource,
+  Game,
+  GameRepack,
+} from "@types";
 
 import { DownloadSettingsModal } from "./download-settings-modal";
 import { gameDetailsContext } from "@renderer/context";
@@ -31,6 +47,7 @@ import {
   useAppDispatch,
   useAppSelector,
   useIsNonSteamExecutable,
+  useToast,
 } from "@renderer/hooks";
 import { clearNewDownloadOptions } from "@renderer/features";
 import { levelDBService } from "@renderer/services/leveldb.service";
@@ -46,7 +63,14 @@ import { useEpicManagedConnection } from "@renderer/hooks/use-epic-managed";
 import { useLibrary } from "@renderer/hooks";
 import type { LibraryGame } from "@types";
 import { epicInstallTiming } from "@renderer/helpers/epic-install-timing";
-import { CustomDownloadLauncher } from "@renderer/components/custom-download/custom-download-launcher";
+
+const getUrlHost = (value: string) => {
+  try {
+    return new URL(value).host;
+  } catch {
+    return value;
+  }
+};
 
 export interface RepacksModalProps {
   visible: boolean;
@@ -72,6 +96,16 @@ export function RepacksModal({
   const [filteredRepacks, setFilteredRepacks] = useState<GameRepack[]>([]);
   const [repack, setRepack] = useState<GameRepack | null>(null);
   const [showSelectFolderModal, setShowSelectFolderModal] = useState(false);
+  const [showCustomLinkModal, setShowCustomLinkModal] = useState(false);
+  const [customLinkUrl, setCustomLinkUrl] = useState("");
+  const [customLinkTitle, setCustomLinkTitle] = useState("");
+  const [customLinkError, setCustomLinkError] = useState("");
+  const [customSources, setCustomSources] = useState<CustomGameSource[]>([]);
+  const [editingCustomSource, setEditingCustomSource] =
+    useState<CustomGameSource | null>(null);
+  const [deletingCustomSource, setDeletingCustomSource] =
+    useState<CustomGameSource | null>(null);
+  const [savingCustomSource, setSavingCustomSource] = useState(false);
   const [downloadSources, setDownloadSources] = useState<DownloadSource[]>([]);
   const [selectedFingerprints, setSelectedFingerprints] = useState<string[]>(
     []
@@ -86,7 +120,7 @@ export function RepacksModal({
     new Set()
   );
 
-  const { game, presentation, repacks, updateGame } =
+  const { game, presentation, repacks, updateGame, catalogueGame } =
     useContext(gameDetailsContext);
   const { steam: steamGame, epic: epicGame } = getOfficialStoreMembers(
     presentation?.members ?? (game ? [game] : [])
@@ -114,6 +148,31 @@ export function RepacksModal({
   }, [epicInstallGame, activeEpicInstallGame]);
 
   const { t } = useTranslation("game_details");
+  const { showSuccessToast, showErrorToast } = useToast();
+
+  const sourceShop = catalogueGame?.shop ?? game?.shop;
+  const sourceObjectId = catalogueGame?.objectId || game?.objectId;
+
+  const refreshCustomSources = useCallback(async () => {
+    if (!sourceShop || !sourceObjectId) {
+      setCustomSources([]);
+      return;
+    }
+
+    try {
+      const sources = await window.electron.getCustomGameSources(
+        sourceShop,
+        sourceObjectId
+      );
+      setCustomSources(sources);
+    } catch {
+      setCustomSources([]);
+    }
+  }, [sourceShop, sourceObjectId]);
+
+  useEffect(() => {
+    if (visible) void refreshCustomSources();
+  }, [visible, refreshCustomSources]);
 
   const { formatDate } = useDate();
   const navigate = useNavigate();
@@ -186,9 +245,34 @@ export function RepacksModal({
     }
   }, [visible, game, dispatch]);
 
+  const customRepacks = useMemo<GameRepack[]>(
+    () =>
+      customSources.map((source) => ({
+        id: `custom-source-${source.id}`,
+        title:
+          source.label?.trim() ||
+          game?.title ||
+          t("custom_download_button", { ns: "downloads" }),
+        fileSize: null,
+        uris: [source.url],
+        unavailableUris: [],
+        uploadDate: null,
+        downloadSourceId: `custom-source-${source.id}`,
+        downloadSourceName: t("custom_source_label", { ns: "downloads" }),
+        createdAt: source.createdAt,
+        isCustom: true,
+        customSourceId: source.id,
+      })),
+    [customSources, game?.title, t]
+  );
+
   const sortedRepacks = useMemo(() => {
-    return orderBy(repacks, [(repack) => repack.uploadDate], ["desc"]);
-  }, [repacks]);
+    return orderBy(
+      [...customRepacks, ...repacks],
+      [(repack) => (repack.isCustom ? 0 : 1), (repack) => repack.uploadDate],
+      ["asc", "desc"]
+    );
+  }, [customRepacks, repacks]);
 
   const getRepackAvailabilityStatus = (
     repack: GameRepack
@@ -217,7 +301,7 @@ export function RepacksModal({
     });
 
     const bySource = byTerm.filter((repack) => {
-      if (selectedFingerprints.length === 0) return true;
+      if (repack.isCustom || selectedFingerprints.length === 0) return true;
 
       return downloadSources.some(
         (src) =>
@@ -234,6 +318,108 @@ export function RepacksModal({
     setRepack(repack);
     setShowSelectFolderModal(true);
     setViewedRepackIds((prev) => new Set(prev).add(repack.id));
+  };
+
+  const openCustomLinkModal = (source?: CustomGameSource) => {
+    setEditingCustomSource(source ?? null);
+    setCustomLinkUrl(source?.url ?? "");
+    setCustomLinkTitle(source?.label ?? "");
+    setCustomLinkError("");
+    setShowCustomLinkModal(true);
+  };
+
+  const closeCustomLinkModal = () => {
+    setShowCustomLinkModal(false);
+    setEditingCustomSource(null);
+    setCustomLinkUrl("");
+    setCustomLinkTitle("");
+    setCustomLinkError("");
+    setSavingCustomSource(false);
+  };
+
+  const handleCustomLinkSubmit: React.FormEventHandler<
+    HTMLFormElement
+  > = async (event) => {
+    event.preventDefault();
+
+    if (!sourceShop || !sourceObjectId) return;
+
+    const url = customLinkUrl.trim();
+
+    try {
+      const parsedUrl = new URL(url);
+      if (parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:") {
+        throw new Error("invalid protocol");
+      }
+    } catch {
+      setCustomLinkError(t("custom_download_invalid_url", { ns: "downloads" }));
+      return;
+    }
+
+    setSavingCustomSource(true);
+
+    try {
+      const result = editingCustomSource
+        ? await window.electron.updateCustomGameSource(
+            sourceShop,
+            sourceObjectId,
+            editingCustomSource.id,
+            url,
+            customLinkTitle
+          )
+        : await window.electron.addCustomGameSource(
+            sourceShop,
+            sourceObjectId,
+            url,
+            customLinkTitle
+          );
+
+      if (!result.ok) {
+        setCustomLinkError(
+          t(
+            result.error === "duplicate"
+              ? "custom_source_error_duplicate"
+              : "custom_download_invalid_url",
+            { ns: "downloads" }
+          )
+        );
+        return;
+      }
+
+      await refreshCustomSources();
+      showSuccessToast(
+        t(
+          editingCustomSource ? "custom_source_updated" : "custom_source_saved",
+          { ns: "downloads" }
+        )
+      );
+      closeCustomLinkModal();
+    } catch {
+      setCustomLinkError(t("custom_download_failed", { ns: "downloads" }));
+    } finally {
+      setSavingCustomSource(false);
+    }
+  };
+
+  const handleDeleteCustomSource = async () => {
+    if (!deletingCustomSource || !sourceShop || !sourceObjectId) return;
+
+    try {
+      await window.electron.deleteCustomGameSource(
+        sourceShop,
+        sourceObjectId,
+        deletingCustomSource.id
+      );
+      await refreshCustomSources();
+      showSuccessToast(t("custom_source_deleted", { ns: "downloads" }));
+    } catch {
+      showErrorToast(
+        t("custom_download_failed", { ns: "downloads" }),
+        t("custom_source_delete_failed", { ns: "downloads" })
+      );
+    } finally {
+      setDeletingCustomSource(null);
+    }
   };
 
   const handleFilter: React.ChangeEventHandler<HTMLInputElement> = (event) => {
@@ -256,6 +442,8 @@ export function RepacksModal({
 
   const isNewRepack = (repack: GameRepack): boolean => {
     if (isLoadingTimestamp) return false;
+
+    if (repack.isCustom) return false;
 
     if (viewedRepackIds.has(repack.id)) return false;
 
@@ -308,6 +496,13 @@ export function RepacksModal({
       setFilterTerm("");
       setSelectedFingerprints([]);
       setIsFilterDrawerOpen(false);
+      setShowCustomLinkModal(false);
+      setEditingCustomSource(null);
+      setDeletingCustomSource(null);
+      setCustomLinkUrl("");
+      setCustomLinkTitle("");
+      setCustomLinkError("");
+      setSavingCustomSource(false);
     }
   }, [visible]);
 
@@ -318,6 +513,74 @@ export function RepacksModal({
         onClose={() => setShowSelectFolderModal(false)}
         startDownload={startDownload}
         repack={repack}
+      />
+      <Modal
+        visible={showCustomLinkModal}
+        title={t(
+          editingCustomSource
+            ? "custom_source_edit_title"
+            : "custom_source_add_title",
+          { ns: "downloads" }
+        )}
+        description={t(
+          editingCustomSource
+            ? "custom_source_edit_description"
+            : "custom_source_add_description",
+          { ns: "downloads" }
+        )}
+        onClose={closeCustomLinkModal}
+      >
+        <form
+          className="repacks-modal__custom-form"
+          onSubmit={handleCustomLinkSubmit}
+        >
+          <TextField
+            label={t("custom_download_url_label", { ns: "downloads" })}
+            placeholder="https://example.com/game.zip"
+            value={customLinkUrl}
+            onChange={(event) => setCustomLinkUrl(event.target.value)}
+          />
+          <TextField
+            label={t("custom_download_title_label", { ns: "downloads" })}
+            placeholder={t("custom_download_title_placeholder", {
+              ns: "downloads",
+            })}
+            value={customLinkTitle}
+            onChange={(event) => setCustomLinkTitle(event.target.value)}
+          />
+          {customLinkError && (
+            <p className="repacks-modal__custom-error">{customLinkError}</p>
+          )}
+          <div className="repacks-modal__custom-actions">
+            <Button type="submit" theme="primary" disabled={savingCustomSource}>
+              <LinkIcon />
+              {savingCustomSource
+                ? t("loading")
+                : t(
+                    editingCustomSource
+                      ? "custom_source_save_changes"
+                      : "custom_source_save",
+                    { ns: "downloads" }
+                  )}
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      <ConfirmationModal
+        visible={deletingCustomSource !== null}
+        title={t("custom_source_delete_title", { ns: "downloads" })}
+        descriptionText={t("custom_source_delete_description", {
+          ns: "downloads",
+        })}
+        confirmButtonLabel={t("custom_source_delete_confirm", {
+          ns: "downloads",
+        })}
+        cancelButtonLabel={t("custom_download_cancel_action", {
+          ns: "downloads",
+        })}
+        onConfirm={() => void handleDeleteCustomSource()}
+        onClose={() => setDeletingCustomSource(null)}
       />
       <EpicInstallModal
         game={activeEpicInstallGame}
@@ -393,7 +656,14 @@ export function RepacksModal({
         </div>
 
         <div className="repacks-modal__custom-link">
-          <CustomDownloadLauncher defaultTitle={game?.title} />
+          <Button
+            type="button"
+            theme="outline"
+            onClick={() => openCustomLinkModal()}
+          >
+            <LinkIcon />
+            {t("custom_source_add", { ns: "downloads" })}
+          </Button>
         </div>
 
         <div className="repacks-modal__repacks">
@@ -457,6 +727,14 @@ export function RepacksModal({
                       <Button
                         type="button"
                         theme="primary"
+                        onClick={() => openCustomLinkModal()}
+                      >
+                        <LinkIcon />
+                        {t("custom_source_add", { ns: "downloads" })}
+                      </Button>
+                      <Button
+                        type="button"
+                        theme="outline"
                         onClick={() => {
                           onClose();
                           navigate("/settings?tab=download_sources");
@@ -474,10 +752,17 @@ export function RepacksModal({
                   checkIfLastDownloadedOption(repack);
                 const availabilityStatus = getRepackAvailabilityStatus(repack);
                 const tooltipId = `availability-orb-${repack.id}`;
+                const customSource = repack.customSourceId
+                  ? customSources.find(
+                      (source) => source.id === repack.customSourceId
+                    )
+                  : undefined;
+                const customSourceHost = customSource
+                  ? getUrlHost(customSource.url)
+                  : null;
 
-                return (
+                const repackButton = (
                   <Button
-                    key={repack.id}
                     theme="dark"
                     onClick={() => handleRepackClick(repack)}
                     className="repacks-modal__repack-button"
@@ -505,11 +790,55 @@ export function RepacksModal({
                     )}
 
                     <p className="repacks-modal__repack-info">
-                      {repack.fileSize} - {repack.downloadSourceName} -{" "}
-                      {repack.uploadDate ? formatDate(repack.uploadDate) : ""}
+                      {customSource
+                        ? `${t("custom_source_label", { ns: "downloads" })} - ${customSourceHost}`
+                        : `${repack.fileSize} - ${repack.downloadSourceName} - ${
+                            repack.uploadDate
+                              ? formatDate(repack.uploadDate)
+                              : ""
+                          }`}
                     </p>
                   </Button>
                 );
+
+                if (customSource) {
+                  return (
+                    <div
+                      key={repack.id}
+                      className="repacks-modal__custom-source-row"
+                    >
+                      {repackButton}
+                      <div className="repacks-modal__custom-source-actions">
+                        <Button
+                          type="button"
+                          theme="outline"
+                          title={t("custom_source_edit", { ns: "downloads" })}
+                          aria-label={t("custom_source_edit", {
+                            ns: "downloads",
+                          })}
+                          onClick={() => openCustomLinkModal(customSource)}
+                        >
+                          <PencilIcon />
+                        </Button>
+                        <Button
+                          type="button"
+                          theme="outline"
+                          title={t("custom_source_delete", {
+                            ns: "downloads",
+                          })}
+                          aria-label={t("custom_source_delete", {
+                            ns: "downloads",
+                          })}
+                          onClick={() => setDeletingCustomSource(customSource)}
+                        >
+                          <TrashIcon />
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                }
+
+                return <Fragment key={repack.id}>{repackButton}</Fragment>;
               })}
         </div>
       </Modal>

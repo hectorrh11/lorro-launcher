@@ -7,6 +7,7 @@ import "./cleanup-unused-assets";
 import "./clear-new-download-options";
 import "./close-game";
 import "./copy-custom-game-asset";
+import "./custom-game-sources";
 import "./create-game-shortcut";
 import "./create-steam-shortcut";
 import "./download-game-artwork";

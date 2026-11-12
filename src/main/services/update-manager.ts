@@ -2,7 +2,6 @@ import updater, { UpdateInfo } from "electron-updater";
 import { logger, WindowManager } from "@main/services";
 import { AppUpdaterEvent, UserPreferences } from "@types";
 import { app } from "electron";
-import { publishNotificationUpdateReadyToInstall } from "@main/services/notifications";
 import { db, levelKeys } from "@main/level";
 
 const { autoUpdater } = updater;
@@ -13,9 +12,6 @@ const updateRepository = import.meta.env.MAIN_VITE_UPDATE_REPOSITORY;
 export const isUpdateChannelConfigured = Boolean(updateRepository);
 
 export class UpdateManager {
-  private static hasNotified = false;
-  private static newVersion = "";
-
   private static mockValuesForDebug() {
     this.sendEvent({ type: "update-available", info: { version: "3.3.1" } });
     this.sendEvent({ type: "update-downloaded" });
@@ -61,15 +57,9 @@ export class UpdateManager {
       .removeAllListeners()
       .on("update-available", (info: UpdateInfo) => {
         this.sendEvent({ type: "update-available", info });
-        this.newVersion = info.version;
       })
       .on("update-downloaded", () => {
         this.sendEvent({ type: "update-downloaded" });
-
-        if (!this.hasNotified) {
-          this.hasNotified = true;
-          publishNotificationUpdateReadyToInstall(this.newVersion);
-        }
       })
       .on("error", (error) => {
         logger.error("Auto-update check failed", error);

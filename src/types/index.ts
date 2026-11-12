@@ -31,6 +31,8 @@ export interface GameRepack {
   downloadSourceId: string;
   downloadSourceName: string;
   createdAt: string;
+  isCustom?: boolean;
+  customSourceId?: string;
 }
 
 export interface DownloadSource {

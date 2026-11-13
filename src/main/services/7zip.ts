@@ -71,23 +71,60 @@ export class SevenZip {
       outputPath,
       cwd,
       passwords = [],
+      signal,
     }: {
       filePath: string;
       outputPath?: string;
       cwd?: string;
       passwords?: string[];
+      signal?: AbortSignal;
     },
     onProgress?: (progress: ExtractionProgress) => void
   ): Promise<ExtractionResult> {
+    signal?.throwIfAborted();
+
     const destination = outputPath ?? cwd ?? process.cwd();
 
     await fs.promises.mkdir(destination, { recursive: true });
+    signal?.throwIfAborted();
 
     return new Promise((resolve, reject) => {
       let settled = false;
       let activeAttempt = 0;
+      let abortRequested = false;
+      let activeChild: ReturnType<typeof spawn> | null = null;
+
+      const abortReason = () =>
+        signal?.reason instanceof Error
+          ? signal.reason
+          : new DOMException("ZIP extraction aborted", "AbortError");
+
+      const settle = (error?: unknown, result?: ExtractionResult) => {
+        if (settled) return;
+
+        settled = true;
+        signal?.removeEventListener("abort", onAbort);
+
+        if (error) reject(error);
+        else resolve(result!);
+      };
+
+      const onAbort = () => {
+        if (settled) return;
+
+        abortRequested = true;
+        activeAttempt++;
+        try {
+          activeChild?.kill();
+        } catch {
+          // The process may have already exited.
+        }
+        settle(abortReason());
+      };
 
       const tryPassword = (index = 0) => {
+        if (settled || abortRequested) return;
+
         const attemptId = ++activeAttempt;
         const password = passwords[index] ?? "";
         logger.info(
@@ -108,13 +145,17 @@ export class SevenZip {
 
         const stream = Seven.extractFull(filePath, ".", options);
 
-        stream._childProcess = spawn(stream._bin, stream._args, {
+        const childProcess = spawn(stream._bin, stream._args, {
           cwd: destination,
           detached: true,
           windowsHide: true,
         });
+        stream._childProcess = childProcess;
+        activeChild = childProcess;
 
         stream.on("progress", (progress) => {
+          if (settled) return;
+
           if (onProgress) {
             onProgress({
               percent: progress.percent,
@@ -136,11 +177,15 @@ export class SevenZip {
             return;
           }
 
-          settled = true;
+          if (abortRequested) {
+            settle(abortReason());
+            return;
+          }
+
           logger.info(
             `Successfully extracted ${filePath} (${extractedFiles.length} files)`
           );
-          resolve({
+          settle(undefined, {
             success: true,
             extractedFiles,
           });
@@ -148,6 +193,11 @@ export class SevenZip {
 
         stream.on("error", (err) => {
           if (settled || attemptId !== activeAttempt) {
+            return;
+          }
+
+          if (abortRequested) {
+            settle(abortReason());
             return;
           }
 
@@ -162,16 +212,22 @@ export class SevenZip {
             );
             tryPassword(index + 1);
           } else {
-            settled = true;
             logger.error(
               `Failed to extract file: ${filePath} after trying all passwords`
             );
-            reject(new Error(`Failed to extract file: ${filePath}`));
+            settle(new Error(`Failed to extract file: ${filePath}`));
           }
         });
 
         Seven.listen(stream);
       };
+
+      signal?.addEventListener("abort", onAbort, { once: true });
+
+      if (signal?.aborted) {
+        onAbort();
+        return;
+      }
 
       tryPassword(0);
     });

@@ -2,7 +2,7 @@
 
 Launcher de escritorio **independiente** (Electron + React + TypeScript + Vite)
 basado en el código abierto de Hydra. Repo: `hectorrh11/lorro-launcher`.
-Versión publicada actual: **1.95.0** (Windows, Ubuntu/Debian y Arch Linux).
+Versión publicada actual: **1.96.0** (Windows, Ubuntu/Debian y Arch Linux).
 
 Este documento es la fuente de verdad para retomar el proyecto en una sesión
 nueva. Léelo entero antes de tocar código.
@@ -266,6 +266,18 @@ solo mueve un juego suelto `shop: "custom"` cuando su título normalizado
 coincide con exactamente un juego del catálogo y existe la URL en
 `custom-downloads.json`; después lo marca `isDeleted: true` sin borrar datos.
 
+Desde 1.96.0 la ficha de un juego del catálogo no instalado ofrece **Importar
+desde ZIP**. `game-zip-import.ts` valida el archivo con 7-Zip (corrupto,
+cifrado, rutas absolutas, letra de unidad o segmentos `..`), comprueba espacio,
+lo copia o mueve a `getDownloadsPath()`, extrae si se pide, verifica cada entrada
+dentro de la carpeta, aplana el anidamiento redundante (`Game/Game/Game.exe`) y
+llama a `GameFilesManager.setExtractionComplete` para tamaño instalado,
+detección/vinculación del ejecutable y aviso de elección. Con la extracción
+desactivada el ZIP queda como descarga completada y el juego no se marca
+instalado; se puede extraer luego desde la ficha o desde Descargas. Los avisos
+de progreso usan `on-game-zip-import-progress`, la operación es cancelable y un
+fallo o cancelación no deja `executablePath`.
+
 ### Lanzamiento
 
 `useLaunchLibraryGame` abre el selector de `.exe` si falta y guarda la ruta
@@ -451,6 +463,18 @@ enlaces de Hydra/Lorro Cloud.
 - Textos de Extras (modo rendimiento y tienda) traducidos; sin claves visibles.
 
 ---
+
+### 1.96.0 (publicada)
+
+- Importar desde ZIP en la ficha de un juego no instalado, asociado al mismo
+  `shop`/`objectId` (sin crear otra ficha). Copiar o mover a la carpeta de
+  juegos, extraer automáticamente y borrar el ZIP tras verificar.
+- Extracción desactivada: el ZIP se conserva, el juego no se marca instalado y
+  aparece "Extraer ZIP descargado" en la ficha y en Descargas.
+- Validación de ZIP corrupto/cifrado, bloqueo de ZIP Slip y enlaces simbólicos,
+  comprobación de espacio, aviso antes de sobrescribir y cancelación segura.
+- Progreso real por fases, reutilización del detector/vinculador de ejecutables
+  y aplanado seguro de `Game/Game/Game.exe`.
 
 ### 1.95.0 (publicada)
 
@@ -658,6 +682,9 @@ Comprobar además:
 - **1.90.0** — enlace personalizado como fuente de descarga del juego
   (`Downloader.Custom`), con la misma GUI, registro en Descargas, extracción y
   detección del ejecutable; aviso de actualización emergente eliminado.
+- **1.96.0** — importar desde ZIP en la ficha de un juego no instalado, con
+  copia/movimiento, extracción opcional, borrado verificado, reutilización del
+  detector de ejecutables, progreso cancelable y protección contra ZIP Slip.
 - **1.95.0** — los enlaces personalizados se guardan como fuentes del juego del
   catálogo (`customGameSources`), se mezclan con sus repacks, se pueden editar y
   borrar, y migran los juegos sueltos solo con coincidencia inequívoca.

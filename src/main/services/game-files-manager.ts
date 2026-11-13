@@ -6,6 +6,7 @@ import {
   findLikelyGameExecutableInFolder,
 } from "@main/helpers/find-game-executable";
 import { updateGameExecutablePath } from "@main/helpers/update-executable-path";
+import { flattenRedundantDirectories } from "@main/helpers/flatten-directory";
 import { runAchievementMetadataExport } from "@main/services/achievements/metadata-export";
 import { db, downloadsSublevel, gamesSublevel, levelKeys } from "@main/level";
 import {
@@ -929,6 +930,8 @@ export class GameFilesManager {
         if (!extractedNestedArchives) {
           return false;
         }
+
+        await flattenRedundantDirectories(extractionPath);
 
         if (fs.existsSync(extractionPath) && fs.existsSync(filePath)) {
           const userPreferences = await db.get<string, UserPreferences | null>(

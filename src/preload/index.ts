@@ -114,6 +114,9 @@ import type {
   ExternalDownloadManagerInfo,
   CustomGameSource,
   CustomGameSourceMutationResult,
+  GameZipImportOptions,
+  GameZipImportProgress,
+  GameZipImportResult,
 } from "@types";
 import type { AuthPage, Downloader } from "@shared";
 import type { AxiosProgressEvent } from "axios";
@@ -1286,6 +1289,23 @@ contextBridge.exposeInMainWorld("electron", {
     ipcRenderer.invoke("resetGamePlayTime", shop, objectId),
   extractGameDownload: (shop: GameShop, objectId: string) =>
     ipcRenderer.invoke("extractGameDownload", shop, objectId),
+  inspectGameZipImport: (shop: GameShop, objectId: string, zipPath: string) =>
+    ipcRenderer.invoke("inspectGameZipImport", shop, objectId, zipPath),
+  importGameFromZip: (
+    options: GameZipImportOptions
+  ): Promise<GameZipImportResult> =>
+    ipcRenderer.invoke("importGameFromZip", options),
+  cancelGameZipImport: (operationId: string) =>
+    ipcRenderer.invoke("cancelGameZipImport", operationId),
+  onGameZipImportProgress: (cb: (progress: GameZipImportProgress) => void) => {
+    const listener = (
+      _event: Electron.IpcRendererEvent,
+      progress: GameZipImportProgress
+    ) => cb(progress);
+    ipcRenderer.on("on-game-zip-import-progress", listener);
+    return () =>
+      ipcRenderer.removeListener("on-game-zip-import-progress", listener);
+  },
   scanInstalledGames: (
     additionalDirectories?: string[],
     includeDefaultDirectories?: boolean,

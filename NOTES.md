@@ -1,5 +1,87 @@
 # Lorro Launcher — Notes
 
+## v1.96.0 — Import a catalogue game from a ZIP
+
+### What changed
+
+- A catalogue game that is not installed now shows **Import from ZIP** on its
+  game page. The native file picker accepts ZIP files; cancelling is a no-op.
+- The import is attached to that same catalogue game (`shop` + `objectId`).
+  It does not create a second library entry. If the catalogue game is not in
+  the library yet, the normal `addGameToLibrary` call runs first.
+- The options dialog shows the archive name, size, entry count, estimated
+  extracted size, free space and destination root. The user chooses **Copy**
+  or **Move** and can toggle **Extract automatically** and **Delete ZIP after
+  extracting** (the second is disabled when extraction is off).
+- Copy never touches the original file. Move first transfers the ZIP and only
+  removes the source after the transfer succeeds; a failed transfer keeps the
+  original. A conflicting destination ZIP is renamed to a temporary backup and
+  restored if the transfer fails.
+- If extraction is disabled, the ZIP is kept, the game is not marked as
+  installed, and **Extract downloaded ZIP** appears on the game page. The same
+  ZIP can be extracted later from the Downloads page.
+- The ZIP is deleted after extraction only if the option was enabled and the
+  extraction was verified. Default preference still applies to extraction
+  started later from the Downloads page.
+- Real progress is emitted through `on-game-zip-import-progress`: preparing,
+  copying/moving, extracting (with the current file), verifying, detecting the
+  executable and done. The operation is asynchronous and cancellable.
+
+### Safety and error handling
+
+- `inspectGameZipImport` lists the archive with 7-Zip before importing and
+  rejects empty/corrupt archives, password-protected archives and entry names
+  that are absolute, contain a drive letter or contain a `..` segment.
+- Disk space is checked when `statfs` is available, including the ZIP copy when
+  the file is copied or moved across volumes.
+- Existing destination ZIP/folder conflicts require explicit confirmation
+  before overwrite.
+- After extraction every archive entry is checked inside the extraction root
+  and must be a regular file. Symbolic links created by the archive are
+  rejected as unsafe.
+- Redundant nesting (`Game/Game/Game.exe`) is flattened only while the folder
+  contains exactly one directory and no files, so layouts such as
+  `Game.exe` + `data/` are never rearranged.
+- A failed or cancelled import removes the partial extraction folder, resets
+  `extracting` to `false`, keeps the downloaded ZIP, and never sets an
+  `executablePath` unless executable detection actually succeeded.
+- Executable detection, binding, the "choose another .exe" prompt, shortcuts
+  and installed size all reuse `GameFilesManager.setExtractionComplete`.
+
+### Implementation map
+
+- `src/types/zip-import.types.ts` — inspection, options, progress, result and
+  error types.
+- `src/main/services/game-zip-import.ts` — validation, copy/move, extraction,
+  verification, flattening, download record and cancellation.
+- `src/main/helpers/flatten-directory.ts` — safe redundant-folder flattening.
+- `src/main/events/library/game-zip-import.ts` — `inspectGameZipImport`,
+  `importGameFromZip`, `cancelGameZipImport`.
+- `src/main/services/7zip.ts` — `extractFile` accepts an optional
+  `AbortSignal`; cancelling kills the 7-Zip child process.
+- `src/main/services/game-files-manager.ts` — deferred ZIP extraction also
+  flattens redundant nesting.
+- `src/renderer/src/pages/game-details/modals/zip-import-modal.tsx` and
+  `.scss` — options dialog, progress UI and the game-page buttons.
+- `src/renderer/src/pages/game-details/hero/hero-panel-actions.tsx` — adds the
+  import action for games without an executable.
+- `src/preload/index.ts` and `src/renderer/src/declaration.d.ts` — IPC bridge
+  and renderer types.
+
+### Verification
+
+- `yarn typecheck` — node and web pass.
+- `npx electron-vite build` — passes.
+- `node --test scripts/zip-import.test.mjs` — 10/10 pass. The integration test
+  bundles the real import service with stubbed Level DB/window services and the
+  real 7-Zip binary, then covers Copy/Move × extract/keep, corrupt ZIP,
+  `../` ZIP Slip rejection, overwrite confirmation, cancellation and the
+  absence of a second game entry.
+- Manual check: import with Copy and Move, extract automatically on and off,
+  cancel during transfer and extraction, import a corrupt ZIP and a ZIP with a
+  conflicting folder, then extract a deferred ZIP from the game page and from
+  Downloads.
+
 ## v1.95.0 — Custom links are now game download sources
 
 ### What changed

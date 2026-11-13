@@ -14,6 +14,7 @@ import "./download-game-artwork";
 import "./delete-archive";
 import "./delete-game-folder";
 import "./extract-game-download";
+import "./game-zip-import";
 import "./get-default-wine-prefix-selection-path";
 import "./get-installed-proton-versions";
 import "./get-available-proton-releases";

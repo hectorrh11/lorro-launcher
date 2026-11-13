@@ -24,6 +24,10 @@ import type {
   ExternalDownloadManagerInfo,
   CustomGameSource,
   CustomGameSourceMutationResult,
+  GameZipImportOptions,
+  GameZipImportProgress,
+  GameZipImportResult,
+  GameZipInspectionResult,
   RealDebridUser,
   PremiumizeUser,
   AllDebridUser,
@@ -975,6 +979,18 @@ declare global {
       minimized: boolean;
     }) => Promise<void>;
     extractGameDownload: (shop: GameShop, objectId: string) => Promise<boolean>;
+    inspectGameZipImport: (
+      shop: GameShop,
+      objectId: string,
+      zipPath: string
+    ) => Promise<GameZipInspectionResult>;
+    importGameFromZip: (
+      options: GameZipImportOptions
+    ) => Promise<GameZipImportResult>;
+    cancelGameZipImport: (operationId: string) => Promise<boolean>;
+    onGameZipImportProgress: (
+      cb: (progress: GameZipImportProgress) => void
+    ) => () => Electron.IpcRenderer;
     scanInstalledGames: (
       additionalDirectories?: string[],
       includeDefaultDirectories?: boolean,

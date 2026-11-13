@@ -7,15 +7,17 @@ release channel, installer and data folder. This document tracks what has been
 completed, what has been verified, what is still pending, and what is required
 to distribute the app.
 
-**Current status (estado tras 1.95.0):** **1.95.0** is the latest
-public release for Windows, Ubuntu/Debian and Arch Linux. It turns custom links
-into persisted download sources of the existing catalogue game instead of
-separate library entries: each link keeps the game's original `shop`/`objectId`,
-appears alongside its built-in repacks, can be edited or deleted, survives
-restarts and installs through the standard download, extraction and executable
-detection pipeline. Legacy standalone `shop: "custom"` games are migrated only
-when the normalized title match is unambiguous and their URL is known; otherwise
-they are left untouched and no data is deleted. It also includes 1.90.0 (custom
+**Current status (estado tras 1.96.0):** **1.96.0** is the latest
+public release for Windows, Ubuntu/Debian and Arch Linux. It adds **Import from
+ZIP** to the page of a catalogue game that is not installed: the archive is
+attached to that same `shop`/`objectId`, can be copied or moved into the
+configured games folder, extracted immediately or kept for later, and passed
+through validation, disk-space checks, extraction, verification, redundant
+nesting flattening and the normal executable detection/binding flow. Existing
+destination files require confirmation, unsafe paths and symbolic links are
+rejected, and a failed or cancelled import never marks the game as installed.
+It also includes 1.95.0 (custom links as persisted download sources of the
+existing catalogue game, with conservative legacy migration), 1.90.0 (custom
 link as a normal source with the standard download settings, record, extraction
 and executable detection, and removal of the Hydra-text update popup), 1.88.0's
 32-connection custom downloads, 8 MB work units, buffered writes, smoothed speed
@@ -322,6 +324,16 @@ hectorrh11, repo: lorro-launcher`) and in `.env`
   against non-custom games; only a unique match with a known URL in
   `custom-downloads.json` is migrated, and the legacy record is hidden with
   `isDeleted: true` without deleting its data.
+- **ZIP import (1.96.0)**: a non-installed catalogue game shows **Import from
+  ZIP**. The native picker feeds `inspectGameZipImport` (7-Zip listing, corrupt
+  and encrypted rejection, ZIP Slip checks), then `importGameFromZip` copies or
+  moves the archive into the configured downloads root, optionally extracts it,
+  verifies every entry, flattens redundant `Game/Game` nesting and reuses
+  `GameFilesManager.setExtractionComplete` for installed size, executable
+  detection/binding and the usual prompt. With extraction off the record stays
+  as a completed ZIP and the game is not installed. Progress is streamed through
+  `on-game-zip-import-progress`; the operation is cancellable and never marks a
+  game installed after a failure.
 - **Clip reliability (1.84.0)**: the circular buffer keeps the WebM header,
   requests pending recorder data before saving and rebases cluster timestamps
   to the selected keyframe and duration. Changing the clip duration updates the

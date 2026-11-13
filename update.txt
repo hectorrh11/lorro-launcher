@@ -1,4 +1,35 @@
 ========================================================
+VERSION 1.96.0
+========================================================
+IMPORTAR DESDE ZIP: la ficha de un juego no instalado
+incluye el boton "Importar desde ZIP". El archivo se
+importa dentro de ese mismo juego, sin crear una ficha
+nueva, y usa la carpeta de juegos configurada en Lorro.
+
+COPIAR O MOVER: puedes copiar el ZIP (el original no se
+toca nunca) o moverlo. Al mover, el original solo se borra
+despues de que la transferencia termine correctamente; si
+algo falla, se conserva.
+
+EXTRACCION: la opcion "Extraer automaticamente" viene
+activada. Si la desactivas, el ZIP se guarda pero el juego
+no se marca como instalado y aparece el boton "Extraer ZIP
+descargado" para hacerlo mas tarde desde la ficha o desde
+Descargas. La opcion "Borrar ZIP al extraer" solo elimina
+el archivo despues de verificar la extraccion.
+
+PROGRESO REAL: preparando, copiando o moviendo, extrayendo,
+verificando, detectando el ejecutable y listo. La ventana no
+se bloquea y se puede cancelar.
+
+SEGURIDAD: se valida el ZIP, se bloquean rutas peligrosas y
+enlaces simbolicos, se comprueba el espacio libre, se avisa
+antes de sobrescribir archivos existentes y un fallo o una
+cancelacion nunca dejan el juego marcado como instalado. La
+deteccion del .exe reutiliza el flujo normal de Lorro,
+incluido el aviso para elegir otro ejecutable.
+
+========================================================
 VERSION 1.95.0
 ========================================================
 ENLACES PERSONALIZADOS COMO FUENTE DEL JUEGO: el boton

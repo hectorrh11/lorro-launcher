@@ -33,6 +33,7 @@ import {
 } from "@renderer/helpers";
 import { DiscSelectionModal } from "../modals/disc-selection-modal";
 import { EpicCloudSaveConflictModal } from "../modals/epic-cloud-save-conflict-modal";
+import { GameZipImportButton } from "../modals/zip-import-modal";
 
 import "./hero-panel-actions.scss";
 import { useEffect } from "react";
@@ -476,15 +477,18 @@ export function HeroPanelActions() {
     }
 
     return (
-      <Button
-        onClick={() => setShowRepacksModal(true)}
-        theme="outline"
-        disabled={isGameDownloading}
-        className={`hero-panel-actions__action ${repacks.length === 0 && !canDownloadOnSteam(officialMembers.steam) && !officialMembers.epic ? "hero-panel-actions__action--disabled" : ""}`}
-      >
-        <DownloadIcon />
-        {t("download")}
-      </Button>
+      <>
+        <Button
+          onClick={() => setShowRepacksModal(true)}
+          theme="outline"
+          disabled={isGameDownloading}
+          className={`hero-panel-actions__action ${repacks.length === 0 && !canDownloadOnSteam(officialMembers.steam) && !officialMembers.epic ? "hero-panel-actions__action--disabled" : ""}`}
+        >
+          <DownloadIcon />
+          {t("download")}
+        </Button>
+        <GameZipImportButton className="hero-panel-actions__action" />
+      </>
     );
   };
 
@@ -492,6 +496,7 @@ export function HeroPanelActions() {
     return (
       <>
         {addGameToLibraryButton}
+        <GameZipImportButton className="hero-panel-actions__action" />
         {showDownloadOptionsButton}
       </>
     );
@@ -627,5 +632,10 @@ export function HeroPanelActions() {
     );
   }
 
-  return addGameToLibraryButton;
+  return (
+    <>
+      {addGameToLibraryButton}
+      <GameZipImportButton className="hero-panel-actions__action" />
+    </>
+  );
 }

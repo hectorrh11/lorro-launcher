@@ -7,16 +7,22 @@ release channel, installer and data folder. This document tracks what has been
 completed, what has been verified, what is still pending, and what is required
 to distribute the app.
 
-**Current status (estado tras 1.96.0):** **1.96.0** is the latest
-public release for Windows, Ubuntu/Debian and Arch Linux. It adds **Import from
-ZIP** to the page of a catalogue game that is not installed: the archive is
-attached to that same `shop`/`objectId`, can be copied or moved into the
-configured games folder, extracted immediately or kept for later, and passed
-through validation, disk-space checks, extraction, verification, redundant
-nesting flattening and the normal executable detection/binding flow. Existing
-destination files require confirmation, unsafe paths and symbolic links are
-rejected, and a failed or cancelled import never marks the game as installed.
-It also includes 1.95.0 (custom links as persisted download sources of the
+**Current status (estado tras 1.97.0):** **1.97.0** is the latest
+public release for Windows, Ubuntu/Debian and Arch Linux. It fixes the black
+window introduced by 1.96.0: `electron-vite` injected its CommonJS shim banner
+inside a string literal of the dynamic events chunk, so `loadState()` threw a
+`SyntaxError` before registering any IPC handler and the renderer never mounted.
+The offending message is reworded and `scripts/verify-main-bundle.mjs`
+(`yarn verify:bundle`, also run by `yarn build`) now `node --check`s every
+`out/main` chunk and validates the shim position. It also includes **1.96.0**,
+which adds **Import from ZIP** to the page of a catalogue game that is not
+installed: the archive is attached to that same `shop`/`objectId`, can be
+copied or moved into the configured games folder, extracted immediately or kept
+for later, and passed through validation, disk-space checks, extraction,
+verification, redundant nesting flattening and the normal executable
+detection/binding flow. Existing destination files require confirmation,
+unsafe paths and symbolic links are rejected, and a failed or cancelled import
+never marks the game as installed. It also includes 1.95.0 (custom links as persisted download sources of the
 existing catalogue game, with conservative legacy migration), 1.90.0 (custom
 link as a normal source with the standard download settings, record, extraction
 and executable detection, and removal of the Hydra-text update popup), 1.88.0's

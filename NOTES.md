@@ -1,5 +1,43 @@
 # Lorro Launcher — Notes
 
+## v1.97.0 — Fix the black window shipped in 1.96.0
+
+### Root cause
+
+- `electron-vite` (4.0.1) injects a "CommonJS Shims" banner into ESM chunks
+  with a regex that finds the *last* occurrence that looks like
+  `import … from "…"`. A log message introduced in 1.96.0,
+  `"[GameZipImport] The moved ZIP was kept after a failed import"`, ends with
+  the word `import` right before the closing quote, so the regex matched
+  `import");` and inserted the shim **inside** the following string literal.
+- The broken chunk is the dynamic `./events` chunk. `loadState()` does
+  `await import("./events")` and threw `SyntaxError: Invalid or unexpected
+  token`, so `loadState()` aborted before registering any IPC handler. The
+  renderer never mounted and only the imperative feedback button (created
+  outside React) stayed visible: the reported black window with the comments
+  button.
+
+### Fix
+
+- Reworded the log message to `"[GameZipImport] The moved ZIP was kept because
+  the import failed"`, so no string ends with `import` before a quote.
+- Added `scripts/verify-main-bundle.mjs` (`yarn verify:bundle`, also part of
+  `yarn build`): it runs `node --check` on every `out/main/*.js` chunk and fails
+  if a chunk has more than one CommonJS shim or its shim sits beyond the import
+  block. This catches the same class of packaging corruption before shipping.
+
+### Verification
+
+- `yarn typecheck` passes; `yarn build` builds and `verify:bundle` reports
+  `Verified 12 main chunks.`
+- `node --check` on all main chunks passes (before the fix
+  `index-CppkQbkR.js` failed at line 7345).
+- Dev launch of the built app shows the renderer booting normally
+  (`Initializing ... Resources`, profile `put /profile/games/...` 200) and no
+  `No handler registered for 'getVersion'` error.
+- Users on 1.96.0 must install 1.97.0 manually once: the broken version cannot
+  self-update because its main process never finishes starting.
+
 ## v1.96.0 — Import a catalogue game from a ZIP
 
 ### What changed

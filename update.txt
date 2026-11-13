@@ -1,4 +1,25 @@
 ========================================================
+VERSION 1.97.0
+========================================================
+CORRECCION CRITICA: la ventana en negro de la 1.96.0.
+El empaquetado insertaba un fragmento interno en medio de
+una cadena del codigo, el proceso principal fallaba al
+arrancar y la interfaz no llegaba a dibujarse: solo se veia
+el boton flotante de comentarios. Ya esta corregido, la
+aplicacion vuelve a cargar biblioteca, tienda, ajustes,
+descargas, clips e Importar desde ZIP.
+
+IMPORTAR DESDE ZIP sigue incluido de la 1.96.0: copiar o
+mover a la carpeta de juegos, extraccion automatica con
+verificacion, borrar el ZIP solo tras verificar, extraer
+mas tarde si lo desactivas, progreso real cancelable,
+bloqueo de rutas peligrosas y aviso antes de sobrescribir.
+
+Si estas en la 1.96.0 con la pantalla en negro, instala este
+instalador una vez: esa version no puede actualizarse sola
+porque el proceso principal no arranca.
+
+========================================================
 VERSION 1.96.0
 ========================================================
 IMPORTAR DESDE ZIP: la ficha de un juego no instalado

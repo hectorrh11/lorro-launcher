@@ -1,6 +1,6 @@
 {
   "name": "lorro-launcher",
-  "version": "1.96.0",
+  "version": "1.97.0",
   "description": "Lorro Launcher - a premium game launcher for your library, downloads and achievements.",
   "main": "./out/main/index.js",
   "author": "Lorro Launcher contributors",
@@ -31,7 +31,8 @@
     "prepare:legendary": "node ./scripts/prepare-legendary.cjs",
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
-    "build": "npm run typecheck && electron-vite build",
+    "build": "npm run typecheck && electron-vite build && npm run verify:bundle",
+    "verify:bundle": "node scripts/verify-main-bundle.mjs",
     "postinstall": "npm run build:native && electron-builder install-app-deps && node ./scripts/postinstall.cjs && npm run prepare:legendary",
     "build:unpack": "npm run build:native && npm run build && electron-builder --dir",
     "build:win": "npm run build:native && electron-vite build && electron-builder --win --publish never",

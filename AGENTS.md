@@ -2,7 +2,7 @@
 
 Launcher de escritorio **independiente** (Electron + React + TypeScript + Vite)
 basado en el código abierto de Hydra. Repo: `hectorrh11/lorro-launcher`.
-Versión publicada actual: **1.96.0** (Windows, Ubuntu/Debian y Arch Linux).
+Versión publicada actual: **1.97.0** (Windows, Ubuntu/Debian y Arch Linux).
 
 Este documento es la fuente de verdad para retomar el proyecto en una sesión
 nueva. Léelo entero antes de tocar código.
@@ -181,7 +181,9 @@ foreach ($f in @("package.json","electron-builder.yml","update.txt","README.md",
 }
 ```
 
-5. En el espejo: `npx electron-vite build`.
+5. En el espejo: `npx electron-vite build` y `node scripts/verify-main-bundle.mjs`
+   (valida `node --check` de cada chunk de `out/main`; debe decir
+   `Verified N main chunks.`).
 6. `$env:GH_TOKEN = & "C:\Program Files\GitHub CLI\gh.exe" auth token`
    y `npx electron-builder --win --publish always` (crea la release en borrador
    con `latest.yml`, `*-windows-setup.exe`, `*-windows-portable.exe` y blockmap).
@@ -464,6 +466,16 @@ enlaces de Hydra/Lorro Cloud.
 
 ---
 
+### 1.97.0 (publicada)
+
+- Corregida la ventana en negro de la 1.96.0: electron-vite insertaba su banner
+  de shims CommonJS dentro de una cadena (`"... failed import"`) al generar el
+  chunk de `./events`, `loadState()` lanzaba `SyntaxError` y no se registraba
+  ningun IPC; el renderer no montaba y solo quedaba el boton de comentarios.
+- Cadena reformulada y nuevo `scripts/verify-main-bundle.mjs`
+  (`yarn verify:bundle`, incluido en `yarn build`) que hace `node --check` de
+  cada chunk de `out/main` y valida la posicion del shim.
+
 ### 1.96.0 (publicada)
 
 - Importar desde ZIP en la ficha de un juego no instalado, asociado al mismo
@@ -619,6 +631,7 @@ enlaces de Hydra/Lorro Cloud.
 ```powershell
 yarn typecheck          # node + web, debe terminar en "Done"
 npx electron-vite build # en el espejo, exit 0
+node scripts/verify-main-bundle.mjs # "Verified N main chunks."
 ```
 
 Comprobar además:
@@ -682,7 +695,10 @@ Comprobar además:
 - **1.90.0** — enlace personalizado como fuente de descarga del juego
   (`Downloader.Custom`), con la misma GUI, registro en Descargas, extracción y
   detección del ejecutable; aviso de actualización emergente eliminado.
-- **1.96.0** — importar desde ZIP en la ficha de un juego no instalado, con
+- **1.97.0** — corrige la ventana en negro de la 1.96.0 (banner de shims de
+  electron-vite insertado dentro de una cadena del chunk de eventos) y anade
+  `verify:bundle` para validar los chunks del proceso principal.
+- **1.96.0** - importar desde ZIP en la ficha de un juego no instalado, con
   copia/movimiento, extracción opcional, borrado verificado, reutilización del
   detector de ejecutables, progreso cancelable y protección contra ZIP Slip.
 - **1.95.0** — los enlaces personalizados se guardan como fuentes del juego del

@@ -602,7 +602,7 @@ class GameZipImportManager {
 
       if (originalMoved) {
         logger.info(
-          "[GameZipImport] The moved ZIP was kept after a failed import"
+          "[GameZipImport] The moved ZIP was kept because the import failed"
         );
       }
 

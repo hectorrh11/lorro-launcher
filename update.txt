@@ -1,4 +1,28 @@
 ========================================================
+VERSION 1.98.0
+========================================================
+COLECCIONES VISIBLES: las colecciones a las que
+pertenece cada juego ya se ven en la barra lateral y en
+la biblioteca. Cada coleccion puede tener color de titulo,
+emblema y titulo en gris atenuado, y un juego usa la
+primera coleccion que tenga alguno de esos ajustes.
+Emblemas disponibles: trofeo, gema, estrella, marca,
+reloj, tachado y paquete.
+Por defecto "Terminado" (o "100%") lleva trofeo verde,
+"En proceso" reloj ocre, "Abandonado" tachado y gris, y
+"No instalado" gema y gris. Se puede cambiar todo en
+Ajustes -> Colecciones: color Auto o personalizado, con
+paleta y selector libre, emblema y atenuado, con boton
+para restablecer cada coleccion.
+En la barra lateral el emblema aparece junto al nombre y
+el color tiñe el titulo. En la biblioteca, la vista
+grande muestra un chip con el nombre de la coleccion, el
+emblema y el color; las vistas compacta y cuadricula
+muestran el emblema sobre la portada, una franja del
+color y la portada en gris si la coleccion esta
+atenuada.
+
+========================================================
 VERSION 1.97.2
 ========================================================
 NUEVO ASPECTO: la interfaz deja el estilo "dashboard" de

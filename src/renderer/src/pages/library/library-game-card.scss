@@ -94,6 +94,34 @@
     min-width: 0;
   }
 
+  &__collection-emblem {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+    padding: 2px;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.48);
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  &__wrapper--collection-dimmed {
+    .library-game-card__game-image,
+    .library-game-card__classics-image {
+      filter: grayscale(0.75) brightness(0.62);
+    }
+  }
+
+  &__collection-accent {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    z-index: 3;
+    pointer-events: none;
+  }
+
   &__playtime {
     white-space: nowrap;
     background: rgba(0, 0, 0, 0.4);

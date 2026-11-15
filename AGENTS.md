@@ -2,7 +2,7 @@
 
 Launcher de escritorio **independiente** (Electron + React + TypeScript + Vite)
 basado en el código abierto de Hydra. Repo: `hectorrh11/lorro-launcher`.
-Versión actual: **1.97.2** (sin publicar; última publicada **1.97.0**).
+Versión actual: **1.98.0** (sin publicar; última publicada **1.97.2**).
 
 Este documento es la fuente de verdad para retomar el proyecto en una sesión
 nueva. Léelo entero antes de tocar código.
@@ -299,6 +299,22 @@ cargarlas, `useGameCollections` crea una sola vez las cuatro predeterminadas
 si faltan: **Terminado**, **En proceso**, **Abandonado** y **No instalado**.
 No duplica nombres existentes ni sobrescribe las del usuario.
 
+Desde 1.98.0 cada colección puede decorar el título de sus juegos. El estilo se
+guarda en `userPreferences.collectionStyles` (mapa por id de colección con
+`color`, `emblem` y `dimmed`) y se resuelve con
+`src/shared/collection-styles.ts`: el valor explícito gana sobre el
+predeterminado por nombre (`getDefaultCollectionStyle`). De los emblemas
+disponibles (`none`, `trophy`, `gem`, `star`, `check`, `clock`, `abandoned`,
+`package`), un juego usa la **primera** colección que tenga color, emblema o
+atenuado (`resolveGameCollectionStyle`), así una colección neutra no tapa a una
+significativa. Se aplica en `sidebar-game-item.tsx` (color y emblema junto al
+nombre) y en las tarjetas de la biblioteca: chip con el nombre de la colección
+en la vista grande y emblema + franja de color + portada en gris en las vistas
+compacta/cuadrícula. La UI vive en Ajustes → Colecciones
+(`settings-collections.tsx`), con paleta, selector libre, emblema, atenuado y
+botón de restablecer por colección. `updateUserPreferences` fusiona en
+superficie, así que se envía siempre el mapa completo.
+
 ### Temas y fondo
 
 Claro y oscuro. La tienda de temas incluye los acentos de pago **Golden** (300
@@ -466,7 +482,23 @@ enlaces de Hydra/Lorro Cloud.
 
 ---
 
-### 1.97.2 (sin publicar)
+### 1.98.0 (sin publicar)
+
+- Las colecciones de cada juego ya se ven en la barra lateral y en la
+  biblioteca: color del título, emblema y título en gris atenuado.
+- `src/shared/collection-styles.ts` con los tipos `CollectionStyleMap` /
+  `CollectionVisualStyle`, emblemas, paleta de colores, predeterminados por
+  nombre (`Terminado`/`100%` → trofeo verde, `En proceso` → reloj ocre,
+  `Abandonado` → tachado gris, `No instalado` → gema gris) y
+  `resolveGameCollectionStyle` (gana la primera colección decorada).
+- Estilo persistido en `userPreferences.collectionStyles` y aplicado en
+  `sidebar-game-item.tsx`, `library-game-card.tsx` (emblema sobre la portada,
+  franja de color y portada en gris) y `library-game-card-large.tsx` (chip con
+  el nombre de la colección y título con color).
+- Ajustes → Colecciones (`settings-collections.tsx`): color Auto o de paleta o
+  libre, emblema, atenuado y restablecer por colección.
+
+### 1.97.2 (publicada)
 
 - Restyling visual completo: grises calidos neutros, un unico acento ocre
   `#c08b52`, bordes de 1 px, radios de 4-8 px y tipografia del sistema. Fuera
@@ -481,7 +513,7 @@ enlaces de Hydra/Lorro Cloud.
 - Corregido el solape de "Personalizar inicio" con el hero y el boton de
   comentarios con la barra inferior. Sin cambios de logica, IPC ni textos.
 
-### 1.97.1 (sin publicar)
+### 1.97.1 (publicada)
 
 - Las descargas de enlaces personalizados fallaban al instante con
   `Invalid parallel download limits`: el motor segmentado limitaba a 16
@@ -722,6 +754,11 @@ Comprobar además:
 - **1.90.0** — enlace personalizado como fuente de descarga del juego
   (`Downloader.Custom`), con la misma GUI, registro en Descargas, extracción y
   detección del ejecutable; aviso de actualización emergente eliminado.
+- **1.98.0** — las colecciones se ven en la barra lateral y en la biblioteca:
+  color del título, emblema (trofeo, gema, estrella, marca, reloj, tachado,
+  paquete) y título en gris atenuado, configurables por colección en Ajustes →
+  Colecciones, con predeterminados para Terminado, En proceso, Abandonado y
+  No instalado.
 - **1.97.2** — rediseño visual sobrio: grises calidos, acento ocre unico,
   bordes finos, radios pequenos y tipografia del sistema; sin degradados,
   brillos ni sombras de color.

@@ -8,12 +8,17 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ConfirmationModal,
+  CollectionStyleMarker,
   GameContextMenu,
   SteamLibraryBadge,
   useGameActions,
 } from "..";
 import { HeartFillIcon } from "@primer/octicons-react";
-import { useAppSelector, useToast } from "@renderer/hooks";
+import {
+  useAppSelector,
+  useGameCollectionStyle,
+  useToast,
+} from "@renderer/hooks";
 import { useCollectionContextMenu } from "@renderer/context";
 import { getLibraryPresentationBadgeSource } from "@renderer/pages/library/library-category";
 
@@ -44,6 +49,7 @@ export function SidebarGameItem({
     (state) => state.userPreferences.value
   );
   const { openCollectionContextMenu } = useCollectionContextMenu();
+  const collectionStyle = useGameCollectionStyle(game);
   const [contextMenu, setContextMenu] = useState<{
     visible: boolean;
     position: { x: number; y: number };
@@ -163,7 +169,25 @@ export function SidebarGameItem({
               )}
           </span>
 
-          <span className="sidebar__menu-item-button-label">
+          {collectionStyle && collectionStyle.emblem !== "none" && (
+            <CollectionStyleMarker
+              emblem={collectionStyle.emblem}
+              color={collectionStyle.color}
+              size={11}
+              className="sidebar__collection-emblem"
+            />
+          )}
+
+          <span
+            className={cn("sidebar__menu-item-button-label", {
+              "sidebar__menu-item-button-label--dimmed": collectionStyle?.dimmed,
+            })}
+            style={
+              collectionStyle?.color && !collectionStyle.dimmed
+                ? { color: collectionStyle.color }
+                : undefined
+            }
+          >
             {getGameTitle(game)}
           </span>
 

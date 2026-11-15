@@ -17,6 +17,7 @@ import {
   LinkIcon,
   PlayIcon,
   StarFillIcon,
+  TagIcon,
   VideoIcon,
   ShieldCheckIcon,
 } from "@primer/octicons-react";
@@ -35,6 +36,7 @@ import { SettingsAdvanced } from "./settings-advanced";
 import { SettingsClips } from "./settings-clips";
 import { SettingsStore } from "./settings-store";
 import { SettingsHome } from "./settings-home";
+import { SettingsCollections } from "./settings-collections";
 
 export default function Settings() {
   const { t } = useTranslation("settings");
@@ -60,6 +62,15 @@ export default function Settings() {
           "Choose what appears on your home page."
         ),
         icon: <HomeIcon size={16} />,
+      },
+      {
+        id: "collections" as const,
+        label: t("collections", "Collections"),
+        description: t(
+          "settings_description_collections",
+          "Colors, emblems and grey titles for your collections."
+        ),
+        icon: <TagIcon size={16} />,
       },
       {
         id: "downloads" as const,
@@ -203,6 +214,10 @@ export default function Settings() {
 
             if (selectedCategoryId === "home") {
               return <SettingsHome />;
+            }
+
+            if (selectedCategoryId === "collections") {
+              return <SettingsCollections />;
             }
 
             if (selectedCategoryId === "downloads") {

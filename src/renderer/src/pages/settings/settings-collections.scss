@@ -1,0 +1,181 @@
+@use "../../scss/globals.scss";
+
+.settings-collections {
+  &__hint,
+  &__empty {
+    margin: 0;
+    color: globals.$muted-color;
+    font-size: globals.$small-font-size;
+    line-height: 1.5;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__item {
+    border: 1px solid globals.$border-color;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    overflow: hidden;
+  }
+
+  &__item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 14px;
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    text-align: left;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
+  }
+
+  &__preview {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  &__preview-emblem {
+    flex: 0 0 auto;
+  }
+
+  &__preview-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &--dimmed {
+      color: globals.$muted-color;
+      opacity: 0.62;
+    }
+  }
+
+  &__item-meta {
+    flex: 0 0 auto;
+    color: globals.$muted-color;
+    font-size: 12px;
+  }
+
+  &__item-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 4px 14px 16px;
+    border-top: 1px solid globals.$border-color;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 12px;
+  }
+
+  &__field-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: globals.$muted-color;
+  }
+
+  &__colors {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__swatch {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.16);
+    cursor: pointer;
+    padding: 0;
+    transition:
+      transform 0.16s ease,
+      border-color 0.16s ease;
+
+    &:hover {
+      transform: scale(1.08);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    &--active {
+      border-color: rgba(255, 255, 255, 0.85);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12);
+    }
+
+    &--default {
+      width: auto;
+      height: 26px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: transparent;
+      color: globals.$muted-color;
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+  }
+
+  &__color-input {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 26px;
+    padding: 0 10px;
+    border: 1px solid globals.$border-color;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: globals.$muted-color;
+    cursor: pointer;
+
+    input[type="color"] {
+      width: 18px;
+      height: 18px;
+      padding: 0;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+  }
+
+  &__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 20px;
+  }
+
+  &__reset {
+    align-self: flex-start;
+    padding: 7px 12px;
+    border: 1px solid globals.$border-color;
+    border-radius: 8px;
+    background: transparent;
+    color: globals.$muted-color;
+    font-size: 12px;
+    cursor: pointer;
+
+    &:hover {
+      color: inherit;
+      border-color: rgba(255, 255, 255, 0.28);
+    }
+  }
+}

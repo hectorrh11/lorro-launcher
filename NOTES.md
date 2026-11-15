@@ -1,5 +1,51 @@
 # Lorro Launcher — Notes
 
+## v1.98.0 — Collection styles in the sidebar and library
+
+### What changed
+
+- Each game now shows the collections it belongs to. A collection can set a
+  title colour, an emblem and a dimmed grey title, and the game uses the first
+  collection that has any of those set.
+- New `src/shared/collection-styles.ts`: `CollectionStyleMap`,
+  `CollectionVisualStyle`, `CollectionStyleEmblem`, `COLLECTION_STYLE_EMBLEMS`
+  (none, trophy, gem, star, check, clock, abandoned, package),
+  `COLLECTION_STYLE_COLOR_PRESETS`, `getDefaultCollectionStyle` (name-based
+  defaults), `resolveCollectionStyle`, `resolveGameCollectionStyle`,
+  `updateCollectionStyle` and `clearCollectionStyle`.
+- Defaults by collection name: `Terminado`/`Finished`/`100%` → green trophy,
+  `En proceso`/`In progress` → ochre clock, `Abandonado` → crossed-out grey,
+  `No instalado` → grey gem.
+- Style persisted in `userPreferences.collectionStyles` and resolved through the
+  new `useGameCollectionStyle` hook (redux `state.collections.items` +
+  `state.userPreferences.value.collectionStyles`).
+- Sidebar (`sidebar-game-item.tsx`): emblem before the title, title colour and a
+  dimmed variant. The label keeps its ellipsis behaviour.
+- Library `large` view (`library-game-card-large.tsx`): chip with the collection
+  name + emblem next to the achievements row and a coloured title when there is
+  no logo image.
+- Library `compact`/`grid` view (`library-game-card.tsx`): emblem badge over the
+  cover, a 3px colour stripe on the left edge and a gray/darkened cover when the
+  collection is dimmed.
+- Settings → Collections (`settings-collections.tsx`): per-collection colour
+  (Auto, palette or free `input[type=color]`), emblem select, dimmed checkbox
+  and a reset button. New `collections` settings category and
+  `SettingsCategoryId`.
+- i18n: new `settings.collections*` and `settings.collection_emblem_*` keys in
+  `en` and `es`.
+
+### Verified
+
+- `tsc --noEmit` with `tsconfig.node.json` and `tsconfig.web.json` both clean.
+- `electron-vite build` + `scripts/verify-main-bundle.mjs` clean.
+- No IPC, API or backend schema changes: everything is a user preference.
+
+### Known limits
+
+- Only the first decorated collection is shown per game (no stacked emblems).
+- Big Picture cards still show logos only; no collection decoration there.
+- The collection chip appears only in the `large` library view.
+
 ## v1.97.2 — Visual restyle: quiet, tool-like interface
 
 ### What changed (visual only)

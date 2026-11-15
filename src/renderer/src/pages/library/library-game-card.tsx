@@ -8,6 +8,7 @@ import {
   isAnimatedCoverCandidate,
   useAppSelector,
   useAnimatedSourceWarmup,
+  useGameCollectionStyle,
   useLaunchLibraryGame,
 } from "@renderer/hooks";
 import {
@@ -15,7 +16,11 @@ import {
   isGameReadyToPlay,
   resolveClassicsBadge,
 } from "@renderer/helpers";
-import { AchievementProgress, SteamLibraryBadge } from "@renderer/components";
+import {
+  AchievementProgress,
+  CollectionStyleEmblemIcon,
+  SteamLibraryBadge,
+} from "@renderer/components";
 import { GameVisibilityBadge } from "@renderer/components/game-visibility-badge/game-visibility-badge";
 import {
   memo,
@@ -104,6 +109,7 @@ export const LibraryGameCard = memo(function LibraryGameCard({
   const userPreferences = useAppSelector(
     (state) => state.userPreferences.value
   );
+  const collectionStyle = useGameCollectionStyle(game);
   const hideBadges = userPreferences?.hideLibraryGameBadges ?? false;
   const hideReadySizeBadges =
     userPreferences?.hideLibraryReadySizeBadges ?? false;
@@ -280,7 +286,9 @@ export const LibraryGameCard = memo(function LibraryGameCard({
       type="button"
       onMouseEnter={() => setIsCoverHovered(true)}
       onMouseLeave={() => setIsCoverHovered(false)}
-      className="library-game-card__wrapper"
+      className={cn("library-game-card__wrapper", {
+        "library-game-card__wrapper--collection-dimmed": collectionStyle?.dimmed,
+      })}
       onClick={handleWrapperClick}
       onDoubleClick={handleWrapperDoubleClick}
       onContextMenu={handleContextMenuClick}
@@ -301,6 +309,22 @@ export const LibraryGameCard = memo(function LibraryGameCard({
               isHiddenFromOthers={game.isHiddenFromOthers}
               isConcealed={game.isConcealed}
             />
+            {collectionStyle && collectionStyle.emblem !== "none" && (
+              <span
+                className="library-game-card__collection-emblem"
+                style={
+                  collectionStyle.color
+                    ? { color: collectionStyle.color }
+                    : undefined
+                }
+                title={collectionStyle.collectionName}
+              >
+                <CollectionStyleEmblemIcon
+                  emblem={collectionStyle.emblem}
+                  size={12}
+                />
+              </span>
+            )}
             {!hideBadges && (
               <div className="library-game-card__playtime">
                 {game.hasManuallyUpdatedPlaytime ? (
@@ -402,6 +426,13 @@ export const LibraryGameCard = memo(function LibraryGameCard({
       </div>
 
       {renderCoverMedia()}
+
+      {collectionStyle?.color && (
+        <span
+          className="library-game-card__collection-accent"
+          style={{ backgroundColor: collectionStyle.color }}
+        />
+      )}
 
       <div
         className={cn("library-game-card__action-button", {

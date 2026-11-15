@@ -7,6 +7,7 @@ import {
   useAppSelector,
   useCoverPoster,
   useGameCard,
+  useGameCollectionStyle,
   useAnimatedSourceWarmup,
 } from "@renderer/hooks";
 import {
@@ -14,7 +15,11 @@ import {
   isGameReadyToPlay,
   resolveClassicsBadge,
 } from "@renderer/helpers";
-import { AchievementProgress, SteamLibraryBadge } from "@renderer/components";
+import {
+  AchievementProgress,
+  CollectionStyleMarker,
+  SteamLibraryBadge,
+} from "@renderer/components";
 import { GameVisibilityBadge } from "@renderer/components/game-visibility-badge/game-visibility-badge";
 import { formatBytes, getDisplayedPlayTimeInMilliseconds } from "@shared";
 import {
@@ -85,6 +90,7 @@ export const LibraryGameCardLarge = memo(function LibraryGameCardLarge({
   const { t } = useTranslation("library");
   const { formatPlayTime, handleCardClick, handleContextMenuClick } =
     useGameCard(game, onContextMenu);
+  const collectionStyle = useGameCollectionStyle(game);
 
   const userPreferences = useAppSelector(
     (state) => state.userPreferences.value
@@ -491,11 +497,47 @@ export const LibraryGameCardLarge = memo(function LibraryGameCardLarge({
               className="library-game-card-large__logo"
             />
           ) : (
-            <h3 className="library-game-card-large__title">{game.title}</h3>
+            <h3
+              className={cn("library-game-card-large__title", {
+                "library-game-card-large__title--dimmed":
+                  collectionStyle?.dimmed,
+              })}
+              style={
+                collectionStyle?.color && !collectionStyle.dimmed
+                  ? { color: collectionStyle.color }
+                  : undefined
+              }
+            >
+              {game.title}
+            </h3>
           )}
         </div>
 
         <div className="library-game-card-large__info-bar">
+          {collectionStyle && (
+            <span
+              className="library-game-card-large__collection-chip"
+              style={
+                collectionStyle.color
+                  ? {
+                      color: collectionStyle.color,
+                      borderColor: `${collectionStyle.color}55`,
+                    }
+                  : undefined
+              }
+              title={collectionStyle.collectionName}
+            >
+              <CollectionStyleMarker
+                emblem={collectionStyle.emblem}
+                size={11}
+                className="library-game-card-large__collection-chip-icon"
+              />
+              <span className="library-game-card-large__collection-chip-label">
+                {collectionStyle.collectionName}
+              </span>
+            </span>
+          )}
+
           {!hideAchievementProgress &&
             (totalAchievementsCount > 0 || unlockedAchievementsCount > 0) && (
               <AchievementProgress

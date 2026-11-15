@@ -201,6 +201,37 @@
     justify-content: flex-end;
   }
 
+  &__title--dimmed {
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  &__collection-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 45%;
+    margin-right: auto;
+    padding: 3px 9px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 999px;
+    background-color: rgba(0, 0, 0, 0.42);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  &__collection-chip-icon {
+    opacity: 0.95;
+  }
+
+  &__collection-chip-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   &__top-right {
     display: flex;
     align-items: flex-start;

@@ -7,8 +7,18 @@ release channel, installer and data folder. This document tracks what has been
 completed, what has been verified, what is still pending, and what is required
 to distribute the app.
 
-**Current status (estado tras 1.97.2):** **1.97.2** restyles the interface to a
-quiet, tool-like look: warm neutral grays, a single ochre accent, 1px borders,
+**Current status (estado tras 1.98.0):** **1.98.0** makes collection membership
+visible for every library game. A collection can define a title colour, an
+emblem (trophy, gem, star, check, clock, crossed-out, package) and a dimmed grey
+title, and a game picks the first collection that has any of those set. Defaults
+ship for `Terminado` (green trophy), `En proceso` (ochre clock), `Abandonado`
+(crossed-out grey) and `No instalado` (grey gem). The sidebar shows the emblem
+and colour next to the game name; the library `large` view shows a chip with the
+collection name, while the compact/grid views show the emblem, a colour stripe
+and a gray cover when the collection is dimmed. Everything is configured in
+Settings → Collections and stored in `userPreferences.collectionStyles`; there
+are no API or schema changes. It includes **1.97.2**, which restyles the
+interface to a quiet, tool-like look: warm neutral grays, a single ochre accent, 1px borders,
 4-8px radii and a system font stack, with decorative gradients, glows and
 colored shadows removed while keeping legibility scrims, skeletons, the crop
 checkerboard and the purchased animated wallpapers. It also fixes the

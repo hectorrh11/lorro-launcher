@@ -1,4 +1,4 @@
-import type { Downloader } from "@shared";
+import type { CollectionStyleMap, Downloader } from "@shared";
 import type { GameShop } from "./game.types";
 import type { DownloadStatus } from "./download.types";
 import type { ClassicsDisc } from "./emulator.types";
@@ -242,6 +242,7 @@ export interface UserPreferences {
   hideSteamLibraryBadges?: boolean;
   hideEpicLibraryBadges?: boolean;
   hideLibraryAchievementProgress?: boolean;
+  collectionStyles?: CollectionStyleMap;
   autoplayAnimatedArtwork?: boolean;
   persistFiltersAndSorting?: boolean;
   ownedLorroThemes?: string[];

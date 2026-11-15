@@ -15,6 +15,7 @@ export * from "./use-search-history";
 export * from "./use-search-suggestions";
 export * from "./use-similar-games";
 export * from "./use-game-collections";
+export * from "./use-game-collection-style";
 export * from "./use-classics-scan";
 export * from "./use-retroarch-scan";
 export * from "./use-game-artwork-grid";

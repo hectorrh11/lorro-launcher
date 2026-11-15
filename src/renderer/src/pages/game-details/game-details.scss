@@ -27,11 +27,7 @@
     width: 100%;
     flex: 1;
     min-width: 0;
-    background: linear-gradient(
-      0deg,
-      globals.$background-color 50%,
-      globals.$dark-background-color 100%
-    );
+    background-color: globals.$background-color;
     padding: calc(globals.$spacing-unit * 1.5);
     gap: calc(globals.$spacing-unit * 1.5);
   }

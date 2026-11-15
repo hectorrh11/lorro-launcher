@@ -1,5 +1,81 @@
 # Lorro Launcher — Notes
 
+## v1.97.2 — Visual restyle: quiet, tool-like interface
+
+### What changed (visual only)
+
+- Design tokens rewritten in `scss/globals.scss`: warm neutral surfaces
+  (`#151311` bg, `#100e0d` deep, `#1b1917` panel, `#211e1b` raised, `#272320`
+  hover), text `#ece7df` / `#bcb5aa` / `#8d857a`, borders
+  `rgba(255,255,255,.09)` and `.16`, one ochre accent `#c08b52`
+  (`#d7a878` soft, `#a9743f` secondary, `#9a938a` tertiary), all glows
+  transparent. New radius tokens `$radius-xs/sm/md/lg` (4/6/8/10px) and a
+  single system font stack for both `$font-body` and `$font-display`.
+  `lorro-gradient`, `lorro-text-gradient`, `lorro-surface` and
+  `platinum-gradient` now output flat fills.
+- `scss/themes.scss`: default accent, background overlay, light theme, glass
+  and title-bar tints moved to the neutral palette; Golden/Esmeralda/Rubí keep
+  their hues with transparent glows; `--color-primary` now maps to the accent.
+- Shared components restyled flat: button, badge, game card, hero, fields,
+  checkbox/radio, sidebar, header, toast, dropdown/context menu,
+  vertical cover card, window title bar. Hover is a small background/border
+  shift, transitions 0.14s, focus is a 2px accent outline, no scale or glow.
+- Page sweeps removed decorative gradients from home, catalogue, library,
+  downloads, achievements, settings (incl. store, appearance, advanced),
+  game details, launcher, custom download launcher and error fallback.
+  Kept only functional scrims under text, skeleton shimmers, the image-crop
+  checkerboard, the classics ring and the profile metal disc; purchased
+  animated wallpapers in `lorro-cosmetics.scss` are untouched.
+- `#lorro-feedback-button` (inline styles in `lib/lorro-feedback.ts`) is flat,
+  uses the system font and sits at `bottom: 56px` so it no longer overlaps the
+  bottom bar; `.home__customize` lost its `-28px` margin so the hero no longer
+  covers "Personalizar inicio".
+
+### Verification
+
+- `yarn typecheck` — node and web pass.
+- `npx electron-vite build` — passes (main/preload/renderer).
+- `node scripts/verify-main-bundle.mjs` — 12 chunks verified.
+- `git diff --stat` — 65 files, +480/-718; renderer changes are SCSS plus the
+  inline styles in `lorro-feedback.ts`; no TSX, hooks, IPC, routes or strings
+  changed. Manual visual review on Windows is still pending.
+
+## v1.97.1 — Custom-link downloads failed with "Invalid parallel download limits"
+
+### Root cause
+
+- 1.95.0 turned custom links into persisted download sources and made the
+  custom downloader request `parallelRangeConnections: 32`, but the segmented
+  HTTP engine (`parallel-range-download.ts`) still capped connections at 16 and
+  threw `Invalid parallel download limits` for anything above it.
+- Every custom-link game download therefore failed before the first byte:
+  `[JsHttpDownloader] Download error: Error: Invalid parallel download limits`
+  → `[DownloadManager] Download failed for <game>: Invalid parallel download
+  limits`. With no bytes transferred nothing populated the download record
+  (size, speed, progress), so the download page showed an empty/error entry.
+
+### Fix
+
+- `MAX_PARALLEL_CONNECTIONS` is now exported and raised to 32, matching the
+  custom downloader, the documented limit and the 1.96.0 notes.
+- Added `normalizeParallelConnectionCount()`: non-finite counts fall back to the
+  default 4, and any other value is clamped to 1–32. `downloadParallelRanges`
+  clamps instead of throwing, so a bad value from settings or a remote service
+  can no longer kill a download. The worker pool uses the clamped value.
+- `download-manager.ts` now references `MAX_PARALLEL_CONNECTIONS` instead of the
+  duplicated literal `32`, so the two limits cannot drift again.
+
+### Verification
+
+- `node --test scripts/parallel-range.test.mjs` — 4/4 pass with a real local
+  HTTP server serving 1.5 MB in 256 KB ranges: 32 connections completes and the
+  file is byte-identical, 4096 connections is clamped instead of failing, a
+  single connection works and the range metadata is cleaned up.
+- `yarn typecheck`, `npx electron-vite build` and
+  `node scripts/verify-main-bundle.mjs` pass.
+- Manual check: add a custom link to a catalogue game, start the download and
+  confirm size/speed/progress appear and the file completes.
+
 ## v1.97.0 — Fix the black window shipped in 1.96.0
 
 ### Root cause

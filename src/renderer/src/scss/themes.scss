@@ -17,19 +17,20 @@
   &__overlay {
     position: absolute;
     inset: 0;
-    background-color: #05040a;
+    background-color: #151311;
     opacity: var(--lorro-bg-dim, 0);
   }
 }
 
 /* Accent palette: default violet values, overridden by purchased themes. */
 :root {
-  --lorro-accent: #8b5cf6;
-  --lorro-accent-soft: #c4b5fd;
-  --lorro-accent-2: #4f46e5;
-  --lorro-accent-3: #22d3ee;
-  --lorro-accent-3-soft: #a5f3fc;
-  --lorro-accent-glow: rgba(139, 92, 246, 0.45);
+  --color-primary: var(--lorro-accent);
+  --lorro-accent: #c08b52;
+  --lorro-accent-soft: #d7a878;
+  --lorro-accent-2: #a9743f;
+  --lorro-accent-3: #9a938a;
+  --lorro-accent-3-soft: #c3bcb1;
+  --lorro-accent-glow: transparent;
 }
 
 html[data-lorro-theme="golden"] {
@@ -38,7 +39,7 @@ html[data-lorro-theme="golden"] {
   --lorro-accent-2: #d97706;
   --lorro-accent-3: #fde68a;
   --lorro-accent-3-soft: #fff3c4;
-  --lorro-accent-glow: rgba(244, 185, 66, 0.45);
+  --lorro-accent-glow: transparent;
 }
 
 html[data-lorro-theme="esmeralda"] {
@@ -47,7 +48,7 @@ html[data-lorro-theme="esmeralda"] {
   --lorro-accent-2: #10b981;
   --lorro-accent-3: #6ee7b7;
   --lorro-accent-3-soft: #d1fae5;
-  --lorro-accent-glow: rgba(52, 211, 153, 0.45);
+  --lorro-accent-glow: transparent;
 }
 
 html[data-lorro-theme="ruby"] {
@@ -56,7 +57,7 @@ html[data-lorro-theme="ruby"] {
   --lorro-accent-2: #be123c;
   --lorro-accent-3: #fb7185;
   --lorro-accent-3-soft: #ffe4e6;
-  --lorro-accent-glow: rgba(244, 63, 94, 0.45);
+  --lorro-accent-glow: transparent;
 }
 
 /* Light theme: opt-in inversion filter that covers the whole UI, including
@@ -64,7 +65,7 @@ html[data-lorro-theme="ruby"] {
 html[data-lorro-theme="light"] body {
   min-height: 100vh;
   filter: invert(1) hue-rotate(180deg);
-  background-color: #f3f1fb;
+  background-color: #f3f0ea;
 }
 
 html[data-lorro-theme="light"] img,
@@ -136,17 +137,13 @@ html[data-lorro-background="preset"] {
   .game-item,
   .achievement-panel,
   .download-group {
-    background: rgba(12, 10, 20, 0.62);
+    background: rgba(24, 21, 19, 0.62);
     -webkit-backdrop-filter: blur(16px);
     backdrop-filter: blur(16px);
   }
 
   .settings__sidebar-button--active {
-    background: linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--lorro-accent) 26%, transparent) 0%,
-      color-mix(in srgb, var(--lorro-accent) 8%, transparent) 100%
-    );
+    background: color-mix(in srgb, var(--lorro-accent) 16%, transparent);
     -webkit-backdrop-filter: blur(16px);
     backdrop-filter: blur(16px);
   }
@@ -163,7 +160,7 @@ html[data-lorro-background="preset"] {
   }
 
   .title-bar {
-    background-color: rgba(8, 7, 13, 0.72);
+    background-color: rgba(16, 14, 13, 0.72);
     -webkit-backdrop-filter: blur(16px);
     backdrop-filter: blur(16px);
   }

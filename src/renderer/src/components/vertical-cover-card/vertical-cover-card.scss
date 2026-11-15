@@ -10,10 +10,11 @@
   color: inherit;
   background: globals.$background-color;
   border: 0;
-  border-radius: 4px;
-  box-shadow: 0 8px 10px -2px rgba(0, 0, 0, 0.5);
+  border-radius: globals.$radius-sm;
   cursor: pointer;
-  transition: all ease 0.2s;
+  transition:
+    border-color 0.14s ease,
+    background-color 0.14s ease;
 
   &:active {
     opacity: globals.$active-opacity;
@@ -59,11 +60,7 @@
     margin: auto;
     object-fit: contain;
     border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 4px;
-    box-shadow:
-      0 11px 7px rgba(0, 0, 0, 0.05),
-      0 5px 5px rgba(0, 0, 0, 0.09),
-      0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: globals.$radius-xs;
   }
 
   &__placeholder {
@@ -71,12 +68,7 @@
     width: 100%;
     height: 100%;
     color: rgba(255, 255, 255, 0.3);
-    background: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0.08) 0%,
-      rgba(255, 255, 255, 0.04) 50%,
-      rgba(255, 255, 255, 0.08) 100%
-    );
+    background-color: rgba(255, 255, 255, 0.05);
 
     svg {
       position: absolute;

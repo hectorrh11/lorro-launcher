@@ -63,7 +63,10 @@ import { GameFilesManager } from "../game-files-manager";
 import { PremiumizeClient } from "./premiumize";
 import { AllDebridClient } from "./all-debrid";
 import { getDebridRootFolderName, isZipDownloadUrl } from "./debrid-files";
-import { getRangeSizeForRequestBudget } from "./parallel-range-download";
+import {
+  getRangeSizeForRequestBudget,
+  MAX_PARALLEL_CONNECTIONS,
+} from "./parallel-range-download";
 import {
   DEFAULT_DOWNLOAD_USER_AGENT,
   JsHttpDownloader,
@@ -1691,7 +1694,7 @@ export class DownloadManager {
             this.resolveFilename(resumingFilename, download.uri, download.uri)
           ),
           allowParallelRanges: true,
-          parallelRangeConnections: 32,
+          parallelRangeConnections: MAX_PARALLEL_CONNECTIONS,
           probeUnboundedRange: true,
         };
       default:

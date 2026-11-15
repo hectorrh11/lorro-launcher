@@ -12,20 +12,9 @@
     justify-content: space-between;
     gap: 16px;
     padding: 18px 20px;
-    border-radius: 14px;
+    border-radius: globals.$radius-md;
     border: 1px solid globals.$border-color;
-    background:
-      radial-gradient(
-        120% 180% at 0% 0%,
-        rgba(139, 92, 246, 0.16),
-        transparent 55%
-      ),
-      linear-gradient(
-        135deg,
-        globals.$surface-raised-color,
-        globals.$surface-color
-      );
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    background-color: globals.$surface-raised-color;
   }
 
   &__bar-text {
@@ -75,9 +64,9 @@
     min-width: 20px;
     height: 18px;
     padding: 0 6px;
-    border-radius: 999px;
-    background: rgba(139, 92, 246, 0.16);
-    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: globals.$radius-xs;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     color: globals.$lorro-violet-soft;
     font-size: 11px;
     font-weight: 600;
@@ -90,11 +79,11 @@
     margin-bottom: 16px;
     padding: 12px;
     border-radius: 12px;
-    border: 1px solid rgba(139, 92, 246, 0.32);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     background:
       radial-gradient(
         120% 160% at 0% 0%,
-        rgba(139, 92, 246, 0.16),
+        rgba(255, 255, 255, 0.08),
         transparent 60%
       ),
       globals.$surface-color;
@@ -160,7 +149,7 @@
     align-items: center;
     gap: 5px;
     padding: 2px 9px;
-    border-radius: 999px;
+    border-radius: globals.$radius-xs;
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
@@ -170,14 +159,14 @@
 
     &--active {
       color: globals.$lorro-cyan;
-      border-color: rgba(34, 211, 238, 0.35);
-      background: rgba(34, 211, 238, 0.1);
+      border-color: rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.06);
     }
 
     &--queued {
       color: globals.$lorro-violet-soft;
-      border-color: rgba(139, 92, 246, 0.35);
-      background: rgba(139, 92, 246, 0.1);
+      border-color: rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.06);
     }
 
     &--paused {
@@ -207,7 +196,7 @@
 
   &__progress-bar {
     height: 6px;
-    border-radius: 999px;
+    border-radius: globals.$radius-xs;
     background: rgba(255, 255, 255, 0.08);
     overflow: hidden;
   }
@@ -215,11 +204,7 @@
   &__progress-fill {
     height: 100%;
     border-radius: inherit;
-    background: linear-gradient(
-      90deg,
-      globals.$lorro-violet,
-      globals.$lorro-cyan
-    );
+    background-color: globals.$lorro-violet;
     transition: width 0.3s ease;
 
     &--indeterminate {

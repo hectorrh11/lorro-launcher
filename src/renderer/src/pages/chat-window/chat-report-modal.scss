@@ -95,7 +95,7 @@ $error-text: #fda4af;
     padding: 0 calc(globals.$spacing-unit * 1.5);
     box-sizing: border-box;
     border: 1px solid $pill-border;
-    border-radius: 999px;
+    border-radius: globals.$radius-xs;
     font-size: 13px;
     color: globals.$body-color;
     cursor: pointer;
@@ -181,7 +181,7 @@ $error-text: #fda4af;
     }
 
     &:focus {
-      border-color: #dadbe1;
+      border-color: #ece7df;
     }
   }
 

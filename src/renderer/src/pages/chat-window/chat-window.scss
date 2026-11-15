@@ -1897,7 +1897,7 @@ $cooldown-ring-length: 2 * math.$pi * 11;
     }
 
     &:focus-within {
-      border-color: #dadbe1;
+      border-color: #ece7df;
     }
 
     &--shake,
@@ -2057,7 +2057,7 @@ $cooldown-ring-length: 2 * math.$pi * 11;
       color 0.2s ease;
 
     &:hover {
-      background-color: #dadbe1;
+      background-color: #ece7df;
     }
 
     &:disabled {
@@ -2472,7 +2472,7 @@ $cooldown-ring-length: 2 * math.$pi * 11;
     transition: border-color 0.2s ease;
 
     &:focus-within {
-      border-color: #dadbe1;
+      border-color: #ece7df;
     }
   }
 

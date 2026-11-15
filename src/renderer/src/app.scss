@@ -14,14 +14,14 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(167, 139, 250, 0.22);
+  background-color: rgba(255, 255, 255, 0.16);
   border-radius: 24px;
   border: 2px solid transparent;
   background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(167, 139, 250, 0.4);
+  background-color: rgba(255, 255, 255, 0.16);
 }
 
 html,
@@ -117,12 +117,12 @@ progress[value] {
 }
 
 ::selection {
-  background-color: rgba(139, 92, 246, 0.4);
+  background-color: rgba(255, 255, 255, 0.12);
   color: #ffffff;
 }
 
 :focus-visible {
-  outline: 2px solid rgba(167, 139, 250, 0.7);
+  outline: 2px solid rgba(255, 255, 255, 0.16);
   outline-offset: 2px;
 }
 
@@ -142,22 +142,7 @@ progress[value] {
     flex-direction: column;
     position: relative;
     height: 100%;
-    background:
-      radial-gradient(
-        1100px 620px at 18% -12%,
-        rgba(124, 92, 240, 0.16),
-        transparent 70%
-      ),
-      radial-gradient(
-        900px 520px at 88% 4%,
-        rgba(34, 211, 238, 0.08),
-        transparent 72%
-      ),
-      linear-gradient(
-        180deg,
-        globals.$background-color 0%,
-        globals.$dark-background-color 100%
-      );
+    background-color: globals.$background-color;
   }
 }
 
@@ -233,7 +218,7 @@ progress[value] {
 
     &:hover {
       opacity: 1;
-      background-color: rgba(139, 92, 246, 0.14);
+      background-color: rgba(255, 255, 255, 0.06);
     }
   }
 

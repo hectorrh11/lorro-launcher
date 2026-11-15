@@ -10,9 +10,7 @@
   padding: calc(globals.$spacing-unit * 2) calc(globals.$spacing-unit * 3);
   color: globals.$muted-color;
   border-bottom: solid 1px globals.$border-color;
-  background:
-    linear-gradient(180deg, rgba(139, 92, 246, 0.06), rgba(8, 7, 13, 0)),
-    globals.$dark-background-color;
+  background-color: globals.$dark-background-color;
 
   &--dragging-disabled {
     -webkit-app-region: no-drag;
@@ -31,20 +29,20 @@
       box-shadow 0.2s ease;
     width: 210px;
     align-items: center;
-    border-radius: 999px;
+    border-radius: globals.$radius-xs;
     border: solid 1px globals.$border-color;
     height: 38px;
     padding: 0 calc(globals.$spacing-unit * 1.5);
     -webkit-app-region: no-drag;
 
     &:hover {
-      border-color: rgba(167, 139, 250, 0.4);
+      border-color: globals.$border-strong-color;
     }
 
     &--focused {
       width: 280px;
-      border-color: rgba(139, 92, 246, 0.7);
-      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.16);
+      border-color: globals.$lorro-violet;
+      box-shadow: none;
     }
   }
 
@@ -81,19 +79,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 10px;
+    border-radius: globals.$radius-sm;
 
     &:hover {
-      color: #ffffff;
-      background-color: rgba(139, 92, 246, 0.14);
+      color: globals.$muted-color;
+      background-color: rgba(255, 255, 255, 0.06);
     }
 
     &--outlined {
       border: 1px solid globals.$border-color;
-      border-radius: 10px;
+      border-radius: globals.$radius-sm;
 
       &:hover {
-        border-color: rgba(167, 139, 250, 0.45);
+        border-color: globals.$border-strong-color;
       }
     }
 

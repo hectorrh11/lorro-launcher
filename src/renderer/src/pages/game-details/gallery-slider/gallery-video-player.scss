@@ -207,7 +207,7 @@ $video-ease: cubic-bezier(0.22, 1, 0.36, 1);
     align-items: center;
     gap: 10px;
     padding: 8px 14px;
-    border-radius: 999px;
+    border-radius: globals.$radius-xs;
     background-color: rgba(0, 0, 0, 0.55);
     color: #fff;
     transform: translateX(-50%);

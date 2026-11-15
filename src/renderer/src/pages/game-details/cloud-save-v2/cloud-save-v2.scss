@@ -235,7 +235,7 @@
     flex-shrink: 0;
     padding: 2px;
     border: 1px solid globals.$border-color;
-    border-radius: 999px;
+    border-radius: globals.$radius-xs;
     background: rgba(255, 255, 255, 0.1);
     cursor: pointer;
     transition:
@@ -455,7 +455,7 @@
   &__status-pill {
     padding: calc(globals.$spacing-unit / 2) globals.$spacing-unit;
     border: 1px solid rgba(255, 255, 255, 0.04);
-    border-radius: 999px;
+    border-radius: globals.$radius-xs;
     background: rgba(255, 255, 255, 0.05);
     color: globals.$muted-color;
     font-size: 11px;

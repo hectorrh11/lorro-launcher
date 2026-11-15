@@ -12,13 +12,13 @@
     padding: 4px;
     flex-wrap: wrap;
     border: 1px solid globals.$border-color;
-    border-radius: 999px;
+    border-radius: globals.$radius-xs;
     background: globals.$surface-color;
   }
 
   &__tab {
     padding: 8px 16px;
-    border-radius: 999px;
+    border-radius: globals.$radius-xs;
     border: 1px solid transparent;
     background: transparent;
     color: globals.$body-color;
@@ -46,11 +46,7 @@
     &--active {
       color: globals.$muted-color;
       border-color: color-mix(in srgb, var(--lorro-accent) 55%, transparent);
-      background: linear-gradient(
-        135deg,
-        color-mix(in srgb, var(--lorro-accent) 28%, transparent) 0%,
-        color-mix(in srgb, var(--lorro-accent) 10%, transparent) 100%
-      );
+      background: rgba(255, 255, 255, 0.05);
       box-shadow:
         0 0 0 1px color-mix(in srgb, var(--lorro-accent) 22%, transparent),
         0 8px 22px -10px var(--lorro-accent-glow);
@@ -73,13 +69,7 @@
   }
 
   &__card {
-    background:
-      linear-gradient(
-        160deg,
-        rgba(255, 255, 255, 0.03) 0%,
-        rgba(255, 255, 255, 0.008) 100%
-      ),
-      globals.$surface-color;
+    background: globals.$surface-color;
     border: 1px solid globals.$border-color;
     border-radius: 14px;
     padding: 20px;
@@ -282,13 +272,7 @@
     padding: 14px 16px;
     border: 1px solid globals.$border-color;
     border-radius: 12px;
-    background:
-      linear-gradient(
-        160deg,
-        color-mix(in srgb, var(--lorro-accent) 9%, transparent) 0%,
-        transparent 100%
-      ),
-      globals.$surface-raised-color;
+    background: globals.$surface-raised-color;
 
     > span:not(.settings-advanced__meta) {
       font-size: 10.5px;
@@ -346,11 +330,7 @@
     min-width: 4px;
     min-height: 4px;
     border-radius: 4px 4px 0 0;
-    background: linear-gradient(
-      180deg,
-      globals.$lorro-violet 0%,
-      color-mix(in srgb, var(--lorro-accent-3) 55%, transparent) 100%
-    );
+    background: globals.$lorro-violet;
     transition: filter 0.16s ease;
 
     &:hover {

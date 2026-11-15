@@ -5,8 +5,8 @@
   z-index: 1000;
   background-color: globals.$dark-background-color;
   border: 1px solid globals.$border-color;
-  border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border-radius: globals.$radius-sm;
+  box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.8);
   padding: 4px;
   min-width: 180px;
   animation: contextMenuFadeIn 0.15s ease-out;
@@ -36,7 +36,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    border-radius: 4px;
+    border-radius: globals.$radius-xs;
     padding: 6px 12px;
     background: transparent;
     border: none;
@@ -51,12 +51,12 @@
       color 0.1s ease-in-out;
 
     &:hover:not(&--disabled) {
-      background-color: rgba(255, 255, 255, 0.15);
+      background-color: rgba(255, 255, 255, 0.07);
       color: globals.$body-color;
     }
 
     &:active:not(&--disabled) {
-      background-color: rgba(255, 255, 255, 0.22);
+      background-color: rgba(255, 255, 255, 0.08);
     }
 
     &--disabled {
@@ -69,12 +69,12 @@
       color: globals.$error-color;
 
       &:hover:not(.context-menu__item--disabled) {
-        background-color: rgba(225, 29, 72, 0.18);
+        background-color: rgba(201, 111, 98, 0.14);
         color: globals.$error-color;
       }
 
       &:active:not(.context-menu__item--disabled) {
-        background-color: rgba(225, 29, 72, 0.28);
+        background-color: rgba(201, 111, 98, 0.2);
         color: globals.$error-color;
       }
 
@@ -88,7 +88,7 @@
     }
 
     &--active {
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: rgba(255, 255, 255, 0.08);
       color: globals.$body-color;
     }
   }
@@ -133,8 +133,8 @@
     top: 0;
     background-color: globals.$dark-background-color;
     border: 1px solid globals.$border-color;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    border-radius: globals.$radius-sm;
+    box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.8);
     padding: 4px;
     min-width: 160px;
     margin-left: -1px;

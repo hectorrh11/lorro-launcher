@@ -2,10 +2,12 @@
 
 .select-field {
   display: inline-flex;
-  transition: all ease 0.2s;
+  transition:
+    border-color 0.14s ease,
+    background-color 0.14s ease;
   width: fit-content;
   align-items: center;
-  border-radius: 8px;
+  border-radius: globals.$radius-md;
   border: 1px solid globals.$border-color;
   height: 40px;
   min-height: 40px;
@@ -15,11 +17,11 @@
   }
 
   &:hover {
-    border-color: rgba(255, 255, 255, 0.5);
+    border-color: globals.$border-strong-color;
   }
 
   &--focused {
-    border-color: #dadbe1;
+    border-color: globals.$lorro-violet;
   }
 
   &--disabled {
@@ -35,7 +37,7 @@
   }
 
   &--primary {
-    background-color: globals.$dark-background-color;
+    background-color: globals.$surface-raised-color;
   }
 
   &--dark {
@@ -43,14 +45,14 @@
   }
 
   &__option {
-    background-color: globals.$dark-background-color;
+    background-color: globals.$surface-raised-color;
     border-right: 4px solid;
     border-color: transparent;
-    border-radius: 8px;
+    border-radius: globals.$radius-sm;
     width: fit-content;
     height: 100%;
     outline: none;
-    color: #dadbe1;
+    color: globals.$muted-color;
     cursor: default;
     font-family: inherit;
     font-size: globals.$body-font-size;

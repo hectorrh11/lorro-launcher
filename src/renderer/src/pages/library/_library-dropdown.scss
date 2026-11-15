@@ -9,7 +9,7 @@
   border-radius: 8px;
   border: 1px solid globals.$border-color;
   background-color: globals.$background-color;
-  color: #dadbe1;
+  color: #ece7df;
   cursor: pointer;
   font-size: globals.$body-font-size;
 
@@ -18,7 +18,7 @@
   }
 
   #{$selector}[data-state="open"] {
-    border-color: #dadbe1;
+    border-color: #ece7df;
   }
 }
 

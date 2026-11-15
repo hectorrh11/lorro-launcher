@@ -11,13 +11,7 @@
 
   &__content {
     position: relative;
-    background:
-      radial-gradient(
-        120% 120% at 100% 0%,
-        color-mix(in srgb, var(--lorro-accent) 9%, transparent) 0%,
-        transparent 55%
-      ),
-      globals.$background-color;
+    background: globals.$background-color;
     width: 100%;
     height: 100%;
     border: 1px solid globals.$border-color;
@@ -36,9 +30,7 @@
     gap: 4px;
     padding: 20px 14px;
     border-right: 1px solid globals.$border-color;
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 42%),
-      globals.$dark-background-color;
+    background: globals.$dark-background-color;
     overflow-y: auto;
     flex-shrink: 0;
     scrollbar-width: thin;
@@ -100,10 +92,10 @@
     &--active {
       color: globals.$muted-color;
       border-color: color-mix(in srgb, var(--lorro-accent) 32%, transparent);
-      background: linear-gradient(
-        90deg,
-        color-mix(in srgb, var(--lorro-accent) 22%, transparent) 0%,
-        color-mix(in srgb, var(--lorro-accent) 4%, transparent) 100%
+      background: color-mix(
+        in srgb,
+        var(--lorro-accent) 14%,
+        transparent
       );
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 
@@ -148,13 +140,7 @@
   &__sidebar-divider {
     height: 1px;
     margin: 0 10px 4px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      globals.$border-color 20%,
-      globals.$border-color 80%,
-      transparent
-    );
+    background: globals.$border-color;
   }
 
   &__sidebar-group-label {
@@ -194,7 +180,7 @@
       width: 56px;
       height: 2px;
       border-radius: 2px;
-      background: linear-gradient(90deg, globals.$lorro-violet, transparent);
+      background: globals.$lorro-violet;
     }
   }
 
@@ -346,7 +332,7 @@
     &.checked {
       background-color: globals.$lorro-violet;
       border-color: globals.$lorro-violet;
-      color: #0b0912;
+      color: #151311;
     }
 
     &:has(.checkbox-field__input:focus-visible) {
@@ -378,13 +364,7 @@
     padding: 20px;
     border: 1px solid globals.$border-color;
     border-radius: 14px;
-    background:
-      linear-gradient(
-        160deg,
-        rgba(255, 255, 255, 0.03) 0%,
-        rgba(255, 255, 255, 0.008) 100%
-      ),
-      globals.$surface-color;
+    background: globals.$surface-color;
     box-shadow: 0 18px 40px -36px rgba(0, 0, 0, 0.9);
 
     > h3 {
@@ -426,20 +406,9 @@
     align-items: flex-start;
     gap: 10px;
     padding: 24px;
-    border-radius: 14px;
+    border-radius: globals.$radius-md;
     border: 1px solid globals.$border-strong-color;
-    background:
-      radial-gradient(
-        120% 160% at 0% 0%,
-        color-mix(in srgb, var(--lorro-accent) 22%, transparent) 0%,
-        transparent 60%
-      ),
-      radial-gradient(
-        120% 160% at 100% 100%,
-        color-mix(in srgb, var(--lorro-accent-3) 14%, transparent) 0%,
-        transparent 60%
-      ),
-      globals.$surface-color;
+    background: globals.$surface-color;
     box-shadow: 0 24px 50px -40px rgba(0, 0, 0, 0.9);
   }
 

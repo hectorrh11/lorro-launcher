@@ -53,13 +53,7 @@
     padding: 20px;
     border: 1px solid globals.$border-color;
     border-radius: 14px;
-    background:
-      linear-gradient(
-        160deg,
-        color-mix(in srgb, var(--lorro-accent) 9%, transparent) 0%,
-        rgba(255, 255, 255, 0.008) 100%
-      ),
-      globals.$surface-color;
+    background: globals.$surface-color;
     box-shadow: 0 18px 40px -36px rgba(0, 0, 0, 0.9);
   }
 
@@ -93,7 +87,7 @@
     align-items: center;
     gap: 8px;
     padding: 9px 14px;
-    border-radius: 999px;
+    border-radius: globals.$radius-xs;
     border: 1px solid globals.$border-color;
     background: globals.$surface-raised-color;
     color: globals.$body-color;
@@ -118,11 +112,7 @@
 
     &--active {
       border-color: color-mix(in srgb, var(--lorro-accent) 55%, transparent);
-      background: linear-gradient(
-        135deg,
-        color-mix(in srgb, var(--lorro-accent) 28%, transparent) 0%,
-        color-mix(in srgb, var(--lorro-accent) 10%, transparent) 100%
-      );
+      background: rgba(255, 255, 255, 0.05);
       color: globals.$muted-color;
       box-shadow: 0 8px 22px -10px var(--lorro-accent-glow);
     }
@@ -140,27 +130,27 @@
     flex-shrink: 0;
 
     &--dark {
-      background: #0b0912;
+      background: #151311;
     }
 
     &--light {
-      background: linear-gradient(135deg, #f3f1fb, #dcd7ee);
+      background: #f3f0ea;
     }
 
     &--transparent {
-      background: linear-gradient(135deg, #2a2440, #141020);
+      background: #1b1917;
     }
 
     &--golden {
-      background: linear-gradient(135deg, #f4b942, #d97706);
+      background: #c08b52;
     }
 
     &--esmeralda {
-      background: linear-gradient(135deg, #34d399, #10b981);
+      background: #6f9e6b;
     }
 
     &--ruby {
-      background: linear-gradient(135deg, #f43f5e, #be123c);
+      background: #a05a5a;
     }
   }
 

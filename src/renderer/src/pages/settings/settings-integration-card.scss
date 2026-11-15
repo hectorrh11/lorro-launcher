@@ -6,14 +6,8 @@
   gap: calc(globals.$spacing-unit * 2);
   padding: 20px;
   border: 1px solid globals.$border-color;
-  border-radius: 14px;
-  background:
-    linear-gradient(
-      160deg,
-      rgba(255, 255, 255, 0.03) 0%,
-      rgba(255, 255, 255, 0.008) 100%
-    ),
-    globals.$surface-color;
+  border-radius: globals.$radius-md;
+  background: globals.$surface-color;
   transition: border-color 0.16s ease;
 
   &:hover {
@@ -181,7 +175,7 @@
     position: relative;
     height: 4px;
     overflow: hidden;
-    border-radius: 999px;
+    border-radius: globals.$radius-xs;
     background: rgba(255, 255, 255, 0.08);
   }
 

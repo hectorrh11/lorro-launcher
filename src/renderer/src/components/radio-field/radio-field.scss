@@ -1,7 +1,7 @@
 @use "../../scss/globals.scss";
 
 .radio-field {
-  --radio-field-accent: var(--color-primary);
+  --radio-field-accent: var(--lorro-accent);
   display: inline-flex;
   align-items: center;
   gap: globals.$spacing-unit;
@@ -14,10 +14,9 @@
   }
 
   &:has(.radio-field__input:focus-visible) {
-    outline: 2px solid
-      color-mix(in srgb, var(--radio-field-accent) 70%, #fff 30%);
+    outline: 2px solid globals.$lorro-violet;
     outline-offset: 1px;
-    border-radius: 6px;
+    border-radius: globals.$radius-sm;
   }
 
   &--selected .radio-field__control {
@@ -27,7 +26,6 @@
 
   &--selected .radio-field__dot {
     opacity: 1;
-    transform: scale(1);
     background: #fff;
   }
 
@@ -41,28 +39,25 @@
     width: 20px;
     height: 20px;
     min-width: 20px;
-    border-radius: 999px;
+    border-radius: globals.$radius-xs;
     border: solid 1px globals.$border-color;
     background: globals.$dark-background-color;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     transition:
-      border-color 0.2s ease,
-      background-color 0.2s ease;
+      border-color 0.14s ease,
+      background-color 0.14s ease;
   }
 
   &__dot {
     display: block;
     width: 8px;
     height: 8px;
-    border-radius: 999px;
+    border-radius: globals.$radius-xs;
     background: var(--radio-field-accent);
     opacity: 0;
-    transform: scale(0);
-    transition:
-      transform 0.15s ease,
-      opacity 0.15s ease;
+    transition: opacity 0.14s ease;
   }
 
   &__left-slot {

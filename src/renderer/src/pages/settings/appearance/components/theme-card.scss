@@ -9,14 +9,8 @@
   padding: 20px;
   position: relative;
   border: 1px solid globals.$border-color;
-  border-radius: 14px;
-  background:
-    linear-gradient(
-      160deg,
-      rgba(255, 255, 255, 0.03) 0%,
-      rgba(255, 255, 255, 0.008) 100%
-    ),
-    globals.$surface-color;
+  border-radius: globals.$radius-md;
+  background: globals.$surface-color;
   transition:
     border-color 0.16s ease,
     background-color 0.16s ease,

@@ -371,7 +371,7 @@
   &__badge {
     align-self: center;
     padding: calc(globals.$spacing-unit / 2) calc(globals.$spacing-unit * 2);
-    border-radius: 999px;
+    border-radius: globals.$radius-xs;
     font-weight: bold;
     text-transform: uppercase;
     font-size: globals.$small-font-size;

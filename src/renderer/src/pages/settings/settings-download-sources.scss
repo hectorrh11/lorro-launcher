@@ -21,14 +21,8 @@
   &__item {
     display: flex;
     flex-direction: column;
-    background:
-      linear-gradient(
-        160deg,
-        rgba(255, 255, 255, 0.03) 0%,
-        rgba(255, 255, 255, 0.008) 100%
-      ),
-      globals.$surface-color;
-    border-radius: 14px;
+    background: globals.$surface-color;
+    border-radius: globals.$radius-md;
     padding: 20px;
     gap: globals.$spacing-unit;
     border: solid 1px globals.$border-color;

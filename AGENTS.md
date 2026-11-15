@@ -2,7 +2,7 @@
 
 Launcher de escritorio **independiente** (Electron + React + TypeScript + Vite)
 basado en el código abierto de Hydra. Repo: `hectorrh11/lorro-launcher`.
-Versión publicada actual: **1.97.0** (Windows, Ubuntu/Debian y Arch Linux).
+Versión actual: **1.97.2** (sin publicar; última publicada **1.97.0**).
 
 Este documento es la fuente de verdad para retomar el proyecto en una sesión
 nueva. Léelo entero antes de tocar código.
@@ -466,6 +466,33 @@ enlaces de Hydra/Lorro Cloud.
 
 ---
 
+### 1.97.2 (sin publicar)
+
+- Restyling visual completo: grises calidos neutros, un unico acento ocre
+  `#c08b52`, bordes de 1 px, radios de 4-8 px y tipografia del sistema. Fuera
+  degradados decorativos, neones y sombras de color; menus y dialogos con
+  sombra neutra suave.
+- Tokens en `scss/globals.scss` (superficies, texto, bordes, radios, fuentes) y
+  `scss/themes.scss` (acento por defecto, fondos, temas comprados sin glow).
+- Componentes y paginas aplanados (botones, tarjetas, sidebar, cabecera,
+  campos, menus, ajustes, biblioteca, descargas, ficha de juego, etc.). Se
+  conservan scrims de legibilidad, esqueletos de carga, el damero del recorte y
+  los fondos animados comprados.
+- Corregido el solape de "Personalizar inicio" con el hero y el boton de
+  comentarios con la barra inferior. Sin cambios de logica, IPC ni textos.
+
+### 1.97.1 (sin publicar)
+
+- Las descargas de enlaces personalizados fallaban al instante con
+  `Invalid parallel download limits`: el motor segmentado limitaba a 16
+  conexiones y `Downloader.Custom` pedia 32 desde la 1.95.0. Sin bytes no habia
+  tamano, velocidad ni progreso en la GUI.
+- `MAX_PARALLEL_CONNECTIONS` pasa a 32 y se exporta; nuevo
+  `normalizeParallelConnectionCount()` que ajusta (1-32) en lugar de lanzar, y
+  `download-manager.ts` usa la constante en vez del literal 32.
+- Prueba real en `scripts/parallel-range.test.mjs` (servidor HTTP local, 1.5 MB
+  en rangos de 256 KB): 32 conexiones, 4096 ajustadas y 1 conexion.
+
 ### 1.97.0 (publicada)
 
 - Corregida la ventana en negro de la 1.96.0: electron-vite insertaba su banner
@@ -695,6 +722,12 @@ Comprobar además:
 - **1.90.0** — enlace personalizado como fuente de descarga del juego
   (`Downloader.Custom`), con la misma GUI, registro en Descargas, extracción y
   detección del ejecutable; aviso de actualización emergente eliminado.
+- **1.97.2** — rediseño visual sobrio: grises calidos, acento ocre unico,
+  bordes finos, radios pequenos y tipografia del sistema; sin degradados,
+  brillos ni sombras de color.
+- **1.97.1** — corrige las descargas de enlaces personalizados (limite de 16
+  conexiones frente a las 32 solicitadas); los valores fuera de rango se
+  ajustan y hay prueba con servidor HTTP local.
 - **1.97.0** — corrige la ventana en negro de la 1.96.0 (banner de shims de
   electron-vite insertado dentro de una cadena del chunk de eventos) y anade
   `verify:bundle` para validar los chunks del proceso principal.

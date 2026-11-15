@@ -9,11 +9,7 @@ $mono-font: "SFMono-Regular", "Menlo", "Consolas", "Liberation Mono", monospace;
   align-items: center;
   justify-content: center;
   padding: calc(globals.$spacing-unit * 4);
-  background: linear-gradient(
-    0deg,
-    globals.$dark-background-color 50%,
-    globals.$background-color 100%
-  );
+  background-color: globals.$dark-background-color;
   overflow-y: auto;
 
   &__content {

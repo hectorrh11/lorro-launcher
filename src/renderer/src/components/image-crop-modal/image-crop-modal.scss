@@ -141,7 +141,7 @@
     background-color: rgba(18, 18, 18, 0.66);
     backdrop-filter: blur(12px);
     border: solid 1px globals.$border-color;
-    border-radius: 999px;
+    border-radius: globals.$radius-xs;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     animation: image-crop-toolbar-in 0.25s cubic-bezier(0.33, 1, 0.68, 1);
   }
@@ -195,7 +195,7 @@
     appearance: none;
     width: clamp(120px, 22vw, 200px);
     height: 6px;
-    border-radius: 999px;
+    border-radius: globals.$radius-xs;
     background-color: rgba(255, 255, 255, 0.12);
     background-image: linear-gradient(
       90deg,
@@ -238,13 +238,13 @@
 
     &::-moz-range-track {
       height: 6px;
-      border-radius: 999px;
+      border-radius: globals.$radius-xs;
       background-color: transparent;
     }
 
     &::-moz-range-progress {
       height: 6px;
-      border-radius: 999px;
+      border-radius: globals.$radius-xs;
       background-color: globals.$muted-color;
     }
 

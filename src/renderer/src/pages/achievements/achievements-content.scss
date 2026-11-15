@@ -126,18 +126,14 @@ $logo-max-width: 200px;
       &__container {
         display: flex;
         flex-direction: column;
-        background: linear-gradient(
-          0deg,
-          globals.$background-color 0%,
-          globals.$background-color 100%
-        );
+        background-color: globals.$background-color;
 
         &__banner {
           position: relative;
           overflow: hidden;
           display: flex;
           flex-direction: column;
-          background: linear-gradient(180deg, #101010 0%, #0a0a0a 100%);
+          background-color: globals.$dark-background-color;
 
           &-background {
             position: absolute;
@@ -153,18 +149,12 @@ $logo-max-width: 200px;
             position: absolute;
             inset: 0;
             z-index: 1;
-            background:
-              linear-gradient(
-                to bottom,
-                rgba(0, 0, 0, 0.15) 0%,
-                rgba(0, 0, 0, 0.5) 45%,
-                globals.$background-color 100%
-              ),
-              linear-gradient(
-                90deg,
-                rgba(0, 0, 0, 0.55) 0%,
-                rgba(0, 0, 0, 0) 55%
-              );
+            background: linear-gradient(
+              to bottom,
+              rgba(0, 0, 0, 0.15) 0%,
+              rgba(0, 0, 0, 0.45) 45%,
+              globals.$background-color 100%
+            );
           }
         }
 

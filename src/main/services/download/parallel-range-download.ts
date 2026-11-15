@@ -11,13 +11,22 @@ import {
 } from "./range-download-state.js";
 
 const PARALLEL_RANGE_FAILURE_LIMIT = 2;
-const MAX_PARALLEL_CONNECTIONS = 16;
+export const MAX_PARALLEL_CONNECTIONS = 32;
 const RANGE_CHECKPOINT_INTERVAL_MS = 1000;
 const STRONG_LAST_MODIFIED_AGE_MS = 60_000;
 
 export const PARALLEL_RANGE_SIZE = 8 * 1024 * 1024;
 export const PARALLEL_RANGE_COUNT = 4;
 export const MAX_PARALLEL_RANGE_SIZE = 256 * 1024 * 1024;
+
+/**
+ * Connection counts come from user settings and remote services, so clamp them
+ * instead of failing the whole download when a value is out of range.
+ */
+export function normalizeParallelConnectionCount(value?: number): number {
+  if (!Number.isSafeInteger(value)) return PARALLEL_RANGE_COUNT;
+  return Math.min(MAX_PARALLEL_CONNECTIONS, Math.max(1, value as number));
+}
 
 export function getRangeSizeForRequestBudget(
   totalBytes: number,
@@ -158,7 +167,7 @@ export async function downloadParallelRanges({
   startByte,
   total,
   rangeSize = PARALLEL_RANGE_SIZE,
-  connectionCount = PARALLEL_RANGE_COUNT,
+  connectionCount,
   maxRanges = Infinity,
   resourceId,
   signal,
@@ -190,9 +199,6 @@ export async function downloadParallelRanges({
   if (
     !Number.isSafeInteger(rangeSize) ||
     rangeSize <= 0 ||
-    !Number.isSafeInteger(connectionCount) ||
-    connectionCount < 1 ||
-    connectionCount > MAX_PARALLEL_CONNECTIONS ||
     !(
       maxRanges === Infinity ||
       (Number.isSafeInteger(maxRanges) && maxRanges > 0)
@@ -201,6 +207,7 @@ export async function downloadParallelRanges({
     await firstResponse.body?.cancel();
     throw new Error("Invalid parallel download limits");
   }
+  const connections = normalizeParallelConnectionCount(connectionCount);
   const state: RangeDownloadState = saved ?? {
     version: 1,
     total,
@@ -344,9 +351,8 @@ export async function downloadParallelRanges({
   let workers: Promise<void>[] = [];
   try {
     await persist();
-    workers = Array.from(
-      { length: Math.min(connectionCount, jobs.length) },
-      () => worker()
+    workers = Array.from({ length: Math.min(connections, jobs.length) }, () =>
+      worker()
     );
     try {
       await Promise.all(workers);

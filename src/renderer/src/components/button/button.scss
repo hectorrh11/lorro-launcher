@@ -4,14 +4,13 @@
   padding: globals.$spacing-unit globals.$spacing-unit * 2;
   background-color: globals.$surface-raised-color;
   color: globals.$muted-color;
-  border-radius: 10px;
+  border-radius: globals.$radius-md;
   border: solid 1px globals.$border-color;
   transition:
-    background-color 0.18s ease,
-    border-color 0.18s ease,
-    box-shadow 0.18s ease,
-    filter 0.18s ease,
-    opacity 0.18s ease;
+    background-color 0.14s ease,
+    border-color 0.14s ease,
+    color 0.14s ease,
+    opacity 0.14s ease;
   cursor: pointer;
   min-height: 40px;
   display: flex;
@@ -19,11 +18,16 @@
   justify-content: center;
   gap: globals.$spacing-unit;
   font-weight: 600;
-  letter-spacing: 0.01em;
+  letter-spacing: 0;
 
   &:hover:not(:disabled) {
-    border-color: rgba(167, 139, 250, 0.45);
+    border-color: globals.$border-strong-color;
     background-color: globals.$surface-overlay-color;
+  }
+
+  &:focus-visible {
+    outline: 2px solid globals.$lorro-violet;
+    outline-offset: 2px;
   }
 
   &:active {
@@ -40,31 +44,25 @@
     min-height: 28px;
     padding: 0 calc(globals.$spacing-unit * 1.25);
     gap: calc(globals.$spacing-unit * 0.75);
-    border-radius: 8px;
+    border-radius: globals.$radius-sm;
     font-size: globals.$small-font-size;
   }
 
   &--primary {
-    background: linear-gradient(
-      135deg,
-      globals.$lorro-violet 0%,
-      globals.$lorro-indigo 100%
-    );
-    border-color: rgba(196, 181, 253, 0.45);
-    color: #ffffff;
-    box-shadow: 0 8px 20px -10px rgba(139, 92, 246, 0.9);
+    background-color: globals.$lorro-violet;
+    border-color: transparent;
+    color: globals.$dark-background-color;
+    font-weight: 600;
 
     &:hover:not(:disabled) {
-      filter: brightness(1.1);
-      border-color: rgba(196, 181, 253, 0.75);
-      box-shadow:
-        0 10px 24px -8px rgba(139, 92, 246, 0.95),
-        0 0 18px -4px rgba(34, 211, 238, 0.4);
+      background-color: globals.$lorro-violet-soft;
+      border-color: transparent;
+      color: globals.$dark-background-color;
     }
 
     &:disabled {
-      background: globals.$muted-color;
-      color: globals.$background-color;
+      background-color: globals.$surface-overlay-color;
+      color: globals.$subtle-color;
     }
   }
 
@@ -74,9 +72,9 @@
     color: globals.$muted-color;
 
     &:hover:not(:disabled) {
-      background-color: rgba(139, 92, 246, 0.12);
-      border-color: rgba(167, 139, 250, 0.5);
-      color: #ffffff;
+      background-color: globals.$surface-raised-color;
+      border-color: globals.$border-strong-color;
+      color: globals.$muted-color;
     }
 
     &:disabled {
@@ -94,13 +92,13 @@
   }
 
   &--danger {
-    border-color: rgba(244, 63, 94, 0.45);
+    border-color: transparent;
     background-color: globals.$danger-color;
-    color: #ffffff;
+    color: globals.$muted-color;
 
     &:hover:not(:disabled) {
-      background-color: #9f2347;
-      border-color: rgba(244, 63, 94, 0.8);
+      background-color: #8c443c;
+      border-color: transparent;
     }
   }
 }

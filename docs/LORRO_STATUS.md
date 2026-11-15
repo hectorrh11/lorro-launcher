@@ -7,8 +7,18 @@ release channel, installer and data folder. This document tracks what has been
 completed, what has been verified, what is still pending, and what is required
 to distribute the app.
 
-**Current status (estado tras 1.97.0):** **1.97.0** is the latest
-public release for Windows, Ubuntu/Debian and Arch Linux. It fixes the black
+**Current status (estado tras 1.97.2):** **1.97.2** restyles the interface to a
+quiet, tool-like look: warm neutral grays, a single ochre accent, 1px borders,
+4-8px radii and a system font stack, with decorative gradients, glows and
+colored shadows removed while keeping legibility scrims, skeletons, the crop
+checkerboard and the purchased animated wallpapers. It also fixes the
+"Personalizar inicio" overlap with the hero and the feedback button overlapping
+the bottom bar. It includes **1.97.1**, which fixes custom-link game downloads,
+which failed instantly with `Invalid parallel download limits`: the
+segmented HTTP engine capped connections at 16 while the custom downloader
+requested 32. The cap is now 32 and out-of-range values are clamped instead of
+aborting a download, so size, speed and progress are reported and the file
+completes. It also includes **1.97.0**, which fixes the black
 window introduced by 1.96.0: `electron-vite` injected its CommonJS shim banner
 inside a string literal of the dynamic events chunk, so `loadState()` threw a
 `SyntaxError` before registering any IPC handler and the renderer never mounted.

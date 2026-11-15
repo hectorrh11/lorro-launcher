@@ -1,4 +1,33 @@
 ========================================================
+VERSION 1.97.2
+========================================================
+NUEVO ASPECTO: la interfaz deja el estilo "dashboard" de
+gradientes morados, brillos y pastillas redondeadas por un
+diseño sobrio y de herramienta. Fondos grises calidos
+neutros en cuatro niveles, un unico acento ocre, bordes de
+1 px, esquinas de 4-8 px y una sola tipografia del sistema.
+Sin degradados decorativos, sin neones y sin sombras de
+color; solo sombras neutras suaves en menus y dialogos.
+Botones planos, pestanas y elementos activos con relleno
+discreto, tarjetas de juego con borde fino y chips
+neutros. Se corrige ademas que el boton "Personalizar
+inicio" quedaba tapado por el banner y que el boton de
+comentarios se solapaba con la barra inferior.
+Incluye el arreglo de las descargas de enlaces
+personalizados de la 1.97.1.
+
+========================================================
+VERSION 1.97.1
+========================================================
+ARREGLO: las descargas de enlaces personalizados no
+empezaban. El motor de descarga segmentada seguia limitado
+a 16 conexiones mientras el enlace personalizado pedia 32,
+asi que fallaba al instante con "Invalid parallel download
+limits" y la descarga aparecia vacia, sin tamano ni
+velocidad. Ahora el limite es 32 y los valores fuera de
+rango se ajustan en lugar de romper la descarga.
+
+========================================================
 VERSION 1.97.0
 ========================================================
 CORRECCION CRITICA: la ventana en negro de la 1.96.0.

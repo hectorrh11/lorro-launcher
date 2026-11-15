@@ -1,33 +1,33 @@
 // Lorro Launcher design tokens
-// Premium dark gaming identity: deep violet-black surfaces, luminous accents.
+// Quiet, tool-like dark UI: warm neutral surfaces, a single restrained accent.
 
-$background-color: #0b0912;
-$dark-background-color: #08070d;
+$background-color: #151311;
+$dark-background-color: #100e0d;
 
-$surface-color: #12101b;
-$surface-raised-color: #1a1726;
-$surface-overlay-color: #211d30;
+$surface-color: #1b1917;
+$surface-raised-color: #211e1b;
+$surface-overlay-color: #272320;
 
-$muted-color: #f5f3ff;
-$body-color: #c7c2da;
-$subtle-color: #8b85a3;
+$muted-color: #ece7df;
+$body-color: #bcb5aa;
+$subtle-color: #8d857a;
 
-$border-color: rgba(255, 255, 255, 0.08);
-$border-strong-color: rgba(167, 139, 250, 0.28);
+$border-color: rgba(255, 255, 255, 0.09);
+$border-strong-color: rgba(255, 255, 255, 0.16);
 
-$success-color: #22c55e;
-$danger-color: #7f1d3a;
-$error-color: #f43f5e;
-$warning-color: #fbbf24;
+$success-color: #6f9e6b;
+$danger-color: #7c3b34;
+$error-color: #c96f62;
+$warning-color: #c2a35c;
 
-// Lorro brand palette (accent CSS variables live in themes.scss so the
-// purchased accent themes can override the whole surface count)
-$lorro-violet: var(--lorro-accent, #8b5cf6);
-$lorro-violet-soft: var(--lorro-accent-soft, #c4b5fd);
-$lorro-indigo: var(--lorro-accent-2, #4f46e5);
-$lorro-cyan: var(--lorro-accent-3, #22d3ee);
-$lorro-cyan-soft: var(--lorro-accent-3-soft, #a5f3fc);
-$lorro-glow: var(--lorro-accent-glow, rgba(139, 92, 246, 0.45));
+// Accent palette. The CSS variables live in themes.scss so the purchased
+// accent themes can override them without touching component styles.
+$lorro-violet: var(--lorro-accent, #c08b52);
+$lorro-violet-soft: var(--lorro-accent-soft, #d7a878);
+$lorro-indigo: var(--lorro-accent-2, #a9743f);
+$lorro-cyan: var(--lorro-accent-3, #9a938a);
+$lorro-cyan-soft: var(--lorro-accent-3-soft, #c3bcb1);
+$lorro-glow: transparent;
 
 // Kept for backwards compatibility with existing components.
 $brand-teal: $lorro-cyan;
@@ -35,62 +35,46 @@ $brand-blue: $lorro-indigo;
 
 $classics-rainbow: conic-gradient(
   from 0deg,
-  #f43f5e 5deg,
-  #a855f7 70deg,
-  #6366f1 145deg,
-  #22d3ee 220deg,
-  #fbbf24 290deg,
-  #f43f5e 365deg
+  #a2595a 5deg,
+  #7d6a86 70deg,
+  #6b7186 145deg,
+  #5f7a78 220deg,
+  #a08a5a 290deg,
+  #a2595a 365deg
 );
 
 $platinum-cyan: $lorro-cyan-soft;
 
-$classics-washed: #fca5a5;
+$classics-washed: #c9a3a0;
 
+// Flat surfaces: the accent is a solid fill, never a gradient.
 @mixin lorro-gradient {
-  background-image: linear-gradient(
-    135deg,
-    $lorro-violet 0%,
-    $lorro-indigo 55%,
-    $lorro-cyan 100%
-  );
+  background-image: none;
+  background-color: $lorro-violet;
 }
 
 @mixin lorro-text-gradient {
-  background-image: linear-gradient(
-    100deg,
-    $lorro-violet-soft 0%,
-    $lorro-violet 45%,
-    $lorro-cyan 100%
-  );
-  background-clip: text;
-  color: transparent;
+  background-image: none;
+  background-clip: border-box;
+  color: $muted-color;
 }
 
 @mixin lorro-surface {
   background-color: $surface-color;
   border: 1px solid $border-color;
-  border-radius: 12px;
+  border-radius: $radius-md;
 }
 
 @mixin platinum-gradient {
-  background-image:
-    linear-gradient(
-      105deg,
-      transparent 70%,
-      rgba(255, 255, 255, 0.1) 80%,
-      rgba(255, 255, 255, 0.2) 85%,
-      rgba(255, 255, 255, 0.1) 90%,
-      transparent 100%
-    ),
-    linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.15) 0%,
-      transparent 50%,
-      rgba(255, 255, 255, 0.15) 100%
-    ),
-    linear-gradient(120deg, transparent 0%, $platinum-cyan 30%, $lorro-violet 100%);
+  background-image: none;
+  background-color: $surface-overlay-color;
 }
+
+// Shape scale. Chips use xs, controls and cards use sm/md.
+$radius-xs: 4px;
+$radius-sm: 6px;
+$radius-md: 8px;
+$radius-lg: 10px;
 
 $disabled-opacity: 0.5;
 $active-opacity: 0.7;
@@ -107,7 +91,8 @@ $body-font-size: 14px;
 $hint-font-size: 13px;
 $small-font-size: 12px;
 
-$font-display: "Space Grotesk", "Noto Sans", sans-serif;
-$font-body: "Noto Sans", sans-serif;
+$font-display: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system,
+  "Helvetica Neue", Arial, sans-serif;
+$font-body: $font-display;
 
 $app-container: app-container;

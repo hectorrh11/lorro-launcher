@@ -26,23 +26,23 @@ export function installLorroFeedbackButton() {
     Object.assign(button.style, {
       position: "fixed",
       right: "18px",
-      bottom: "18px",
+      bottom: "56px",
       zIndex: "2147483000",
-      padding: "10px 16px",
-      borderRadius: "999px",
-      border: "1px solid #7c5cff",
-      background: "#150f2b",
-      color: "#e9e4ff",
-      font: "600 13px 'Noto Sans', sans-serif",
+      padding: "8px 14px",
+      borderRadius: "8px",
+      border: "1px solid rgba(255,255,255,0.16)",
+      background: "#211e1b",
+      color: "#ece7df",
+      font: "500 13px system-ui, -apple-system, 'Segoe UI', sans-serif",
       cursor: "pointer",
-      boxShadow: "0 8px 24px rgba(0,0,0,.45)",
-      opacity: "0.9",
+      boxShadow: "0 6px 18px rgba(0,0,0,0.35)",
+      opacity: "0.92",
     });
     button.addEventListener("mouseenter", () => {
       button.style.opacity = "1";
     });
     button.addEventListener("mouseleave", () => {
-      button.style.opacity = "0.9";
+      button.style.opacity = "0.92";
     });
     button.addEventListener("click", () => {
       const url = `${ISSUES_URL}?title=${encodeURIComponent(

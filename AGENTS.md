@@ -2,7 +2,7 @@
 
 Launcher de escritorio **independiente** (Electron + React + TypeScript + Vite)
 basado en el código abierto de Hydra. Repo: `hectorrh11/lorro-launcher`.
-Versión publicada actual: **1.98.1** (Windows, Ubuntu/Debian y Arch Linux).
+Versión publicada actual: **1.98.2** (Windows, Ubuntu/Debian y Arch Linux).
 
 Este documento es la fuente de verdad para retomar el proyecto en una sesión
 nueva. Léelo entero antes de tocar código.
@@ -500,6 +500,15 @@ enlaces de Hydra/Lorro Cloud.
 
 ---
 
+### 1.98.2 (publicada)
+
+- El botón flotante "Comentarios" (`lib/lorro-feedback.ts`, creado sobre
+  `document.body` con `z-index` 2147483000) ya no tapa el aviso de logro: se
+  oculta mientras hay logros en pantalla y reaparece al terminar.
+- `setLorroFeedbackButtonSuppressed(suppressed)` controla la visibilidad del
+  botón; `achievement-notification-overlay.tsx` lo llama según
+  `achievements.length > 0` y restaura el botón al desmontar.
+
 ### 1.98.1 (publicada)
 
 - Barra lateral: arrastrar y soltar juegos para colocarlos en el orden que
@@ -790,6 +799,9 @@ Comprobar además:
 - **1.90.0** — enlace personalizado como fuente de descarga del juego
   (`Downloader.Custom`), con la misma GUI, registro en Descargas, extracción y
   detección del ejecutable; aviso de actualización emergente eliminado.
+- **1.98.2** — el botón flotante "Comentarios" se oculta mientras hay un aviso
+  de logro en pantalla para no tapar el nombre, la descripción ni los
+  LorroPoints ganados; vuelve al terminar.
 - **1.98.1** — orden manual de juegos en la barra lateral arrastrando y
   soltando (persistido en preferencias y aplicado también a la biblioteca) y
   estilos de colección ampliados: 26 emblemas, 18 colores y negrita, cursiva,

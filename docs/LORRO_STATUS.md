@@ -7,15 +7,19 @@ release channel, installer and data folder. This document tracks what has been
 completed, what has been verified, what is still pending, and what is required
 to distribute the app.
 
-**Current status (estado tras 1.98.1):** **1.98.1** adds manual ordering of
-library games: you can drag and drop games in the sidebar to place them wherever
-you want, the order is saved in `userPreferences.sidebarGameOrder` as
-`shop:objectId` keys and is reused by the library through the new `manual` sort
-option; dropping a game switches the sort mode automatically. Collection styles
-grow to 26 emblems, 18 colour presets and five text flags (bold, italic,
-underline, strikethrough, uppercase), with live preview in Settings →
-Collections. It includes **1.98.0**, which makes collection membership visible
-for every library game. A collection can define a title colour, an emblem
+**Current status (estado tras 1.98.2):** **1.98.2** hides the floating
+"Comentarios" button while an achievement notification is on screen, so it no
+longer covers the achievement icon, the +LorroPoints chip, its name or its
+description when the notification is anchored in a bottom corner; the button
+reappears when the notification run ends. It includes **1.98.1**, which adds
+manual ordering of library games: you can drag and drop games in the sidebar to
+place them wherever you want, the order is saved in
+`userPreferences.sidebarGameOrder` as `shop:objectId` keys and is reused by the
+library through the new `manual` sort option; dropping a game switches the sort
+mode automatically. Collection styles grow to 26 emblems, 18 colour presets and
+five text flags (bold, italic, underline, strikethrough, uppercase), with live
+preview in Settings → Collections. It includes **1.98.0**, which makes
+collection membership visible for every library game. A collection can define a title colour, an emblem
 (trophy, gem, star, check, clock, crossed-out, package and more) and a dimmed
 grey title, and a game picks the first collection that has any of those set.
 Defaults ship for `Terminado` (green trophy), `En proceso` (ochre clock),

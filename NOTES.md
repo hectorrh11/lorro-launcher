@@ -1,5 +1,20 @@
 # Lorro Launcher — Notes
 
+## v1.98.2 — Achievement notifications readable
+
+### What changed
+
+- The floating "Comentarios" button (`lorro-feedback.ts`) no longer covers the
+  achievement notification. `setLorroFeedbackButtonSuppressed(true)` hides it
+  while the achievement overlay has pending cards and restores it when the run
+  ends, including the 450 ms closing animation.
+- Root cause: the button is `position: fixed` with `z-index: 2147483000` while
+  the achievement overlay uses `z-index: 999999`; when the notification sat in a
+  bottom corner the button painted on top of the title, description and the
+  `+LorroPoints` chip.
+- No other UI change: the button keeps working and stays visible at all other
+  times. Big Picture still skips it entirely.
+
 ## v1.98.1 — Manual game order and richer collection styles
 
 ### What changed

@@ -1,4 +1,16 @@
 ========================================================
+VERSION 1.98.2
+========================================================
+LOGROS MAS LEGIBLES: el boton flotante "Comentarios"
+ya no aparece encima del aviso de logro desbloqueado.
+Antes se dibujaba por encima de la tarjeta del logro
+cuando el aviso estaba en la esquina inferior derecha y
+tapaba el nombre, la descripcion y los LorroPoints
+ganados; ahora se oculta mientras hay un aviso de logro
+en pantalla y vuelve a aparecer al terminar. El boton
+del resto de la interfaz no cambia.
+
+========================================================
 VERSION 1.98.1
 ========================================================
 ORDEN PERSONALIZADO: ahora puedes arrastrar los juegos

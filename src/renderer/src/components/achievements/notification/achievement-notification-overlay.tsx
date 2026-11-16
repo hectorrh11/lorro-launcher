@@ -8,6 +8,7 @@ import {
   getAchievementSoundUrl,
   getAchievementSoundVolume,
 } from "@renderer/helpers";
+import { setLorroFeedbackButtonSuppressed } from "@renderer/lib/lorro-feedback";
 import { AchievementNotificationItem } from "./achievement-notification";
 
 const NOTIFICATION_TIMEOUT = 4000;
@@ -73,6 +74,12 @@ export function AchievementNotificationOverlay() {
   }, [playAudio]);
 
   const hasAchievementsPending = achievements.length > 0;
+
+  useEffect(() => {
+    setLorroFeedbackButtonSuppressed(hasAchievementsPending);
+
+    return () => setLorroFeedbackButtonSuppressed(false);
+  }, [hasAchievementsPending]);
 
   const startAnimateClosing = useCallback(() => {
     cancelAnimationFrame(closingAnimation.current);

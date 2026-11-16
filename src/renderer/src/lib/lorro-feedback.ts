@@ -12,6 +12,19 @@ const buildBody = () =>
     "<!-- Este comentario es publico en GitHub y lo gestiona Lorro. No se envia a Lorro. -->",
   ].join("\n");
 
+let feedbackButton: HTMLButtonElement | null = null;
+let feedbackButtonSuppressed = false;
+
+const applyFeedbackButtonVisibility = () => {
+  if (!feedbackButton) return;
+  feedbackButton.style.display = feedbackButtonSuppressed ? "none" : "";
+};
+
+export function setLorroFeedbackButtonSuppressed(suppressed: boolean) {
+  feedbackButtonSuppressed = suppressed;
+  applyFeedbackButtonVisibility();
+}
+
 export function installLorroFeedbackButton() {
   if (window.location.hash.startsWith("#/big-picture")) return;
   if (document.getElementById("lorro-feedback-button")) return;
@@ -52,6 +65,8 @@ export function installLorroFeedbackButton() {
     });
 
     document.body.appendChild(button);
+    feedbackButton = button;
+    applyFeedbackButtonVisibility();
   };
 
   if (document.body) mount();

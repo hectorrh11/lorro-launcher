@@ -243,6 +243,7 @@ export interface UserPreferences {
   hideEpicLibraryBadges?: boolean;
   hideLibraryAchievementProgress?: boolean;
   collectionStyles?: CollectionStyleMap;
+  sidebarGameOrder?: string[];
   autoplayAnimatedArtwork?: boolean;
   persistFiltersAndSorting?: boolean;
   ownedLorroThemes?: string[];

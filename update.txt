@@ -1,4 +1,32 @@
 ========================================================
+VERSION 1.98.1
+========================================================
+ORDEN PERSONALIZADO: ahora puedes arrastrar los juegos
+de la barra lateral para colocarlos en el orden que
+quieras. Al soltar un juego sobre otro se guarda el
+orden al instante y el modo de orden pasa a "Orden
+personalizado (arrastrar)". El orden se conserva al
+reiniciar y tambien se aplica a la biblioteca si eliges
+ese modo en el selector de orden.
+La lista muestra una linea violeta arriba o abajo del
+juego sobre el que vas a soltar y el juego arrastrado se
+ve translucido.
+Nuevo modo de orden "Orden personalizado (arrastrar)" en
+el menu de orden de la barra lateral y en la biblioteca.
+MAS ESTILOS DE COLECCION: 18 emblemas nuevos (corazon,
+llama, alfiler, marcador, libro, cohete, escudo, sol,
+luna, rayo, meta, etiqueta, destello, vaso de
+laboratorio, transmision, alto, barra y punto), la paleta
+de colores ampliada a 18 tonos y cinco estilos de texto
+nuevos en Ajustes -> Colecciones: negrita, cursiva,
+subrayado, tachado y mayusculas. Se combinan con el color
+y el emblema, se ven en la barra lateral, en la vista
+grande de la biblioteca y en la vista previa de Ajustes.
+Colores por defecto nuevos por nombre de coleccion:
+"Favoritos" rosa con corazon, "Jugados" azul con libro y
+"Deseados" lila con estrella.
+
+========================================================
 VERSION 1.98.0
 ========================================================
 COLECCIONES VISIBLES: las colecciones a las que

@@ -19,6 +19,7 @@ import {
   AchievementProgress,
   CollectionStyleMarker,
   SteamLibraryBadge,
+  getCollectionTextStyle,
 } from "@renderer/components";
 import { GameVisibilityBadge } from "@renderer/components/game-visibility-badge/game-visibility-badge";
 import { formatBytes, getDisplayedPlayTimeInMilliseconds } from "@shared";
@@ -502,11 +503,7 @@ export const LibraryGameCardLarge = memo(function LibraryGameCardLarge({
                 "library-game-card-large__title--dimmed":
                   collectionStyle?.dimmed,
               })}
-              style={
-                collectionStyle?.color && !collectionStyle.dimmed
-                  ? { color: collectionStyle.color }
-                  : undefined
-              }
+              style={getCollectionTextStyle(collectionStyle)}
             >
               {game.title}
             </h3>
@@ -517,14 +514,17 @@ export const LibraryGameCardLarge = memo(function LibraryGameCardLarge({
           {collectionStyle && (
             <span
               className="library-game-card-large__collection-chip"
-              style={
-                collectionStyle.color
+              style={{
+                ...(collectionStyle.color
                   ? {
                       color: collectionStyle.color,
                       borderColor: `${collectionStyle.color}55`,
                     }
-                  : undefined
-              }
+                  : {}),
+                ...getCollectionTextStyle(collectionStyle, {
+                  includeColor: false,
+                }),
+              }}
               title={collectionStyle.collectionName}
             >
               <CollectionStyleMarker

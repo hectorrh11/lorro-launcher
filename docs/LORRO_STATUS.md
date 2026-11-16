@@ -7,12 +7,20 @@ release channel, installer and data folder. This document tracks what has been
 completed, what has been verified, what is still pending, and what is required
 to distribute the app.
 
-**Current status (estado tras 1.98.0):** **1.98.0** makes collection membership
-visible for every library game. A collection can define a title colour, an
-emblem (trophy, gem, star, check, clock, crossed-out, package) and a dimmed grey
-title, and a game picks the first collection that has any of those set. Defaults
-ship for `Terminado` (green trophy), `En proceso` (ochre clock), `Abandonado`
-(crossed-out grey) and `No instalado` (grey gem). The sidebar shows the emblem
+**Current status (estado tras 1.98.1):** **1.98.1** adds manual ordering of
+library games: you can drag and drop games in the sidebar to place them wherever
+you want, the order is saved in `userPreferences.sidebarGameOrder` as
+`shop:objectId` keys and is reused by the library through the new `manual` sort
+option; dropping a game switches the sort mode automatically. Collection styles
+grow to 26 emblems, 18 colour presets and five text flags (bold, italic,
+underline, strikethrough, uppercase), with live preview in Settings →
+Collections. It includes **1.98.0**, which makes collection membership visible
+for every library game. A collection can define a title colour, an emblem
+(trophy, gem, star, check, clock, crossed-out, package and more) and a dimmed
+grey title, and a game picks the first collection that has any of those set.
+Defaults ship for `Terminado` (green trophy), `En proceso` (ochre clock),
+`Abandonado` (crossed-out grey) and `No instalado` (grey gem), plus new name
+defaults for `Favoritos`, `Jugados` and `Deseados`. The sidebar shows the emblem
 and colour next to the game name; the library `large` view shows a chip with the
 collection name, while the compact/grid views show the emblem, a colour stripe
 and a gray cover when the collection is dimmed. Everything is configured in

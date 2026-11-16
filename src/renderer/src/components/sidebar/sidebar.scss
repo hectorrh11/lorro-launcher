@@ -166,6 +166,23 @@
         background-color: rgba(255, 255, 255, 0.08);
       }
     }
+
+    &[draggable="true"] {
+      cursor: grab;
+    }
+
+    &--dragging {
+      cursor: grabbing;
+      opacity: 0.45;
+    }
+
+    &--drop-before {
+      box-shadow: inset 0 2px 0 globals.$lorro-violet;
+    }
+
+    &--drop-after {
+      box-shadow: inset 0 -2px 0 globals.$lorro-violet;
+    }
   }
 
   &__menu-item-button {

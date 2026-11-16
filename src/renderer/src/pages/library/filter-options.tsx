@@ -3,6 +3,7 @@ import { LibrarySelect } from "./library-select";
 import "./filter-options.scss";
 
 export type SortOption =
+  | "manual"
   | "title_asc"
   | "recently_played"
   | "most_played"
@@ -29,6 +30,7 @@ export function FilterOptions({
         ariaLabel={t("sort_by")}
         onChange={(value) => onSortChange(value as SortOption)}
         options={[
+          { value: "manual", label: t("sort_manual") },
           { value: "title_asc", label: t("sort_title_asc") },
           { value: "recently_played", label: t("recently_played") },
           { value: "most_played", label: t("sort_most_played") },

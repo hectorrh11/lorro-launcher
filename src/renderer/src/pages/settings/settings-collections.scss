@@ -161,6 +161,12 @@
     flex-wrap: wrap;
     align-items: flex-end;
     gap: 20px;
+
+    &--text {
+      align-items: center;
+      gap: 14px 22px;
+      margin-top: 4px;
+    }
   }
 
   &__reset {

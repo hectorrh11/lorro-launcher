@@ -2,7 +2,10 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { CheckboxField, SelectField } from "@renderer/components";
-import { CollectionStyleMarker } from "@renderer/components/collection-style-marker/collection-style-marker";
+import {
+  CollectionStyleMarker,
+  getCollectionTextStyle,
+} from "@renderer/components/collection-style-marker/collection-style-marker";
 import { settingsContext } from "@renderer/context";
 import { useAppSelector, useGameCollections } from "@renderer/hooks";
 import {
@@ -13,6 +16,7 @@ import {
   normalizeCollectionStyleKey,
   resolveCollectionStyle,
   updateCollectionStyle,
+  type CollectionVisualStyle,
   type CollectionStyleEmblem,
   type CollectionStyleMap,
 } from "@shared";
@@ -48,11 +52,7 @@ export function SettingsCollections() {
 
   const handlePatch = (
     collectionId: string,
-    patch: {
-      color?: string | null;
-      emblem?: CollectionStyleEmblem;
-      dimmed?: boolean;
-    }
+    patch: CollectionVisualStyle
   ) => {
     applyStyles(
       updateCollectionStyle(collectionStyles, collectionId, patch)
@@ -139,6 +139,9 @@ export function SettingsCollections() {
                           ? "settings-collections__preview-name settings-collections__preview-name--dimmed"
                           : "settings-collections__preview-name"
                       }
+                      style={getCollectionTextStyle(style, {
+                        includeColor: false,
+                      })}
                     >
                       {collection.name}
                     </span>
@@ -233,6 +236,57 @@ export function SettingsCollections() {
                         checked={style.dimmed}
                         onChange={() =>
                           handlePatch(collection.id, { dimmed: !style.dimmed })
+                        }
+                      />
+                    </div>
+
+                    <div className="settings-collections__row settings-collections__row--text">
+                      <CheckboxField
+                        label={t("collection_style_bold", "Bold")}
+                        checked={style.bold}
+                        onChange={() =>
+                          handlePatch(collection.id, { bold: !style.bold })
+                        }
+                      />
+
+                      <CheckboxField
+                        label={t("collection_style_italic", "Italic")}
+                        checked={style.italic}
+                        onChange={() =>
+                          handlePatch(collection.id, { italic: !style.italic })
+                        }
+                      />
+
+                      <CheckboxField
+                        label={t("collection_style_underline", "Underline")}
+                        checked={style.underline}
+                        onChange={() =>
+                          handlePatch(collection.id, {
+                            underline: !style.underline,
+                          })
+                        }
+                      />
+
+                      <CheckboxField
+                        label={t(
+                          "collection_style_strikethrough",
+                          "Strikethrough"
+                        )}
+                        checked={style.strikethrough}
+                        onChange={() =>
+                          handlePatch(collection.id, {
+                            strikethrough: !style.strikethrough,
+                          })
+                        }
+                      />
+
+                      <CheckboxField
+                        label={t("collection_style_uppercase", "Uppercase")}
+                        checked={style.uppercase}
+                        onChange={() =>
+                          handlePatch(collection.id, {
+                            uppercase: !style.uppercase,
+                          })
                         }
                       />
                     </div>

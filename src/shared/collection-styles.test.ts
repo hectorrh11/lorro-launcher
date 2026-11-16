@@ -31,6 +31,11 @@ test("explicit styles override defaults and ignore invalid colours", () => {
     color: "#ff0000",
     emblem: "star",
     dimmed: true,
+    bold: true,
+    italic: false,
+    underline: false,
+    strikethrough: false,
+    uppercase: false,
   });
 
   const fallback = resolveCollectionStyle(collections[0], {
@@ -75,6 +80,28 @@ test("unknown collection ids are skipped without throwing", () => {
   );
   assert.equal(resolved?.collectionId, "playing");
   assert.equal(resolved?.emblem, "clock");
+});
+
+test("text styles resolve, decorate and never override explicit flags", () => {
+  const styled = resolveCollectionStyle(collections[3], {
+    custom: { bold: true, italic: true, uppercase: true },
+  });
+  assert.equal(styled.bold, true);
+  assert.equal(styled.italic, true);
+  assert.equal(styled.uppercase, true);
+  assert.equal(styled.underline, false);
+
+  const resolved = resolveGameCollectionStyle(["custom", "playing"], collections, {
+    custom: { strikethrough: true },
+  });
+  assert.equal(resolved?.collectionId, "custom");
+  assert.equal(resolved?.strikethrough, true);
+
+  const disabledBold = resolveCollectionStyle(collections[0], {
+    finished: { bold: false },
+  });
+  assert.equal(disabledBold.bold, false);
+  assert.equal(disabledBold.emblem, "trophy");
 });
 
 test("styles are updated and cleared per collection", () => {

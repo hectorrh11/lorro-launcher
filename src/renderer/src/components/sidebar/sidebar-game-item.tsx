@@ -21,6 +21,7 @@ import {
 } from "@renderer/hooks";
 import { useCollectionContextMenu } from "@renderer/context";
 import { getLibraryPresentationBadgeSource } from "@renderer/pages/library/library-category";
+import { getCollectionTextStyle } from "..";
 
 const FAILED_ICON_RETRY_MS = 60_000;
 
@@ -28,12 +29,26 @@ interface SidebarGameItemProps {
   game: LibraryGame;
   handleSidebarGameClick: (game: LibraryGame) => void;
   getGameTitle: (game: LibraryGame) => string;
+  isDragging?: boolean;
+  dropPosition?: "before" | "after" | null;
+  onDragStart?: (game: LibraryGame) => void;
+  onDragOver?: (event: React.DragEvent<HTMLElement>, game: LibraryGame) => void;
+  onDragLeave?: () => void;
+  onDrop?: (event: React.DragEvent<HTMLElement>, game: LibraryGame) => void;
+  onDragEnd?: () => void;
 }
 
 export function SidebarGameItem({
   game,
   handleSidebarGameClick,
   getGameTitle,
+  isDragging = false,
+  dropPosition = null,
+  onDragStart,
+  onDragOver,
+  onDragLeave,
+  onDrop,
+  onDragEnd,
 }: Readonly<SidebarGameItemProps>) {
   const location = useLocation();
   const { t } = useTranslation("game_details");
@@ -106,7 +121,22 @@ export function SidebarGameItem({
             location.pathname ===
             `/game/${catalogueIdentity.shop}/${catalogueIdentity.objectId}`,
           "sidebar__menu-item--muted": game.download?.status === "removed",
+          "sidebar__menu-item--dragging": isDragging,
+          "sidebar__menu-item--drop-before": dropPosition === "before",
+          "sidebar__menu-item--drop-after": dropPosition === "after",
         })}
+        draggable={Boolean(onDragStart)}
+        onDragStart={(event) => {
+          if (!onDragStart) return;
+
+          event.dataTransfer.effectAllowed = "move";
+          event.dataTransfer.setData("text/plain", game.id);
+          onDragStart(game);
+        }}
+        onDragOver={(event) => onDragOver?.(event, game)}
+        onDragLeave={() => onDragLeave?.()}
+        onDrop={(event) => onDrop?.(event, game)}
+        onDragEnd={() => onDragEnd?.()}
       >
         <button
           type="button"
@@ -182,11 +212,7 @@ export function SidebarGameItem({
             className={cn("sidebar__menu-item-button-label", {
               "sidebar__menu-item-button-label--dimmed": collectionStyle?.dimmed,
             })}
-            style={
-              collectionStyle?.color && !collectionStyle.dimmed
-                ? { color: collectionStyle.color }
-                : undefined
-            }
+            style={getCollectionTextStyle(collectionStyle)}
           >
             {getGameTitle(game)}
           </span>

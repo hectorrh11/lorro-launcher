@@ -1,5 +1,37 @@
 # Lorro Launcher — Notes
 
+## v1.98.1 — Manual game order and richer collection styles
+
+### What changed
+
+- Sidebar games can be dragged and dropped to reorder them. The order is saved
+  in `userPreferences.sidebarGameOrder` as `shop:objectId` keys, restored on
+  startup and reused by the library when the `manual` sort is selected.
+- New `manual` value in `SortOption`, `SIDEBAR_SORT_OPTIONS`, `SORT_OPTIONS`,
+  the sidebar sort menu (`StackIcon`) and the library filter bar. Dropping a
+  game switches the sort to `manual` automatically.
+- `src/renderer/src/helpers.ts`: `getLibraryGameOrderKey`,
+  `applyManualLibraryOrder` (stable for games missing from the order) and
+  `sortLibraryGames(games, sortBy, manualOrder?)`.
+- Drag state lives in `sidebar.tsx` (`draggedGameKey`, `dropTarget`) and the
+  handlers are attached to the `<li>` of `SidebarGameItem`; rows get
+  `--dragging`, `--drop-before` and `--drop-after` classes plus a grab cursor.
+- New hook `useUpdateUserPreferences` (IPC → LevelDB read → redux dispatch) so
+  the sidebar can persist the order without the settings context.
+- Collection styles expanded: 26 emblems (heart, flame, pin, bookmark, book,
+  rocket, shield, sun, moon, zap, goal, tag, sparkle, beaker, broadcast, stop,
+  slash, dot added), 18 colour presets and five text flags (`bold`, `italic`,
+  `underline`, `strikethrough`, `uppercase`).
+- `CollectionVisualStyle` / `ResolvedVisualCollectionStyle` carry the text
+  flags; `resolveCollectionStyle` resolves them with `resolveFlag`,
+  `isCollectionStyleVisible` treats any text style as a visible decoration and
+  `getCollectionTextStyle` turns them into CSS.
+- New name defaults: `Favoritos`/`favorites` → pink + heart, `Jugados`/`played`
+  → blue + book, `Deseados`/`wishlist` → lilac + star; `Terminado` is bold.
+- Settings → Collections shows five new checkboxes and previews the text styles
+  live; the sidebar label, the large card title and the collection chip use
+  them.
+
 ## v1.98.0 — Collection styles in the sidebar and library
 
 ### What changed

@@ -2,7 +2,7 @@
 
 Launcher de escritorio **independiente** (Electron + React + TypeScript + Vite)
 basado en el código abierto de Hydra. Repo: `hectorrh11/lorro-launcher`.
-Versión actual: **1.98.0** (sin publicar; última publicada **1.97.2**).
+Versión publicada actual: **1.98.1** (Windows, Ubuntu/Debian y Arch Linux).
 
 Este documento es la fuente de verdad para retomar el proyecto en una sesión
 nueva. Léelo entero antes de tocar código.
@@ -301,19 +301,37 @@ No duplica nombres existentes ni sobrescribe las del usuario.
 
 Desde 1.98.0 cada colección puede decorar el título de sus juegos. El estilo se
 guarda en `userPreferences.collectionStyles` (mapa por id de colección con
-`color`, `emblem` y `dimmed`) y se resuelve con
-`src/shared/collection-styles.ts`: el valor explícito gana sobre el
-predeterminado por nombre (`getDefaultCollectionStyle`). De los emblemas
-disponibles (`none`, `trophy`, `gem`, `star`, `check`, `clock`, `abandoned`,
-`package`), un juego usa la **primera** colección que tenga color, emblema o
-atenuado (`resolveGameCollectionStyle`), así una colección neutra no tapa a una
-significativa. Se aplica en `sidebar-game-item.tsx` (color y emblema junto al
-nombre) y en las tarjetas de la biblioteca: chip con el nombre de la colección
-en la vista grande y emblema + franja de color + portada en gris en las vistas
-compacta/cuadrícula. La UI vive en Ajustes → Colecciones
-(`settings-collections.tsx`), con paleta, selector libre, emblema, atenuado y
-botón de restablecer por colección. `updateUserPreferences` fusiona en
-superficie, así que se envía siempre el mapa completo.
+`color`, `emblem`, `dimmed`, `bold`, `italic`, `underline`, `strikethrough` y
+`uppercase`) y se resuelve con `src/shared/collection-styles.ts`: el valor
+explícito gana sobre el predeterminado por nombre
+(`getDefaultCollectionStyle`). Hay 26 emblemas (`none`, `trophy`, `gem`, `star`,
+`check`, `clock`, `abandoned`, `package`, `heart`, `flame`, `pin`, `bookmark`,
+`book`, `rocket`, `shield`, `sun`, `moon`, `zap`, `goal`, `tag`, `sparkle`,
+`beaker`, `broadcast`, `stop`, `slash`, `dot`) y 18 colores en
+`COLLECTION_STYLE_COLOR_PRESETS`. Un juego usa la **primera** colección que
+tenga color, emblema, atenuado o cualquier estilo de texto
+(`resolveGameCollectionStyle`), así una colección neutra no tapa a una
+significativa. Se aplica en `sidebar-game-item.tsx` (color, emblema y estilos de
+texto junto al nombre) y en las tarjetas de la biblioteca: chip con el nombre de
+la colección en la vista grande y emblema + franja de color + portada en gris en
+las vistas compacta/cuadrícula. `getCollectionTextStyle` convierte el estilo
+resuelto en CSS (`fontWeight`, `fontStyle`, `textDecoration`, `textTransform`).
+La UI vive en Ajustes → Colecciones (`settings-collections.tsx`), con paleta,
+selector libre, emblema, atenuado, cinco casillas de estilo de texto y botón de
+restablecer por colección. `updateUserPreferences` fusiona en superficie, así
+que se envía siempre el mapa completo.
+
+Desde 1.98.1 la barra lateral permite reordenar los juegos arrastrándolos. El
+orden manual se guarda en `userPreferences.sidebarGameOrder` como claves
+`shop:objectId` (`getLibraryGameOrderKey`) y se aplica con
+`applyManualLibraryOrder`; el modo de orden `manual` está en `SortOption`,
+`sortLibraryGames(games, sortBy, manualOrder)`, `SIDEBAR_SORT_OPTIONS` y
+`SORT_OPTIONS`. Al soltar un juego se persiste el orden y el modo cambia a
+manual. El estado del arrastre vive en `sidebar.tsx` y los eventos HTML5 se
+conectan en el `<li>` de `SidebarGameItem` (clases `--dragging`,
+`--drop-before`, `--drop-after`). El hook `useUpdateUserPreferences`
+(`hooks/use-update-user-preferences.ts`) escribe la preferencia y refresca el
+store.
 
 ### Temas y fondo
 
@@ -482,7 +500,25 @@ enlaces de Hydra/Lorro Cloud.
 
 ---
 
-### 1.98.0 (sin publicar)
+### 1.98.1 (publicada)
+
+- Barra lateral: arrastrar y soltar juegos para colocarlos en el orden que
+  quieras. El orden se guarda en `userPreferences.sidebarGameOrder`
+  (claves `shop:objectId`), se aplica al instante y se conserva al reiniciar.
+- Nuevo modo de orden `manual` en `SortOption`, `SIDEBAR_SORT_OPTIONS`,
+  `SORT_OPTIONS`, el menú de orden lateral y la biblioteca; al soltar un juego
+  el modo cambia solo a "Orden personalizado (arrastrar)".
+- `sortLibraryGames(games, sortBy, manualOrder)` con
+  `applyManualLibraryOrder` y `getLibraryGameOrderKey`.
+- Estilos de colección ampliados: 18 emblemas nuevos (corazón, llama, alfiler,
+  marcador, libro, cohete, escudo, sol, luna, rayo, meta, etiqueta, destello,
+  vaso, transmisión, alto, barra, punto), paleta de 18 colores y cinco estilos
+  de texto (negrita, cursiva, subrayado, tachado, mayúsculas) con
+  `getCollectionTextStyle`.
+- Predeterminados nuevos por nombre: Favoritos (rosa, corazón), Jugados (azul,
+  libro), Deseados (lila, estrella); `Terminado` pasa a negrita.
+
+### 1.98.0 (publicada)
 
 - Las colecciones de cada juego ya se ven en la barra lateral y en la
   biblioteca: color del título, emblema y título en gris atenuado.
@@ -754,6 +790,10 @@ Comprobar además:
 - **1.90.0** — enlace personalizado como fuente de descarga del juego
   (`Downloader.Custom`), con la misma GUI, registro en Descargas, extracción y
   detección del ejecutable; aviso de actualización emergente eliminado.
+- **1.98.1** — orden manual de juegos en la barra lateral arrastrando y
+  soltando (persistido en preferencias y aplicado también a la biblioteca) y
+  estilos de colección ampliados: 26 emblemas, 18 colores y negrita, cursiva,
+  subrayado, tachado y mayúsculas.
 - **1.98.0** — las colecciones se ven en la barra lateral y en la biblioteca:
   color del título, emblema (trofeo, gema, estrella, marca, reloj, tachado,
   paquete) y título en gris atenuado, configurables por colección en Ajustes →

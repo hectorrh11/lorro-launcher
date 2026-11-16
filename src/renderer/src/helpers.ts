@@ -527,10 +527,46 @@ const compareLibraryGamesByTitle = (
     ? libraryTitleCollator.compare(a.title ?? "", b.title ?? "")
     : libraryTitleCollator.compare(b.title ?? "", a.title ?? "");
 
+export const getLibraryGameOrderKey = (game: {
+  shop: string;
+  objectId: string;
+}): string => `${game.shop}:${game.objectId}`;
+
+export const applyManualLibraryOrder = (
+  games: LibraryGame[],
+  manualOrder?: readonly string[] | null
+): LibraryGame[] => {
+  if (!manualOrder?.length) return [...games];
+
+  const ranks = new Map<string, number>();
+  manualOrder.forEach((key, index) => {
+    if (!ranks.has(key)) ranks.set(key, index);
+  });
+
+  return games
+    .map((game, index) => ({
+      game,
+      index,
+      rank: ranks.get(getLibraryGameOrderKey(game)),
+    }))
+    .sort((a, b) => {
+      const aRank = a.rank ?? Number.MAX_SAFE_INTEGER;
+      const bRank = b.rank ?? Number.MAX_SAFE_INTEGER;
+      if (aRank !== bRank) return aRank - bRank;
+      return a.index - b.index;
+    })
+    .map((entry) => entry.game);
+};
+
 export const sortLibraryGames = (
   games: LibraryGame[],
-  sortBy: SortOption
+  sortBy: SortOption,
+  manualOrder?: readonly string[] | null
 ): LibraryGame[] => {
+  if (sortBy === "manual") {
+    return applyManualLibraryOrder(games, manualOrder);
+  }
+
   return [...games].sort((a, b) => {
     switch (sortBy) {
       case "recently_played": {

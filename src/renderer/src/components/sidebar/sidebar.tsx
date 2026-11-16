@@ -16,13 +16,18 @@ import {
   useDownload,
   useLibrary,
   useToast,
+  useUpdateUserPreferences,
 } from "@renderer/hooks";
 import { selectIsLibraryLoading } from "@renderer/features";
 import { routes } from "./routes";
 
 import "./sidebar.scss";
 
-import { buildGameDetailsPath, sortLibraryGames } from "@renderer/helpers";
+import {
+  buildGameDetailsPath,
+  getLibraryGameOrderKey,
+  sortLibraryGames,
+} from "@renderer/helpers";
 import {
   categoryShowsPlatforms,
   categoryShowsSources,
@@ -58,6 +63,7 @@ const SIDEBAR_MAX_WIDTH = 450;
 const SIDEBAR_GAME_ITEM_HEIGHT = 42;
 
 const SIDEBAR_SORT_OPTIONS = new Set<SortOption>([
+  "manual",
   "title_asc",
   "recently_played",
   "most_played",
@@ -91,6 +97,10 @@ export function Sidebar() {
   const runningGameId = useAppSelector(
     (state) => state.gameRunning.gameRunning?.id
   );
+  const sidebarGameOrder = useAppSelector(
+    (state) => state.userPreferences.value?.sidebarGameOrder
+  );
+  const updateUserPreferences = useUpdateUserPreferences();
   const [deckyPluginInfo, setDeckyPluginInfo] = useState<{
     installed: boolean;
     version: string | null;
@@ -170,16 +180,20 @@ export function Sidebar() {
 
   const orderSidebarGames = useCallback(
     (games: LibraryGame[]) => {
-      const sorted = sortLibraryGames(games, sidebarSortBy);
+      const sorted = sortLibraryGames(
+        games,
+        sidebarSortBy,
+        sidebarGameOrder
+      );
 
-      if (!showFavoritesFirst) return sorted;
+      if (sidebarSortBy === "manual" || !showFavoritesFirst) return sorted;
 
       return [
         ...sorted.filter((game) => game.favorite),
         ...sorted.filter((game) => !game.favorite),
       ];
     },
-    [sidebarSortBy, showFavoritesFirst]
+    [sidebarSortBy, showFavoritesFirst, sidebarGameOrder]
   );
 
   const orderedLibrary = useMemo(
@@ -318,6 +332,88 @@ export function Sidebar() {
     setShowFavoritesFirst(next);
     localStorage.setItem("sidebar-favorites-first", String(next));
   }, []);
+
+  const [draggedGameKey, setDraggedGameKey] = useState<string | null>(null);
+  const [dropTarget, setDropTarget] = useState<{
+    key: string;
+    position: "before" | "after";
+  } | null>(null);
+
+  const handleGameDragStart = useCallback((game: LibraryGame) => {
+    setDraggedGameKey(getLibraryGameOrderKey(game));
+    setDropTarget(null);
+  }, []);
+
+  const handleGameDragOver = useCallback(
+    (event: React.DragEvent<HTMLElement>, game: LibraryGame) => {
+      if (!draggedGameKey) return;
+
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "move";
+
+      const rect = event.currentTarget.getBoundingClientRect();
+      const position: "before" | "after" =
+        event.clientY < rect.top + rect.height / 2 ? "before" : "after";
+      const key = getLibraryGameOrderKey(game);
+
+      setDropTarget((current) =>
+        current?.key === key && current.position === position
+          ? current
+          : { key, position }
+      );
+    },
+    [draggedGameKey]
+  );
+
+  const handleGameDragLeave = useCallback(() => {
+    setDropTarget(null);
+  }, []);
+
+  const handleGameDragEnd = useCallback(() => {
+    setDraggedGameKey(null);
+    setDropTarget(null);
+  }, []);
+
+  const handleGameDrop = useCallback(
+    (event: React.DragEvent<HTMLElement>, game: LibraryGame) => {
+      event.preventDefault();
+
+      const sourceKey = draggedGameKey;
+      const targetKey = getLibraryGameOrderKey(game);
+      const position =
+        dropTarget?.key === targetKey ? dropTarget.position : "after";
+
+      setDraggedGameKey(null);
+      setDropTarget(null);
+
+      if (!sourceKey || sourceKey === targetKey) return;
+
+      const nextOrder = orderedLibrary
+        .map(getLibraryGameOrderKey)
+        .filter((key) => key !== sourceKey);
+      const targetIndex = nextOrder.indexOf(targetKey);
+
+      if (targetIndex === -1) return;
+
+      nextOrder.splice(
+        position === "before" ? targetIndex : targetIndex + 1,
+        0,
+        sourceKey
+      );
+
+      void updateUserPreferences({ sidebarGameOrder: nextOrder });
+
+      if (sidebarSortBy !== "manual") handleSidebarSortChange("manual");
+    },
+    [
+      draggedGameKey,
+      dropTarget,
+      handleSidebarSortChange,
+      orderedLibrary,
+      sidebarSortBy,
+      updateUserPreferences,
+    ]
+  );
 
   useEffect(() => {
     if (uniquePlatforms.length === 0 || selectedPlatforms.length === 0) return;
@@ -654,6 +750,19 @@ export function Sidebar() {
                           game={game}
                           handleSidebarGameClick={handleSidebarGameClick}
                           getGameTitle={getGameTitle}
+                          isDragging={
+                            draggedGameKey === getLibraryGameOrderKey(game)
+                          }
+                          dropPosition={
+                            dropTarget?.key === getLibraryGameOrderKey(game)
+                              ? dropTarget.position
+                              : null
+                          }
+                          onDragStart={handleGameDragStart}
+                          onDragOver={handleGameDragOver}
+                          onDragLeave={handleGameDragLeave}
+                          onDrop={handleGameDrop}
+                          onDragEnd={handleGameDragEnd}
                         />
                       </div>
                     );

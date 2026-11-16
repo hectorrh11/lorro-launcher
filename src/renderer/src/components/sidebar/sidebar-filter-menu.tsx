@@ -184,6 +184,11 @@ export function SidebarFilterMenu({
     icon: JSX.Element;
   }[] = [
     {
+      value: "manual",
+      label: t("sort_manual", { ns: "library" }),
+      icon: <StackIcon size={14} />,
+    },
+    {
       value: "title_asc",
       label: t("sort_title", { ns: "library" }),
       icon: <SortDescIcon size={14} />,

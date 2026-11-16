@@ -97,6 +97,7 @@ const readStoredPlatforms = (): string[] => {
 };
 
 const SORT_OPTIONS: SortOption[] = [
+  "manual",
   "title_asc",
   "recently_played",
   "most_played",
@@ -107,6 +108,9 @@ const SORT_OPTIONS: SortOption[] = [
 
 export default function Library() {
   const { library, updateLibrary } = useLibrary();
+  const sidebarGameOrder = useAppSelector(
+    (state) => state.userPreferences.value?.sidebarGameOrder
+  );
   const { userDetails } = useUserDetails();
   const accountId = userDetails?.id ?? null;
   const activeAccountIdRef = useRef(accountId);
@@ -496,8 +500,8 @@ export default function Library() {
     [hiddenGames, runningGameId]
   );
   const sortedLibrary = useMemo(
-    () => sortLibraryGames(groupedLibrary, sortBy),
-    [groupedLibrary, sortBy]
+    () => sortLibraryGames(groupedLibrary, sortBy, sidebarGameOrder),
+    [groupedLibrary, sidebarGameOrder, sortBy]
   );
 
   const { platforms: uniquePlatforms, hasImportedGames } = useMemo(
@@ -517,7 +521,7 @@ export default function Library() {
     let filtered =
       selectedCollectionId === HIDDEN_COLLECTION_ID
         ? userDetails
-          ? sortLibraryGames(groupedHiddenGames, sortBy)
+          ? sortLibraryGames(groupedHiddenGames, sortBy, sidebarGameOrder)
           : []
         : sortedLibrary;
 

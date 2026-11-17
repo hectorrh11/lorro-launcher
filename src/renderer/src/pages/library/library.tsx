@@ -24,7 +24,13 @@ import {
   SyncIcon,
 } from "@primer/octicons-react";
 import { useTranslation } from "react-i18next";
-import { AuthPage, groupLibraryGames, removeDiacritics } from "@shared";
+import {
+  AuthPage,
+  filterAdultOnlyGames,
+  groupLibraryGames,
+  isAdultContentFilterEnabled,
+  removeDiacritics,
+} from "@shared";
 import { GameCollection, LibraryGame } from "@types";
 import { CreateCollectionModal, GameContextMenu } from "@renderer/components";
 import { useCollectionContextMenu } from "@renderer/context";
@@ -110,6 +116,13 @@ export default function Library() {
   const { library, updateLibrary } = useLibrary();
   const sidebarGameOrder = useAppSelector(
     (state) => state.userPreferences.value?.sidebarGameOrder
+  );
+  const hideAdultGames = useAppSelector((state) =>
+    isAdultContentFilterEnabled(state.userPreferences.value)
+  );
+  const visibleLibrary = useMemo(
+    () => filterAdultOnlyGames(library, hideAdultGames),
+    [library, hideAdultGames]
   );
   const { userDetails } = useUserDetails();
   const accountId = userDetails?.id ?? null;
@@ -492,8 +505,9 @@ export default function Library() {
   ]);
 
   const groupedLibrary = useMemo(
-    () => groupLibraryGames(library, runningGameId ? [runningGameId] : []),
-    [library, runningGameId]
+    () =>
+      groupLibraryGames(visibleLibrary, runningGameId ? [runningGameId] : []),
+    [visibleLibrary, runningGameId]
   );
   const groupedHiddenGames = useMemo(
     () => groupLibraryGames(hiddenGames, runningGameId ? [runningGameId] : []),
@@ -507,9 +521,11 @@ export default function Library() {
   const { platforms: uniquePlatforms, hasImportedGames } = useMemo(
     () =>
       getLibraryFilterOptions(
-        selectedCollectionId === HIDDEN_COLLECTION_ID ? hiddenGames : library
+        selectedCollectionId === HIDDEN_COLLECTION_ID
+          ? hiddenGames
+          : visibleLibrary
       ),
-    [library, hiddenGames, selectedCollectionId]
+    [visibleLibrary, hiddenGames, selectedCollectionId]
   );
   const hasPlatforms = uniquePlatforms.length > 0;
   const showSourceFilter =
@@ -678,7 +694,7 @@ export default function Library() {
   ]);
 
   const hasGames =
-    library.length > 0 ||
+    visibleLibrary.length > 0 ||
     (Boolean(userDetails) && hiddenGames.length > 0) ||
     (selectedCollectionId === HIDDEN_COLLECTION_ID && Boolean(userDetails));
   const showControls = hasGames || Boolean(userDetails);

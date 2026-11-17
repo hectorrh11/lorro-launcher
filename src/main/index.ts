@@ -59,6 +59,7 @@ import {
   suspendEpicPlaytime,
   resumeEpicPlaytime,
 } from "./services/epic";
+import { startAdultContentScan } from "./services/adult-content-scanner";
 
 crashReporter.start({
   uploadToServer: false,
@@ -366,6 +367,8 @@ const initializeApp = async () => {
   await initializeEpicIntegration().catch(() => {
     logger.warn("Epic integration initialization unavailable");
   });
+
+  void startAdultContentScan();
 
   // Suspend can outlive the 60s stall watchdog; reconnect right away instead
   powerMonitor.on("suspend", suspendEpicPlaytime);

@@ -1587,6 +1587,7 @@
     "launch_hydra_in_big_picture": "Launch Lorro in Big Picture mode",
     "launch_big_picture_in_library_page": "Launch Big Picture in the Library page",
     "disable_nsfw_alert": "Disable NSFW alert",
+    "hide_adult_only_games": "Hide adult-only sexual content games",
     "seed_after_download_complete": "Seed after download complete",
     "show_hidden_achievement_description": "Show hidden achievement descriptions before unlocking them",
     "account": "Account",

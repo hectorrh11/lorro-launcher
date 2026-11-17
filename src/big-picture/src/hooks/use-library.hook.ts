@@ -1,12 +1,20 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { filterAdultOnlyGames, isAdultContentFilterEnabled } from "@shared";
 import { IS_DESKTOP } from "../constants";
 import type { LibraryGame } from "@types";
+import { useUserPreferences } from "./use-user-preferences.hook";
 
 export function useLibrary() {
   const [downloadLibrary, setLibrary] = useState<LibraryGame[]>([]);
+  const userPreferences = useUserPreferences();
+  const hideAdultGames = isAdultContentFilterEnabled(userPreferences);
   const library = useMemo(
-    () => downloadLibrary.filter((game) => !game.isConcealed),
-    [downloadLibrary]
+    () =>
+      filterAdultOnlyGames(
+        downloadLibrary.filter((game) => !game.isConcealed),
+        hideAdultGames
+      ),
+    [downloadLibrary, hideAdultGames]
   );
 
   const updateLibrary = useCallback(async () => {

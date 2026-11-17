@@ -16,13 +16,14 @@ import type {
 } from "@types";
 
 import { registerEvent } from "../register-event";
+import { updateGameRecord } from "@main/services/game-record-updater";
 import {
   gamesArtworkSelectionSublevel,
   gamesShopAssetsSublevel,
   gamesShopCacheSublevel,
   levelKeys,
 } from "@main/level";
-import { composeAssetsWithArtwork } from "@shared";
+import { composeAssetsWithArtwork, hasAdultOnlySexualContent } from "@shared";
 import {
   getStoreDetailsWithFallback,
   formatEpicDescription,
@@ -307,6 +308,14 @@ const getGameShopDetails = async (
       : await appDetails;
 
     if (!details) return details;
+
+    void updateGameRecord(levelKeys.game(shop, objectId), {
+      adultOnlyContent: hasAdultOnlySexualContent(
+        details.content_descriptors?.ids
+      ),
+    }).catch((error) => {
+      logger.error("Could not persist adult content flag", error);
+    });
 
     return {
       ...details,

@@ -5,8 +5,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import type { LibraryGame } from "@types";
 import {
+  filterAdultOnlyGames,
   getGameCatalogueIdentity,
   groupLibraryGames,
+  isAdultContentFilterEnabled,
   removeDiacritics,
 } from "@shared";
 
@@ -100,6 +102,13 @@ export function Sidebar() {
   const sidebarGameOrder = useAppSelector(
     (state) => state.userPreferences.value?.sidebarGameOrder
   );
+  const hideAdultGames = useAppSelector((state) =>
+    isAdultContentFilterEnabled(state.userPreferences.value)
+  );
+  const visibleLibrary = useMemo(
+    () => filterAdultOnlyGames(library, hideAdultGames),
+    [library, hideAdultGames]
+  );
   const updateUserPreferences = useUpdateUserPreferences();
   const [deckyPluginInfo, setDeckyPluginInfo] = useState<{
     installed: boolean;
@@ -154,7 +163,7 @@ export function Sidebar() {
 
   const uniquePlatforms = useMemo(() => {
     const set = new Set<string>();
-    for (const game of library) {
+    for (const game of visibleLibrary) {
       if (game.shop === "launchbox" && game.platform) {
         set.add(game.platform);
       }
@@ -162,11 +171,11 @@ export function Sidebar() {
     return Array.from(set).sort((a, b) =>
       a.localeCompare(b, undefined, { sensitivity: "base" })
     );
-  }, [library]);
+  }, [visibleLibrary]);
 
   const hasImportedGames = useMemo(
-    () => hasImportedLibraryGames(library),
-    [library]
+    () => hasImportedLibraryGames(visibleLibrary),
+    [visibleLibrary]
   );
   const hasPlatforms = uniquePlatforms.length > 0;
   const effectiveSources = useMemo(
@@ -199,9 +208,12 @@ export function Sidebar() {
   const orderedLibrary = useMemo(
     () =>
       orderSidebarGames(
-        groupLibraryGames(library, runningGameId ? [runningGameId] : [])
+        groupLibraryGames(
+          visibleLibrary,
+          runningGameId ? [runningGameId] : []
+        )
       ),
-    [library, orderSidebarGames, runningGameId]
+    [visibleLibrary, orderSidebarGames, runningGameId]
   );
 
   const sortedLibrary = useMemo(
@@ -259,7 +271,7 @@ export function Sidebar() {
   }, [isSearching, filterQuery, searchIndex, showPlayableOnly, sortedLibrary]);
 
   const hasActiveFilter =
-    library.length > 0 &&
+    visibleLibrary.length > 0 &&
     (sidebarCategory !== "all" ||
       (categoryShowsSources(sidebarCategory) && effectiveSources.length > 0) ||
       (categoryShowsPlatforms(sidebarCategory) &&

@@ -7,7 +7,14 @@ release channel, installer and data folder. This document tracks what has been
 completed, what has been verified, what is still pending, and what is required
 to distribute the app.
 
-**Current status (estado tras 1.98.2):** **1.98.2** hides the floating
+**Current status (estado tras 1.98.3):** **1.98.3** adds an adult-content filter
+that is on by default: it hides games Steam flags as adult-only sexual content
+(descriptor 3, the same marker that triggers the warning before opening a game
+page) from the library, the sidebar and Big Picture, while general mature titles
+such as GTA 5 or Cyberpunk 2077 stay visible. The flag is stored per game and
+backfilled in the background at startup. Starting with 1.98.3 releases are
+Windows-only: no AppImage, `.deb` or `.pacman` are published. It includes
+**1.98.2**, which hides the floating
 "Comentarios" button while an achievement notification is on screen, so it no
 longer covers the achievement icon, the +LorroPoints chip, its name or its
 description when the notification is anchored in a bottom corner; the button

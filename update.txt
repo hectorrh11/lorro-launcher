@@ -1,4 +1,18 @@
 ========================================================
+VERSION 1.98.3
+========================================================
+FILTRO DE CONTENIDO ADULTO: nueva opcion en Ajustes ->
+Contenido y juego, activada por defecto, que oculta los
+juegos marcados por Steam como contenido sexual solo
+para adultos. Los juegos con contenido maduro general
+(GTA 5, Cyberpunk 2077 y similares) siguen visibles.
+El filtro se aplica a la biblioteca, a la barra lateral
+y a Big Picture. El aviso previo antes de abrir la ficha
+sigue igual y usa la misma marca de Steam.
+LANZAMIENTOS SOLO PARA WINDOWS: a partir de esta version
+se dejan de publicar paquetes de Linux.
+
+========================================================
 VERSION 1.98.2
 ========================================================
 LOGROS MAS LEGIBLES: el boton flotante "Comentarios"

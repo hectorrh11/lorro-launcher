@@ -2,7 +2,7 @@
 
 Launcher de escritorio **independiente** (Electron + React + TypeScript + Vite)
 basado en el código abierto de Hydra. Repo: `hectorrh11/lorro-launcher`.
-Versión publicada actual: **1.98.2** (Windows, Ubuntu/Debian y Arch Linux).
+Versión publicada actual: **1.98.3** (Windows; sin paquetes de Linux desde esta versión).
 
 Este documento es la fuente de verdad para retomar el proyecto en una sesión
 nueva. Léelo entero antes de tocar código.
@@ -459,6 +459,22 @@ ni `allow_cloud_gifts`. `window.electron.openCheckout()` abre el GitHub del
 usuario y "apoya el proyecto" enlaza a ese GitHub. No reintroducir anuncios ni
 enlaces de Hydra/Lorro Cloud.
 
+### Filtro de contenido adulto (1.98.3)
+
+La preferencia `hideAdultOnlyGames` (Ajustes → Contenido y juego) está activada
+por defecto y oculta de las listas los juegos que Steam marca como
+`AdultOnlySexualContent` (descriptor 3), el mismo criterio que dispara el aviso
+previo a abrir la ficha. Los juegos con contenido maduro general (GTA 5,
+Cyberpunk 2077) siguen visibles. La marca se guarda por juego en
+`Game.adultOnlyContent`: `get-game-shop-details.ts` la escribe al cargar los
+detalles de Steam y `adult-content-scanner.ts` rellena al arrancar los juegos
+antiguos (reutiliza la caché de la tienda, luego consulta con 1,2 s de espera,
+máximo 300 por ejecución y continúa en el siguiente arranque). El filtro se
+aplica en la barra lateral, la página Biblioteca y el hook de biblioteca de Big
+Picture; `useLibrary()` del escritorio sigue devolviendo la biblioteca completa
+para la ficha, menús contextuales y descargas. Las releases son solo para
+Windows desde 1.98.3.
+
 ---
 
 ## 7. Trabajo pendiente acordado
@@ -499,6 +515,15 @@ enlaces de Hydra/Lorro Cloud.
 - Textos de Extras (modo rendimiento y tienda) traducidos; sin claves visibles.
 
 ---
+
+### 1.98.3 (publicada)
+
+- Filtro de contenido adulto activado por defecto (`hideAdultOnlyGames`):
+  oculta los juegos con `AdultOnlySexualContent` de Steam en biblioteca, barra
+  lateral y Big Picture, sin afectar a los +18 generales.
+- Marca por juego (`Game.adultOnlyContent`) escrita al cargar detalles de Steam
+  y rellenada al arrancar por `adult-content-scanner.ts`.
+- Releases solo para Windows: sin AppImage, `.deb` ni `.pacman`.
 
 ### 1.98.2 (publicada)
 
@@ -799,6 +824,9 @@ Comprobar además:
 - **1.90.0** — enlace personalizado como fuente de descarga del juego
   (`Downloader.Custom`), con la misma GUI, registro en Descargas, extracción y
   detección del ejecutable; aviso de actualización emergente eliminado.
+- **1.98.3** — filtro de contenido adulto activado por defecto (oculta los
+  juegos con contenido sexual solo para adultos de Steam en biblioteca, barra
+  lateral y Big Picture) y releases únicamente para Windows.
 - **1.98.2** — el botón flotante "Comentarios" se oculta mientras hay un aviso
   de logro en pantalla para no tapar el nombre, la descripción ni los
   LorroPoints ganados; vuelve al terminar.

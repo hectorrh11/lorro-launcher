@@ -1,5 +1,30 @@
 # Lorro Launcher — Notes
 
+## v1.98.3 — Adult-only content filter, Windows-only releases
+
+### What changed
+
+- New preference `hideAdultOnlyGames`, **on by default**, in Ajustes →
+  Contenido y juego, right after the NSFW alert checkbox. It hides games that
+  Steam flags with `AdultOnlySexualContent` (descriptor id 3) — exactly the set
+  that already triggers the pre-game-details warning. General mature titles
+  (GTA 5, Cyberpunk 2077, ids 1/2/4) stay visible.
+- `src/shared/adult-content.ts`: `hasAdultOnlySexualContent`,
+  `isAdultOnlyContentGame`, `isAdultContentFilterEnabled` (defaults to enabled
+  unless the preference is explicitly `false`) and `filterAdultOnlyGames`.
+- Detection is persisted per game as `Game.adultOnlyContent`:
+  - `get-game-shop-details.ts` writes the flag whenever Steam details are
+    loaded (cached or fresh), because the library payload has no descriptors.
+  - `src/main/services/adult-content-scanner.ts` backfills existing Steam
+    games at startup: it reuses `gamesShopCacheSublevel` entries when possible,
+    then queries `getSteamAppDetails` with a 1.2 s delay, up to 300 games per
+    run, resuming on the next launch for the rest.
+- Filtering happens only on list surfaces: sidebar, library page and the Big
+  Picture library hook. `useLibrary()` (desktop) still returns the full library
+  so game details, context menus and downloads keep working.
+- Releases are Windows-only from now on: no AppImage, `.deb` or `.pacman`, and
+  no `latest-linux.yml` for 1.98.3.
+
 ## v1.98.2 — Achievement notifications readable
 
 ### What changed

@@ -20,6 +20,7 @@ import "./settings-behavior.scss";
 const buildForm = (preferences: UserPreferences | null) => ({
   autoplayGameTrailers: preferences?.autoplayGameTrailers ?? true,
   disableNsfwAlert: preferences?.disableNsfwAlert ?? false,
+  hideAdultOnlyGames: preferences?.hideAdultOnlyGames ?? true,
   showHiddenAchievementsDescription:
     preferences?.showHiddenAchievementsDescription ?? false,
   enableSteamAchievements: preferences?.enableSteamAchievements ?? false,
@@ -161,6 +162,14 @@ export function SettingsContextContentGameplay() {
           checked={form.disableNsfwAlert}
           onChange={() =>
             handleChange({ disableNsfwAlert: !form.disableNsfwAlert })
+          }
+        />
+
+        <CheckboxField
+          label={t("hide_adult_only_games")}
+          checked={form.hideAdultOnlyGames}
+          onChange={() =>
+            handleChange({ hideAdultOnlyGames: !form.hideAdultOnlyGames })
           }
         />
 

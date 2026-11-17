@@ -1541,6 +1541,7 @@
     "launch_hydra_in_library_page": "Iniciar Lorro en la página de Biblioteca",
     "launch_hydra_in_big_picture": "Iniciar Lorro en el modo Big Picture",
     "disable_nsfw_alert": "Deshabilitar alerta de NSFW",
+    "hide_adult_only_games": "Ocultar juegos de contenido sexual para adultos",
     "seed_after_download_complete": "Sembrar después de completar una descarga",
     "show_hidden_achievement_description": "Mostrar logros ocultos antes de desbloquearlos",
     "account": "Cuenta",

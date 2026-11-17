@@ -48,6 +48,7 @@ export interface Game extends LibraryCatalogueMetadata {
   iconUrl: string | null;
   libraryHeroImageUrl: string | null;
   logoImageUrl: string | null;
+  adultOnlyContent?: boolean;
   customIconUrl?: string | null;
   customLogoImageUrl?: string | null;
   customHeroImageUrl?: string | null;
@@ -198,6 +199,7 @@ export interface UserPreferences {
   bigPictureLaunchToLibraryPage?: boolean;
   launchInBigPicture?: boolean;
   disableNsfwAlert?: boolean;
+  hideAdultOnlyGames?: boolean;
   enableAutoInstall?: boolean;
   seedAfterDownloadComplete?: boolean;
   showHiddenAchievementsDescription?: boolean;

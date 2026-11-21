@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./resources/lorro/lorro-logo-horizontal.svg" width="360" alt="Lorro Launcher"/>
+<h1>Lorro Launcher</h1>
 
   <p align="center">
     <strong>Lorro Launcher is an independent desktop game launcher for Windows. It brings your library, downloads, installations, playtime, achievements and backups together in one place, with its own identity, updater and data folder.</strong>
